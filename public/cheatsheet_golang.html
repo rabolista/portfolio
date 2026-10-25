@@ -1,0 +1,924 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Golang Cheatsheet</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Inter:wght@400;500;600;700&display=swap');
+
+  :root {
+    --bg: #0f1117;
+    --surface: #1a1d27;
+    --surface2: #22263a;
+    --border: #2e3250;
+    --accent: #00ADD8;
+    --accent2: #4fc3f7;
+    --green: #4ade80;
+    --yellow: #fbbf24;
+    --red: #f87171;
+    --text: #e2e8f0;
+    --muted: #8892b0;
+    --code-bg: #0d1117;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  header {
+    background: linear-gradient(135deg, #1a1d27 0%, #12152a 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 32px 40px 24px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    backdrop-filter: blur(10px);
+  }
+
+  header h1 { font-size: 22px; font-weight: 700; color: var(--accent); letter-spacing: -0.5px; }
+  header p { color: var(--muted); font-size: 13px; margin-top: 4px; }
+
+  .search-bar { margin-top: 14px; display: flex; gap: 10px; align-items: center; }
+  .search-bar input {
+    background: var(--code-bg); border: 1px solid var(--border); color: var(--text);
+    padding: 8px 14px; border-radius: 8px; font-family: 'Inter', sans-serif; font-size: 13px;
+    width: 280px; outline: none; transition: border-color 0.2s;
+  }
+  .search-bar input:focus { border-color: var(--accent); }
+
+  .tags { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
+  .tag {
+    background: var(--surface2); border: 1px solid var(--border); color: var(--muted);
+    padding: 4px 12px; border-radius: 20px; font-size: 12px; cursor: pointer;
+    transition: all 0.2s; user-select: none;
+  }
+  .tag:hover, .tag.active { background: var(--accent); color: white; border-color: var(--accent); }
+
+  .layout { display: grid; grid-template-columns: 220px 1fr; min-height: calc(100vh - 160px); }
+  .section { scroll-margin-top: 190px; margin-bottom: 48px; }
+
+  .sidebar {
+    background: var(--surface); border-right: 1px solid var(--border); padding: 20px 0;
+    position: sticky; top: 160px; height: calc(100vh - 160px); overflow-y: auto;
+  }
+  .sidebar::-webkit-scrollbar { width: 4px; }
+  .sidebar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+  .sidebar-label {
+    font-size: 10px; font-weight: 700; letter-spacing: 1.5px; color: var(--muted);
+    padding: 8px 20px 4px; text-transform: uppercase;
+  }
+  .sidebar a {
+    display: block; padding: 7px 20px; color: var(--muted); text-decoration: none;
+    font-size: 13px; transition: all 0.15s; border-left: 2px solid transparent;
+  }
+  .sidebar a:hover { color: var(--text); background: var(--surface2); border-left-color: var(--accent); }
+
+  .main { padding: 32px 40px; max-width: 1000px; }
+
+  .section-title {
+    font-size: 18px; font-weight: 700; color: var(--accent); margin-bottom: 20px;
+    padding-bottom: 10px; border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 10px;
+  }
+  .section-title span {
+    font-size: 12px; background: var(--surface2); color: var(--muted);
+    padding: 2px 10px; border-radius: 20px; font-weight: 500;
+  }
+
+  .card {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
+    margin-bottom: 16px; overflow: hidden; transition: border-color 0.2s;
+  }
+  .card:hover { border-color: var(--accent); }
+
+  .card-header {
+    padding: 12px 16px; background: var(--surface2); display: flex;
+    justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border);
+  }
+  .card-title { font-size: 13px; font-weight: 600; color: var(--accent2); }
+  .card-desc { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+  .copy-btn {
+    background: var(--code-bg); border: 1px solid var(--border); color: var(--muted);
+    padding: 4px 12px; border-radius: 6px; font-size: 11px; cursor: pointer;
+    font-family: 'Inter', sans-serif; transition: all 0.2s; white-space: nowrap;
+  }
+  .copy-btn:hover { background: var(--accent); color: white; border-color: var(--accent); }
+  .copy-btn.copied { background: var(--green); color: #0f1117; border-color: var(--green); }
+
+  pre {
+    background: var(--code-bg); padding: 16px; overflow-x: auto;
+    font-family: 'JetBrains Mono', monospace; font-size: 13px; line-height: 1.7;
+  }
+  pre::-webkit-scrollbar { height: 4px; }
+  pre::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+  .kw { color: #c792ea; }
+  .fn { color: #82aaff; }
+  .st { color: #c3e88d; }
+  .cm { color: #546e7a; font-style: italic; }
+  .nm { color: #f78c6c; }
+  .op { color: #89ddff; }
+  .bi { color: #ffcb6b; }
+
+  .output-block {
+    background: #0a0f0a; border-top: 1px solid var(--border); padding: 10px 16px;
+    font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--green);
+  }
+  .output-label {
+    font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: var(--muted);
+    margin-bottom: 4px; font-family: 'Inter', sans-serif;
+  }
+
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+  @media (max-width: 900px) {
+    .layout { grid-template-columns: 1fr; }
+    .sidebar { display: none; }
+    .grid2 { grid-template-columns: 1fr; }
+    header { padding: 20px; }
+    .main { padding: 20px; }
+  }
+
+  .hidden { display: none !important; }
+
+  .badge {
+    display: inline-block; font-size: 10px; padding: 2px 8px; border-radius: 4px;
+    font-weight: 600; margin-left: 8px;
+  }
+  .badge-interview { background: #00ADD820; color: var(--accent); border: 1px solid #00ADD840; }
+  .badge-important { background: #fbbf2420; color: var(--yellow); border: 1px solid #fbbf2440; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🐹 Golang Cheatsheet</h1>
+  <p>Every code block below is ready to copy and run with <code>go run</code></p>
+  <div class="search-bar">
+    <input type="text" id="searchInput" placeholder="Search topics, functions, keywords..." oninput="filterCards()">
+  </div>
+  <div class="tags">
+    <div class="tag active" onclick="filterTag('all', this)">All</div>
+    <div class="tag" onclick="filterTag('basics', this)">Basics</div>
+    <div class="tag" onclick="filterTag('control', this)">Control Flow</div>
+    <div class="tag" onclick="filterTag('data', this)">Data Structures</div>
+    <div class="tag" onclick="filterTag('functions', this)">Functions</div>
+    <div class="tag" onclick="filterTag('structs', this)">Structs & Interfaces</div>
+    <div class="tag" onclick="filterTag('errors', this)">Error Handling</div>
+    <div class="tag" onclick="filterTag('concurrency', this)">Concurrency</div>
+    <div class="tag" onclick="filterTag('advanced', this)">Advanced</div>
+  </div>
+</header>
+
+<div class="layout">
+<nav class="sidebar">
+  <div class="sidebar-label">Basics</div>
+  <a href="#variables">Variables & Types</a>
+  <a href="#strings">Strings & Formatting</a>
+  <div class="sidebar-label">Control Flow</div>
+  <a href="#conditionals">If / Switch</a>
+  <a href="#loops">For Loops</a>
+  <div class="sidebar-label">Data Structures</div>
+  <a href="#arrays">Arrays & Slices</a>
+  <a href="#maps">Maps</a>
+  <div class="sidebar-label">Functions</div>
+  <a href="#functions">Functions</a>
+  <a href="#closures">Closures</a>
+  <div class="sidebar-label">Structs & Interfaces</div>
+  <a href="#structs">Structs</a>
+  <a href="#methods">Methods & Receivers</a>
+  <a href="#interfaces">Interfaces</a>
+  <div class="sidebar-label">Error Handling</div>
+  <a href="#errors">Errors</a>
+  <a href="#defer">Defer / Panic / Recover</a>
+  <div class="sidebar-label">Concurrency</div>
+  <a href="#goroutines">Goroutines</a>
+  <a href="#channels">Channels</a>
+  <a href="#select">Select</a>
+  <div class="sidebar-label">Advanced</div>
+  <a href="#pointers">Pointers</a>
+  <a href="#generics">Generics</a>
+  <a href="#json">JSON</a>
+  <a href="#packages">Packages & Modules</a>
+</nav>
+
+<main class="main" id="mainContent">
+
+<div class="section" id="variables" data-tags="basics">
+  <div class="section-title">Variables & Types <span>basics</span></div>
+  <div class="card" data-tags="basics">
+    <div class="card-header">
+      <div><div class="card-title">Declaring Variables <span class="badge badge-interview">Interview Fav</span></div><div class="card-desc">var, short declaration (:=), constants, zero values</div></div>
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    </div>
+    <pre><span class="kw">package</span> main
+
+<span class="kw">import</span> <span class="st">"fmt"</span>
+
+<span class="kw">func</span> <span class="fn">main</span>() {
+	<span class="cm">// var with explicit type</span>
+	<span class="kw">var</span> name <span class="bi">string</span> <span class="op">=</span> <span class="st">"Robert"</span>
+	<span class="kw">var</span> age <span class="bi">int</span> <span class="op">=</span> <span class="nm">35</span>
+
+	<span class="cm">// short declaration (type inferred) — most common</span>
+	role <span class="op">:=</span> <span class="st">"BI Developer"</span>
+	years <span class="op">:=</span> <span class="nm">15</span>
+
+	<span class="cm">// constants</span>
+	<span class="kw">const</span> Pi <span class="op">=</span> <span class="nm">3.14159</span>
+
+	<span class="cm">// zero values — Go initializes unset vars automatically</span>
+	<span class="kw">var</span> count <span class="bi">int</span>     <span class="cm">// 0</span>
+	<span class="kw">var</span> active <span class="bi">bool</span>  <span class="cm">// false</span>
+	<span class="kw">var</span> label <span class="bi">string</span> <span class="cm">// ""</span>
+
+	fmt.Println(name, age, role, years, Pi, count, active, label)
+}</pre>
+    <div class="output-block"><div class="output-label">Output</div>Robert 35 BI Developer 15 3.14159 0 false</div>
+  </div>
+</div>
+
+<div class="section" id="strings" data-tags="basics">
+  <div class="section-title">Strings & Formatting <span>strings</span></div>
+  <div class="card" data-tags="basics">
+    <div class="card-header">
+      <div><div class="card-title">fmt.Sprintf & strings package</div><div class="card-desc">Formatting verbs and common string operations</div></div>
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    </div>
+    <pre><span class="kw">import</span> (
+	<span class="st">"fmt"</span>
+	<span class="st">"strings"</span>
+)
+
+name <span class="op">:=</span> <span class="st">"Robert"</span>
+age <span class="op">:=</span> <span class="nm">35</span>
+
+<span class="cm">// Sprintf verbs: %s string, %d int, %f float, %v any value, %T type</span>
+msg <span class="op">:=</span> fmt.Sprintf(<span class="st">"%s is %d years old"</span>, name, age)
+fmt.Println(msg)
+
+<span class="cm">// strings package</span>
+fmt.Println(strings.ToUpper(name))          <span class="cm">// ROBERT</span>
+fmt.Println(strings.Contains(name, <span class="st">"ob"</span>)) <span class="cm">// true</span>
+fmt.Println(strings.Split(<span class="st">"a,b,c"</span>, <span class="st">","</span>)) <span class="cm">// [a b c]</span>
+fmt.Println(strings.TrimSpace(<span class="st">"  hi  "</span>)) <span class="cm">// "hi"</span>
+fmt.Println(strings.Join([]<span class="bi">string</span>{<span class="st">"a"</span>, <span class="st">"b"</span>}, <span class="st">"-"</span>)) <span class="cm">// a-b</span></pre>
+    <div class="output-block"><div class="output-label">Output</div>Robert is 35 years old<br>ROBERT<br>true<br>[a b c]<br>hi<br>a-b</div>
+  </div>
+</div>
+
+<div class="section" id="conditionals" data-tags="control">
+  <div class="section-title">If / Switch <span>control flow</span></div>
+  <div class="card" data-tags="control">
+    <div class="card-header">
+      <div><div class="card-title">If Statements & Switch <span class="badge badge-interview">Interview Fav</span></div><div class="card-desc">No parentheses needed; switch doesn't fall through by default</div></div>
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    </div>
+    <pre>score <span class="op">:=</span> <span class="nm">85</span>
+
+<span class="kw">if</span> score <span class="op">>=</span> <span class="nm">90</span> {
+	fmt.Println(<span class="st">"A"</span>)
+} <span class="kw">else if</span> score <span class="op">>=</span> <span class="nm">80</span> {
+	fmt.Println(<span class="st">"B"</span>)
+} <span class="kw">else</span> {
+	fmt.Println(<span class="st">"C"</span>)
+}
+
+<span class="cm">// if with a short statement scoped to the if</span>
+<span class="kw">if</span> v <span class="op">:=</span> score <span class="op">*</span> <span class="nm">2</span>; v <span class="op">></span> <span class="nm">100</span> {
+	fmt.Println(<span class="st">"doubled over 100:"</span>, v)
+}
+
+<span class="cm">// switch — no automatic fallthrough</span>
+<span class="kw">switch</span> role <span class="op">:=</span> <span class="st">"admin"</span>; role {
+<span class="kw">case</span> <span class="st">"admin"</span>:
+	fmt.Println(<span class="st">"Full access"</span>)
+<span class="kw">case</span> <span class="st">"editor"</span>, <span class="st">"contributor"</span>:
+	fmt.Println(<span class="st">"Limited access"</span>)
+<span class="kw">default</span>:
+	fmt.Println(<span class="st">"No access"</span>)
+}</pre>
+    <div class="output-block"><div class="output-label">Output</div>B<br>doubled over 100: 170<br>Full access</div>
+  </div>
+</div>
+
+<div class="section" id="loops" data-tags="control">
+  <div class="section-title">For Loops <span>control flow</span></div>
+  <div class="card" data-tags="control">
+    <div class="card-header">
+      <div><div class="card-title">Go's Only Loop — for <span class="badge badge-important">Key Concept</span></div><div class="card-desc">Go has no while/do-while — for handles every loop pattern</div></div>
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    </div>
+    <pre><span class="cm">// classic C-style for</span>
+<span class="kw">for</span> i <span class="op">:=</span> <span class="nm">0</span>; i <span class="op">&lt;</span> <span class="nm">5</span>; i<span class="op">++</span> {
+	fmt.Print(i, <span class="st">" "</span>)
+}
+fmt.Println()
+
+<span class="cm">// "while" style — just the condition</span>
+n <span class="op">:=</span> <span class="nm">0</span>
+<span class="kw">for</span> n <span class="op">&lt;</span> <span class="nm">3</span> {
+	fmt.Println(<span class="st">"n ="</span>, n)
+	n<span class="op">++</span>
+}
+
+<span class="cm">// infinite loop with break</span>
+count <span class="op">:=</span> <span class="nm">0</span>
+<span class="kw">for</span> {
+	<span class="kw">if</span> count <span class="op">==</span> <span class="nm">2</span> {
+		<span class="kw">break</span>
+	}
+	count<span class="op">++</span>
+}
+
+<span class="cm">// range — iterate over slices, maps, strings</span>
+fruits <span class="op">:=</span> []<span class="bi">string</span>{<span class="st">"apple"</span>, <span class="st">"banana"</span>}
+<span class="kw">for</span> i, fruit <span class="op">:=</span> <span class="kw">range</span> fruits {
+	fmt.Println(i, fruit)
+}</pre>
+    <div class="output-block"><div class="output-label">Output</div>0 1 2 3 4 <br>n = 0<br>n = 1<br>n = 2<br>0 apple<br>1 banana</div>
+  </div>
+</div>
+
+<div class="section" id="arrays" data-tags="data">
+  <div class="section-title">Arrays & Slices <span>data structures</span></div>
+  <div class="card" data-tags="data">
+    <div class="card-header">
+      <div><div class="card-title">Slices — Go's Dynamic Arrays <span class="badge badge-interview">Interview Fav</span></div><div class="card-desc">Arrays are fixed-size; slices are what you'll actually use</div></div>
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    </div>
+    <pre><span class="cm">// fixed-size array</span>
+<span class="kw">var</span> arr [<span class="nm">3</span>]<span class="bi">int</span> <span class="op">=</span> [<span class="nm">3</span>]<span class="bi">int</span>{<span class="nm">1</span>, <span class="nm">2</span>, <span class="nm">3</span>}
+
+<span class="cm">// slice — dynamic, most common in Go code</span>
+nums <span class="op">:=</span> []<span class="bi">int</span>{<span class="nm">3</span>, <span class="nm">1</span>, <span class="nm">4</span>, <span class="nm">1</span>, <span class="nm">5</span>}
+nums <span class="op">=</span> <span class="fn">append</span>(nums, <span class="nm">9</span>)      <span class="cm">// add to end</span>
+fmt.Println(nums)              <span class="cm">// [3 1 4 1 5 9]</span>
+fmt.Println(<span class="fn">len</span>(nums))         <span class="cm">// 6</span>
+fmt.Println(nums[<span class="nm">1</span>:<span class="nm">4</span>])       <span class="cm">// slice of a slice: [1 4 1]</span>
+
+<span class="cm">// make() — pre-allocate a slice with length/capacity</span>
+scores <span class="op">:=</span> <span class="fn">make</span>([]<span class="bi">int</span>, <span class="nm">0</span>, <span class="nm">10</span>)
+scores <span class="op">=</span> <span class="fn">append</span>(scores, <span class="nm">85</span>, <span class="nm">92</span>)
+fmt.Println(scores)
+
+<span class="cm">// 2D slice (like a table)</span>
+grid <span class="op">:=</span> [][]<span class="bi">int</span>{{<span class="nm">1</span>, <span class="nm">2</span>}, {<span class="nm">3</span>, <span class="nm">4</span>}}
+fmt.Println(grid[<span class="nm">1</span>][<span class="nm">0</span>])  <span class="cm">// 3</span></pre>
+    <div class="output-block"><div class="output-label">Output</div>[3 1 4 1 5 9]<br>6<br>[1 4 1]<br>[85 92]<br>3</div>
+  </div>
+</div>
+
+<div class="section" id="maps" data-tags="data">
+  <div class="section-title">Maps <span>data structures</span></div>
+  <div class="card" data-tags="data">
+    <div class="card-header">
+      <div><div class="card-title">Map Operations <span class="badge badge-interview">Interview Fav</span></div><div class="card-desc">Go's key-value collection type</div></div>
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    </div>
+    <pre>employee <span class="op">:=</span> <span class="fn">map</span>[<span class="bi">string</span>]<span class="bi">string</span>{
+	<span class="st">"name"</span>: <span class="st">"Robert"</span>,
+	<span class="st">"role"</span>: <span class="st">"BI Developer"</span>,
+}
+
+<span class="cm">// access</span>
+fmt.Println(employee[<span class="st">"name"</span>])
+
+<span class="cm">// "comma ok" idiom — check if key exists</span>
+value, ok <span class="op">:=</span> employee[<span class="st">"salary"</span>]
+fmt.Println(value, ok)  <span class="cm">// "" false</span>
+
+<span class="cm">// add / update</span>
+employee[<span class="st">"salary"</span>] <span class="op">=</span> <span class="st">"90000"</span>
+
+<span class="cm">// delete</span>
+<span class="fn">delete</span>(employee, <span class="st">"role"</span>)
+
+<span class="cm">// loop through a map</span>
+<span class="kw">for</span> k, v <span class="op">:=</span> <span class="kw">range</span> employee {
+	fmt.Println(k, <span class="st">"="</span>, v)
+}
+
+fmt.Println(<span class="fn">len</span>(employee))</pre>
+    <div class="output-block"><div class="output-label">Output</div>Robert<br> false<br>name = Robert<br>salary = 90000<br>2</div>
+  </div>
+</div>
+
+<div class="section" id="functions" data-tags="functions">
+  <div class="section-title">Functions <span>functions</span></div>
+  <div class="card" data-tags="functions">
+    <div class="card-header">
+      <div><div class="card-title">Functions, Multiple Returns, Variadic <span class="badge badge-interview">Interview Fav</span></div><div class="card-desc">Go functions can return more than one value — very idiomatic</div></div>
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    </div>
+    <pre><span class="kw">func</span> <span class="fn">greet</span>(name <span class="bi">string</span>) <span class="bi">string</span> {
+	<span class="kw">return</span> <span class="st">"Hello, "</span> <span class="op">+</span> name
+}
+
+<span class="cm">// multiple return values — commonly (result, error)</span>
+<span class="kw">func</span> <span class="fn">divide</span>(a, b <span class="bi">float64</span>) (<span class="bi">float64</span>, <span class="bi">error</span>) {
+	<span class="kw">if</span> b <span class="op">==</span> <span class="nm">0</span> {
+		<span class="kw">return</span> <span class="nm">0</span>, fmt.Errorf(<span class="st">"cannot divide by zero"</span>)
+	}
+	<span class="kw">return</span> a <span class="op">/</span> b, <span class="kw">nil</span>
+}
+
+<span class="cm">// variadic — accepts any number of args</span>
+<span class="kw">func</span> <span class="fn">sum</span>(nums <span class="op">...</span><span class="bi">int</span>) <span class="bi">int</span> {
+	total <span class="op">:=</span> <span class="nm">0</span>
+	<span class="kw">for</span> _, n <span class="op">:=</span> <span class="kw">range</span> nums {
+		total <span class="op">+=</span> n
+	}
+	<span class="kw">return</span> total
+}
+
+fmt.Println(<span class="fn">greet</span>(<span class="st">"Robert"</span>))
+result, err <span class="op">:=</span> <span class="fn">divide</span>(<span class="nm">10</span>, <span class="nm">2</span>)
+fmt.Println(result, err)
+fmt.Println(<span class="fn">sum</span>(<span class="nm">1</span>, <span class="nm">2</span>, <span class="nm">3</span>, <span class="nm">4</span>))</pre>
+    <div class="output-block"><div class="output-label">Output</div>Hello, Robert<br>5 &lt;nil&gt;<br>10</div>
+  </div>
+</div>
+
+<div class="section" id="closures" data-tags="functions">
+  <div class="section-title">Closures <span>functions</span></div>
+  <div class="card" data-tags="functions">
+    <div class="card-header">
+      <div><div class="card-title">Function Literals & Closures</div><div class="card-desc">Functions can capture variables from their surrounding scope</div></div>
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    </div>
+    <pre><span class="kw">func</span> <span class="fn">counter</span>() <span class="kw">func</span>() <span class="bi">int</span> {
+	count <span class="op">:=</span> <span class="nm">0</span>
+	<span class="kw">return</span> <span class="kw">func</span>() <span class="bi">int</span> {
+		count<span class="op">++</span>
+		<span class="kw">return</span> count
+	}
+}
+
+next <span class="op">:=</span> <span class="fn">counter</span>()
+fmt.Println(next())  <span class="cm">// 1</span>
+fmt.Println(next())  <span class="cm">// 2</span>
+fmt.Println(next())  <span class="cm">// 3</span>
+
+<span class="cm">// anonymous function, called immediately</span>
+<span class="kw">func</span>() {
+	fmt.Println(<span class="st">"ran immediately"</span>)
+}()</pre>
+    <div class="output-block"><div class="output-label">Output</div>1<br>2<br>3<br>ran immediately</div>
+  </div>
+</div>
+
+<div class="section" id="structs" data-tags="structs">
+  <div class="section-title">Structs <span>structs & interfaces</span></div>
+  <div class="card" data-tags="structs">
+    <div class="card-header">
+      <div><div class="card-title">Struct Basics <span class="badge badge-interview">Interview Fav</span></div><div class="card-desc">Go's way of grouping fields — no classes, no inheritance</div></div>
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    </div>
+    <pre><span class="kw">type</span> Employee <span class="kw">struct</span> {
+	Name   <span class="bi">string</span>
+	Role   <span class="bi">string</span>
+	Salary <span class="bi">float64</span>
+}
+
+<span class="cm">// create with field names (recommended)</span>
+emp <span class="op">:=</span> Employee{Name: <span class="st">"Robert"</span>, Role: <span class="st">"BI Developer"</span>, Salary: <span class="nm">90000</span>}
+
+<span class="cm">// access / update fields</span>
+fmt.Println(emp.Name)
+emp.Salary <span class="op">*=</span> <span class="nm">1.1</span>
+fmt.Println(emp.Salary)
+
+<span class="cm">// nested structs</span>
+<span class="kw">type</span> Address <span class="kw">struct</span> {
+	City    <span class="bi">string</span>
+	Country <span class="bi">string</span>
+}
+<span class="kw">type</span> Person <span class="kw">struct</span> {
+	Employee
+	Home Address
+}
+p <span class="op">:=</span> Person{Employee: emp, Home: Address{City: <span class="st">"London"</span>, Country: <span class="st">"Canada"</span>}}
+fmt.Println(p.Name, p.Home.City) <span class="cm">// embedded field promotion</span></pre>
+    <div class="output-block"><div class="output-label">Output</div>Robert<br>99000<br>Robert London</div>
+  </div>
+</div>
+
+<div class="section" id="methods" data-tags="structs">
+  <div class="section-title">Methods & Receivers <span>structs & interfaces</span></div>
+  <div class="card" data-tags="structs">
+    <div class="card-header">
+      <div><div class="card-title">Value vs Pointer Receivers <span class="badge badge-important">Key Concept</span></div><div class="card-desc">Pointer receivers can modify the struct; value receivers work on a copy</div></div>
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    </div>
+    <pre><span class="kw">type</span> Account <span class="kw">struct</span> {
+	Balance <span class="bi">float64</span>
+}
+
+<span class="cm">// value receiver — read-only, gets a copy</span>
+<span class="kw">func</span> (a Account) <span class="fn">Describe</span>() <span class="bi">string</span> {
+	<span class="kw">return</span> fmt.Sprintf(<span class="st">"Balance: $%.2f"</span>, a.Balance)
+}
+
+<span class="cm">// pointer receiver — can mutate the original struct</span>
+<span class="kw">func</span> (a <span class="op">*</span>Account) <span class="fn">Deposit</span>(amount <span class="bi">float64</span>) {
+	a.Balance <span class="op">+=</span> amount
+}
+
+acc <span class="op">:=</span> Account{Balance: <span class="nm">100</span>}
+acc.Deposit(<span class="nm">50</span>)  <span class="cm">// Go auto-takes the address here</span>
+fmt.Println(acc.Describe())</pre>
+    <div class="output-block"><div class="output-label">Output</div>Balance: $150.00</div>
+  </div>
+</div>
+
+<div class="section" id="interfaces" data-tags="structs">
+  <div class="section-title">Interfaces <span>structs & interfaces</span></div>
+  <div class="card" data-tags="structs">
+    <div class="card-header">
+      <div><div class="card-title">Interfaces — Implicit Implementation <span class="badge badge-interview">Interview Fav</span></div><div class="card-desc">No "implements" keyword — any type with the right methods satisfies an interface</div></div>
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    </div>
+    <pre><span class="kw">type</span> Shape <span class="kw">interface</span> {
+	Area() <span class="bi">float64</span>
+}
+
+<span class="kw">type</span> Rectangle <span class="kw">struct</span> { Width, Height <span class="bi">float64</span> }
+<span class="kw">func</span> (r Rectangle) <span class="fn">Area</span>() <span class="bi">float64</span> { <span class="kw">return</span> r.Width <span class="op">*</span> r.Height }
+
+<span class="kw">type</span> Circle <span class="kw">struct</span> { Radius <span class="bi">float64</span> }
+<span class="kw">func</span> (c Circle) <span class="fn">Area</span>() <span class="bi">float64</span> { <span class="kw">return</span> <span class="nm">3.14159</span> <span class="op">*</span> c.Radius <span class="op">*</span> c.Radius }
+
+<span class="kw">func</span> <span class="fn">printArea</span>(s Shape) {
+	fmt.Printf(<span class="st">"Area: %.2f\n"</span>, s.Area())
+}
+
+<span class="fn">printArea</span>(Rectangle{Width: <span class="nm">4</span>, Height: <span class="nm">5</span>})
+<span class="fn">printArea</span>(Circle{Radius: <span class="nm">3</span>})
+
+<span class="cm">// empty interface — accepts any type (like interface{} / any)</span>
+<span class="kw">var</span> anything <span class="bi">any</span> <span class="op">=</span> <span class="st">"could be anything"</span>
+fmt.Println(anything)</pre>
+    <div class="output-block"><div class="output-label">Output</div>Area: 20.00<br>Area: 28.27<br>could be anything</div>
+  </div>
+</div>
+
+<div class="section" id="errors" data-tags="errors">
+  <div class="section-title">Error Handling <span>error handling</span></div>
+  <div class="card" data-tags="errors">
+    <div class="card-header">
+      <div><div class="card-title">The error Type — No Exceptions <span class="badge badge-interview">Interview Fav</span></div><div class="card-desc">Go handles errors as regular return values, not try/catch</div></div>
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    </div>
+    <pre><span class="kw">import</span> (
+	<span class="st">"errors"</span>
+	<span class="st">"fmt"</span>
+)
+
+<span class="kw">func</span> <span class="fn">validateAge</span>(age <span class="bi">int</span>) <span class="bi">error</span> {
+	<span class="kw">if</span> age <span class="op">&lt;</span> <span class="nm">0</span> {
+		<span class="kw">return</span> errors.New(<span class="st">"age cannot be negative"</span>)
+	}
+	<span class="kw">return</span> <span class="kw">nil</span>
+}
+
+<span class="kw">if</span> err <span class="op">:=</span> <span class="fn">validateAge</span>(<span class="op">-</span><span class="nm">5</span>); err <span class="op">!=</span> <span class="kw">nil</span> {
+	fmt.Println(<span class="st">"Error:"</span>, err)
+}
+
+<span class="cm">// custom error type</span>
+<span class="kw">type</span> ValidationError <span class="kw">struct</span> {
+	Field string
+}
+<span class="kw">func</span> (e <span class="op">*</span>ValidationError) <span class="fn">Error</span>() <span class="bi">string</span> {
+	<span class="kw">return</span> fmt.Sprintf(<span class="st">"invalid field: %s"</span>, e.Field)
+}
+
+<span class="kw">func</span> <span class="fn">checkField</span>(name <span class="bi">string</span>) <span class="bi">error</span> {
+	<span class="kw">if</span> name <span class="op">==</span> <span class="st">""</span> {
+		<span class="kw">return</span> &ValidationError{Field: <span class="st">"name"</span>}
+	}
+	<span class="kw">return</span> <span class="kw">nil</span>
+}
+
+err <span class="op">:=</span> <span class="fn">checkField</span>(<span class="st">""</span>)
+fmt.Println(err)</pre>
+    <div class="output-block"><div class="output-label">Output</div>Error: age cannot be negative<br>invalid field: name</div>
+  </div>
+</div>
+
+<div class="section" id="defer" data-tags="errors">
+  <div class="section-title">Defer / Panic / Recover <span>error handling</span></div>
+  <div class="card" data-tags="errors">
+    <div class="card-header">
+      <div><div class="card-title">defer, panic, recover <span class="badge badge-important">Key Concept</span></div><div class="card-desc">defer always runs; panic/recover is Go's rare "exception-like" mechanism</div></div>
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    </div>
+    <pre><span class="kw">func</span> <span class="fn">process</span>() {
+	<span class="kw">defer</span> fmt.Println(<span class="st">"cleanup runs last"</span>)  <span class="cm">// runs when function returns</span>
+	fmt.Println(<span class="st">"processing..."</span>)
+}
+
+<span class="cm">// recover from a panic so the program doesn't crash</span>
+<span class="kw">func</span> <span class="fn">safeCall</span>() {
+	<span class="kw">defer</span> <span class="kw">func</span>() {
+		<span class="kw">if</span> r <span class="op">:=</span> recover(); r <span class="op">!=</span> <span class="kw">nil</span> {
+			fmt.Println(<span class="st">"recovered from:"</span>, r)
+		}
+	}()
+	<span class="kw">panic</span>(<span class="st">"something went wrong"</span>)
+}
+
+<span class="fn">process</span>()
+<span class="fn">safeCall</span>()
+fmt.Println(<span class="st">"program continues"</span>)</pre>
+    <div class="output-block"><div class="output-label">Output</div>processing...<br>cleanup runs last<br>recovered from: something went wrong<br>program continues</div>
+  </div>
+</div>
+
+<div class="section" id="goroutines" data-tags="concurrency">
+  <div class="section-title">Goroutines <span>concurrency</span></div>
+  <div class="card" data-tags="concurrency">
+    <div class="card-header">
+      <div><div class="card-title">Starting Goroutines <span class="badge badge-interview">Interview Fav</span></div><div class="card-desc">Lightweight threads managed by the Go runtime</div></div>
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    </div>
+    <pre><span class="kw">import</span> (
+	<span class="st">"fmt"</span>
+	<span class="st">"sync"</span>
+)
+
+<span class="kw">func</span> <span class="fn">worker</span>(id <span class="bi">int</span>, wg <span class="op">*</span>sync.WaitGroup) {
+	<span class="kw">defer</span> wg.Done()
+	fmt.Printf(<span class="st">"worker %d done\n"</span>, id)
+}
+
+<span class="kw">func</span> <span class="fn">main</span>() {
+	<span class="kw">var</span> wg sync.WaitGroup
+
+	<span class="kw">for</span> i <span class="op">:=</span> <span class="nm">1</span>; i <span class="op">&lt;=</span> <span class="nm">3</span>; i<span class="op">++</span> {
+		wg.Add(<span class="nm">1</span>)
+		<span class="kw">go</span> <span class="fn">worker</span>(i, &wg)  <span class="cm">// "go" starts it concurrently</span>
+	}
+
+	wg.Wait() <span class="cm">// block until all goroutines call Done()</span>
+	fmt.Println(<span class="st">"all workers finished"</span>)
+}</pre>
+    <div class="output-block"><div class="output-label">Output</div>worker 3 done<br>worker 1 done<br>worker 2 done<br>all workers finished<br><span class="cm">(order may vary — that's concurrency!)</span></div>
+  </div>
+</div>
+
+<div class="section" id="channels" data-tags="concurrency">
+  <div class="section-title">Channels <span>concurrency</span></div>
+  <div class="card" data-tags="concurrency">
+    <div class="card-header">
+      <div><div class="card-title">Sending & Receiving on Channels <span class="badge badge-interview">Interview Fav</span></div><div class="card-desc">How goroutines communicate safely</div></div>
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    </div>
+    <pre>ch <span class="op">:=</span> <span class="fn">make</span>(<span class="kw">chan</span> <span class="bi">string</span>)
+
+<span class="kw">go</span> <span class="kw">func</span>() {
+	ch <span class="op">&lt;-</span> <span class="st">"hello from goroutine"</span>  <span class="cm">// send</span>
+}()
+
+msg <span class="op">:=</span> <span class="op">&lt;-</span>ch  <span class="cm">// receive (blocks until a value arrives)</span>
+fmt.Println(msg)
+
+<span class="cm">// buffered channel — doesn't block until full</span>
+results <span class="op">:=</span> <span class="fn">make</span>(<span class="kw">chan</span> <span class="bi">int</span>, <span class="nm">3</span>)
+results <span class="op">&lt;-</span> <span class="nm">1</span>
+results <span class="op">&lt;-</span> <span class="nm">2</span>
+<span class="fn">close</span>(results)  <span class="cm">// signal no more values</span>
+
+<span class="kw">for</span> r <span class="op">:=</span> <span class="kw">range</span> results {
+	fmt.Println(<span class="st">"result:"</span>, r)
+}</pre>
+    <div class="output-block"><div class="output-label">Output</div>hello from goroutine<br>result: 1<br>result: 2</div>
+  </div>
+</div>
+
+<div class="section" id="select" data-tags="concurrency">
+  <div class="section-title">Select <span>concurrency</span></div>
+  <div class="card" data-tags="concurrency">
+    <div class="card-header">
+      <div><div class="card-title">select — Wait on Multiple Channels</div><div class="card-desc">Like a switch statement, but for channels</div></div>
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    </div>
+    <pre><span class="kw">import</span> (
+	<span class="st">"fmt"</span>
+	<span class="st">"time"</span>
+)
+
+c1 <span class="op">:=</span> <span class="fn">make</span>(<span class="kw">chan</span> <span class="bi">string</span>)
+c2 <span class="op">:=</span> <span class="fn">make</span>(<span class="kw">chan</span> <span class="bi">string</span>)
+
+<span class="kw">go</span> <span class="kw">func</span>() { time.Sleep(<span class="nm">50</span> <span class="op">*</span> time.Millisecond); c1 <span class="op">&lt;-</span> <span class="st">"one"</span> }()
+<span class="kw">go</span> <span class="kw">func</span>() { time.Sleep(<span class="nm">100</span> <span class="op">*</span> time.Millisecond); c2 <span class="op">&lt;-</span> <span class="st">"two"</span> }()
+
+<span class="kw">for</span> i <span class="op">:=</span> <span class="nm">0</span>; i <span class="op">&lt;</span> <span class="nm">2</span>; i<span class="op">++</span> {
+	<span class="kw">select</span> {
+	<span class="kw">case</span> msg1 <span class="op">:=</span> <span class="op">&lt;-</span>c1:
+		fmt.Println(<span class="st">"received"</span>, msg1)
+	<span class="kw">case</span> msg2 <span class="op">:=</span> <span class="op">&lt;-</span>c2:
+		fmt.Println(<span class="st">"received"</span>, msg2)
+	}
+}</pre>
+    <div class="output-block"><div class="output-label">Output</div>received one<br>received two</div>
+  </div>
+</div>
+
+<div class="section" id="pointers" data-tags="advanced">
+  <div class="section-title">Pointers <span>advanced</span></div>
+  <div class="card" data-tags="advanced">
+    <div class="card-header">
+      <div><div class="card-title">Pointers — & and * <span class="badge badge-interview">Interview Fav</span></div><div class="card-desc">Pass by reference instead of copying values</div></div>
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    </div>
+    <pre>x <span class="op">:=</span> <span class="nm">10</span>
+p <span class="op">:=</span> &x         <span class="cm">// p is a pointer to x's address</span>
+
+fmt.Println(<span class="op">*</span>p)     <span class="cm">// 10 — dereference to get the value</span>
+<span class="op">*</span>p <span class="op">=</span> <span class="nm">20</span>       <span class="cm">// modify x through the pointer</span>
+fmt.Println(x)      <span class="cm">// 20</span>
+
+<span class="cm">// why it matters: functions that need to modify the caller's value</span>
+<span class="kw">func</span> <span class="fn">double</span>(n <span class="op">*</span><span class="bi">int</span>) {
+	<span class="op">*</span>n <span class="op">*=</span> <span class="nm">2</span>
+}
+<span class="fn">double</span>(&x)
+fmt.Println(x)  <span class="cm">// 40</span></pre>
+    <div class="output-block"><div class="output-label">Output</div>10<br>20<br>40</div>
+  </div>
+</div>
+
+<div class="section" id="generics" data-tags="advanced">
+  <div class="section-title">Generics <span>advanced</span></div>
+  <div class="card" data-tags="advanced">
+    <div class="card-header">
+      <div><div class="card-title">Generic Functions (Go 1.18+)</div><div class="card-desc">Write one function that works across multiple types</div></div>
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    </div>
+    <pre><span class="kw">func</span> <span class="fn">Max</span>[T <span class="kw">int</span> <span class="op">|</span> <span class="kw">float64</span>](a, b T) T {
+	<span class="kw">if</span> a <span class="op">></span> b {
+		<span class="kw">return</span> a
+	}
+	<span class="kw">return</span> b
+}
+
+fmt.Println(Max(<span class="nm">3</span>, <span class="nm">7</span>))         <span class="cm">// 7 (ints)</span>
+fmt.Println(Max(<span class="nm">2.5</span>, <span class="nm">1.1</span>))     <span class="cm">// 2.5 (floats)</span>
+
+<span class="cm">// generic slice helper</span>
+<span class="kw">func</span> <span class="fn">Filter</span>[T <span class="kw">any</span>](items []T, keep <span class="kw">func</span>(T) <span class="bi">bool</span>) []T {
+	<span class="kw">var</span> result []T
+	<span class="kw">for</span> _, item <span class="op">:=</span> <span class="kw">range</span> items {
+		<span class="kw">if</span> keep(item) {
+			result <span class="op">=</span> <span class="fn">append</span>(result, item)
+		}
+	}
+	<span class="kw">return</span> result
+}
+
+nums <span class="op">:=</span> []<span class="bi">int</span>{<span class="nm">1</span>, <span class="nm">2</span>, <span class="nm">3</span>, <span class="nm">4</span>, <span class="nm">5</span>, <span class="nm">6</span>}
+evens <span class="op">:=</span> Filter(nums, <span class="kw">func</span>(n <span class="bi">int</span>) <span class="bi">bool</span> { <span class="kw">return</span> n<span class="op">%</span><span class="nm">2</span><span class="op">==</span><span class="nm">0</span> })
+fmt.Println(evens)</pre>
+    <div class="output-block"><div class="output-label">Output</div>7<br>2.5<br>[2 4 6]</div>
+  </div>
+</div>
+
+<div class="section" id="json" data-tags="advanced">
+  <div class="section-title">JSON <span>advanced</span></div>
+  <div class="card" data-tags="advanced">
+    <div class="card-header">
+      <div><div class="card-title">encoding/json — Marshal & Unmarshal <span class="badge badge-important">BI Essential</span></div><div class="card-desc">Struct tags control the JSON field names</div></div>
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    </div>
+    <pre><span class="kw">import</span> (
+	<span class="st">"encoding/json"</span>
+	<span class="st">"fmt"</span>
+)
+
+<span class="kw">type</span> Employee <span class="kw">struct</span> {
+	Name string  <span class="fn">`json:"name"`</span>
+	Role string  <span class="fn">`json:"role"`</span>
+}
+
+emp <span class="op">:=</span> Employee{Name: <span class="st">"Robert"</span>, Role: <span class="st">"BI Developer"</span>}
+
+<span class="cm">// struct -> JSON</span>
+data, _ <span class="op">:=</span> json.Marshal(emp)
+fmt.Println(<span class="fn">string</span>(data))
+
+<span class="cm">// JSON -> struct</span>
+raw <span class="op">:=</span> []<span class="bi">byte</span>(<span class="fn">`{"name":"Alice","role":"Analyst"}`</span>)
+<span class="kw">var</span> parsed Employee
+json.Unmarshal(raw, &parsed)
+fmt.Println(parsed.Name, parsed.Role)</pre>
+    <div class="output-block"><div class="output-label">Output</div>{"name":"Robert","role":"BI Developer"}<br>Alice Analyst</div>
+  </div>
+</div>
+
+<div class="section" id="packages" data-tags="advanced">
+  <div class="section-title">Packages & Modules <span>advanced</span></div>
+  <div class="card" data-tags="advanced">
+    <div class="card-header">
+      <div><div class="card-title">go.mod, Imports, Exported Names</div><div class="card-desc">Capitalized = exported (public); lowercase = unexported (private)</div></div>
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    </div>
+    <pre><span class="cm">// create a new module</span>
+<span class="cm">// $ go mod init github.com/rabolista/myapp</span>
+
+<span class="cm">// install a dependency</span>
+<span class="cm">// $ go get github.com/some/package</span>
+
+<span class="kw">package</span> main
+
+<span class="kw">import</span> (
+	<span class="st">"fmt"</span>                 <span class="cm">// standard library</span>
+	<span class="st">"github.com/rabolista/myapp/utils"</span> <span class="cm">// local package</span>
+)
+
+<span class="kw">func</span> <span class="fn">main</span>() {
+	fmt.Println(utils.Helper()) <span class="cm">// only exported (capitalized) names are visible</span>
+}
+
+<span class="cm">// run and build</span>
+<span class="cm">// $ go run main.go</span>
+<span class="cm">// $ go build -o app</span></pre>
+    <div class="output-block"><div class="output-label">Output</div>(depends on utils.Helper() implementation)</div>
+  </div>
+</div>
+
+</main>
+</div>
+
+<script>
+function copyCode(btn) {
+  const pre = btn.closest('.card').querySelector('pre');
+  const text = pre.innerText;
+  navigator.clipboard.writeText(text).then(() => {
+    btn.textContent = 'Copied!';
+    btn.classList.add('copied');
+    setTimeout(() => {
+      btn.textContent = 'Copy';
+      btn.classList.remove('copied');
+    }, 2000);
+  });
+}
+
+function filterCards() {
+  const query = document.getElementById('searchInput').value.toLowerCase();
+  const sections = document.querySelectorAll('.section');
+
+  sections.forEach(section => {
+    let sectionHasMatch = false;
+    const sectionCards = section.querySelectorAll('.card');
+    sectionCards.forEach(card => {
+      const text = card.innerText.toLowerCase();
+      if (text.includes(query)) {
+        card.classList.remove('hidden');
+        sectionHasMatch = true;
+      } else {
+        card.classList.add('hidden');
+      }
+    });
+    section.style.display = sectionHasMatch ? '' : 'none';
+  });
+}
+
+function filterTag(tag, el) {
+  document.querySelectorAll('.tag').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('searchInput').value = '';
+
+  const sections = document.querySelectorAll('.section');
+  sections.forEach(section => {
+    const sectionTags = section.getAttribute('data-tags') || '';
+    const cards = section.querySelectorAll('.card');
+    let sectionVisible = false;
+
+    cards.forEach(card => {
+      card.classList.remove('hidden');
+      const cardTags = card.getAttribute('data-tags') || '';
+      if (tag === 'all' || sectionTags.includes(tag) || cardTags.includes(tag)) {
+        card.classList.remove('hidden');
+        sectionVisible = true;
+      } else {
+        card.classList.add('hidden');
+      }
+    });
+    section.style.display = (tag === 'all' || sectionVisible) ? '' : 'none';
+  });
+}
+</script>
+</body>
+</html>

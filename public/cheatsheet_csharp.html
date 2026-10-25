@@ -1,0 +1,878 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>C# Cheatsheet</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Inter:wght@400;500;600;700&display=swap');
+
+  :root {
+    --bg: #0f1117;
+    --surface: #1a1d27;
+    --surface2: #22263a;
+    --border: #2e3250;
+    --accent: #9179F2;
+    --accent2: #4fc3f7;
+    --green: #4ade80;
+    --yellow: #fbbf24;
+    --red: #f87171;
+    --text: #e2e8f0;
+    --muted: #8892b0;
+    --code-bg: #0d1117;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  header {
+    background: linear-gradient(135deg, #1a1d27 0%, #12152a 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 32px 40px 24px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    backdrop-filter: blur(10px);
+  }
+
+  header h1 { font-size: 22px; font-weight: 700; color: var(--accent); letter-spacing: -0.5px; }
+  header p { color: var(--muted); font-size: 13px; margin-top: 4px; }
+
+  .search-bar { margin-top: 14px; display: flex; gap: 10px; align-items: center; }
+  .search-bar input {
+    background: var(--code-bg); border: 1px solid var(--border); color: var(--text);
+    padding: 8px 14px; border-radius: 8px; font-family: 'Inter', sans-serif; font-size: 13px;
+    width: 280px; outline: none; transition: border-color 0.2s;
+  }
+  .search-bar input:focus { border-color: var(--accent); }
+
+  .tags { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
+  .tag {
+    background: var(--surface2); border: 1px solid var(--border); color: var(--muted);
+    padding: 4px 12px; border-radius: 20px; font-size: 12px; cursor: pointer;
+    transition: all 0.2s; user-select: none;
+  }
+  .tag:hover, .tag.active { background: var(--accent); color: white; border-color: var(--accent); }
+
+  .layout { display: grid; grid-template-columns: 220px 1fr; min-height: calc(100vh - 160px); }
+  .section { scroll-margin-top: 190px; margin-bottom: 48px; }
+
+  .sidebar {
+    background: var(--surface); border-right: 1px solid var(--border); padding: 20px 0;
+    position: sticky; top: 160px; height: calc(100vh - 160px); overflow-y: auto;
+  }
+  .sidebar::-webkit-scrollbar { width: 4px; }
+  .sidebar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+  .sidebar-label {
+    font-size: 10px; font-weight: 700; letter-spacing: 1.5px; color: var(--muted);
+    padding: 8px 20px 4px; text-transform: uppercase;
+  }
+  .sidebar a {
+    display: block; padding: 7px 20px; color: var(--muted); text-decoration: none;
+    font-size: 13px; transition: all 0.15s; border-left: 2px solid transparent;
+  }
+  .sidebar a:hover { color: var(--text); background: var(--surface2); border-left-color: var(--accent); }
+
+  .main { padding: 32px 40px; max-width: 1000px; }
+
+  .section-title {
+    font-size: 18px; font-weight: 700; color: var(--accent); margin-bottom: 20px;
+    padding-bottom: 10px; border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 10px;
+  }
+  .section-title span {
+    font-size: 12px; background: var(--surface2); color: var(--muted);
+    padding: 2px 10px; border-radius: 20px; font-weight: 500;
+  }
+
+  .card {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
+    margin-bottom: 16px; overflow: hidden; transition: border-color 0.2s;
+  }
+  .card:hover { border-color: var(--accent); }
+
+  .card-header {
+    padding: 12px 16px; background: var(--surface2); display: flex;
+    justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border);
+  }
+  .card-title { font-size: 13px; font-weight: 600; color: var(--accent2); }
+  .card-desc { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+  .copy-btn {
+    background: var(--code-bg); border: 1px solid var(--border); color: var(--muted);
+    padding: 4px 12px; border-radius: 6px; font-size: 11px; cursor: pointer;
+    font-family: 'Inter', sans-serif; transition: all 0.2s; white-space: nowrap;
+  }
+  .copy-btn:hover { background: var(--accent); color: white; border-color: var(--accent); }
+  .copy-btn.copied { background: var(--green); color: #0f1117; border-color: var(--green); }
+
+  pre {
+    background: var(--code-bg); padding: 16px; overflow-x: auto;
+    font-family: 'JetBrains Mono', monospace; font-size: 13px; line-height: 1.7;
+  }
+  pre::-webkit-scrollbar { height: 4px; }
+  pre::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+  .kw { color: #c792ea; }
+  .fn { color: #82aaff; }
+  .st { color: #c3e88d; }
+  .cm { color: #546e7a; font-style: italic; }
+  .nm { color: #f78c6c; }
+  .op { color: #89ddff; }
+  .bi { color: #ffcb6b; }
+
+  .output-block {
+    background: #0a0f0a; border-top: 1px solid var(--border); padding: 10px 16px;
+    font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--green);
+  }
+  .output-label {
+    font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: var(--muted);
+    margin-bottom: 4px; font-family: 'Inter', sans-serif;
+  }
+
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+  @media (max-width: 900px) {
+    .layout { grid-template-columns: 1fr; }
+    .sidebar { display: none; }
+    .grid2 { grid-template-columns: 1fr; }
+    header { padding: 20px; }
+    .main { padding: 20px; }
+  }
+
+  .hidden { display: none !important; }
+
+  .badge {
+    display: inline-block; font-size: 10px; padding: 2px 8px; border-radius: 4px;
+    font-weight: 600; margin-left: 8px;
+  }
+  .badge-interview { background: #9179F220; color: var(--accent); border: 1px solid #9179F240; }
+  .badge-important { background: #fbbf2420; color: var(--yellow); border: 1px solid #fbbf2440; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🎯 C# Cheatsheet</h1>
+  <p>Every code block below is ready to run in a .NET console app or LINQPad</p>
+  <div class="search-bar">
+    <input type="text" id="searchInput" placeholder="Search topics, functions, keywords..." oninput="filterCards()">
+  </div>
+  <div class="tags">
+    <div class="tag active" onclick="filterTag('all', this)">All</div>
+    <div class="tag" onclick="filterTag('basics', this)">Basics</div>
+    <div class="tag" onclick="filterTag('control', this)">Control Flow</div>
+    <div class="tag" onclick="filterTag('collections', this)">Collections</div>
+    <div class="tag" onclick="filterTag('oop', this)">OOP</div>
+    <div class="tag" onclick="filterTag('errors', this)">Error Handling</div>
+    <div class="tag" onclick="filterTag('linq', this)">LINQ</div>
+    <div class="tag" onclick="filterTag('async', this)">Async</div>
+    <div class="tag" onclick="filterTag('db', this)">Data / SQL Server</div>
+  </div>
+</header>
+
+<div class="layout">
+<nav class="sidebar">
+  <div class="sidebar-label">Basics</div>
+  <a href="#variables">Variables & Types</a>
+  <a href="#strings">Strings & Interpolation</a>
+  <div class="sidebar-label">Control Flow</div>
+  <a href="#conditionals">If / Switch</a>
+  <a href="#loops">Loops</a>
+  <div class="sidebar-label">Collections</div>
+  <a href="#arrays">Arrays & Lists</a>
+  <a href="#dicts">Dictionaries</a>
+  <div class="sidebar-label">OOP</div>
+  <a href="#classes">Classes & Objects</a>
+  <a href="#inheritance">Inheritance & Polymorphism</a>
+  <a href="#interfaces">Interfaces & Abstract Classes</a>
+  <a href="#properties">Properties & Auto-Properties</a>
+  <a href="#records">Records & Structs</a>
+  <div class="sidebar-label">Error Handling</div>
+  <a href="#errors">Try / Catch / Finally</a>
+  <a href="#nullable">Nullable Types & Null-Coalescing</a>
+  <div class="sidebar-label">LINQ</div>
+  <a href="#linq">LINQ Query Methods</a>
+  <div class="sidebar-label">Async</div>
+  <a href="#async">async / await / Task</a>
+  <div class="sidebar-label">Advanced</div>
+  <a href="#generics">Generics</a>
+  <a href="#delegates">Delegates & Events</a>
+  <div class="sidebar-label">Data / SQL Server</div>
+  <a href="#ado">ADO.NET — SQL Server</a>
+  <a href="#files">File I/O</a>
+</nav>
+
+<main class="main" id="mainContent">
+
+<div class="section" id="variables" data-tags="basics">
+  <div class="section-title">Variables & Types <span>basics</span></div>
+  <div class="card" data-tags="basics">
+    <div class="card-header">
+      <div><div class="card-title">Declaring Variables <span class="badge badge-interview">Interview Fav</span></div><div class="card-desc">var (inferred), explicit types, const, readonly</div></div>
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    </div>
+    <pre><span class="cm">// explicit types</span>
+<span class="bi">string</span> name <span class="op">=</span> <span class="st">"Robert"</span>;
+<span class="bi">int</span> age <span class="op">=</span> <span class="nm">35</span>;
+<span class="bi">double</span> salary <span class="op">=</span> <span class="nm">90000.5</span>;
+<span class="bi">bool</span> isEmployed <span class="op">=</span> <span class="kw">true</span>;
+
+<span class="cm">// var — type inferred at compile time (still statically typed)</span>
+<span class="kw">var</span> role <span class="op">=</span> <span class="st">"BI Developer"</span>;
+
+<span class="cm">// constants — must be set at compile time</span>
+<span class="kw">const</span> <span class="bi">double</span> Pi <span class="op">=</span> <span class="nm">3.14159</span>;
+
+<span class="cm">// readonly — can only be set in constructor, once per instance</span>
+<span class="kw">readonly</span> <span class="bi">string</span> Company <span class="op">=</span> <span class="st">"Masco Canada"</span>;
+
+Console.WriteLine($<span class="st">"{name}, {age}, {role}"</span>);</pre>
+    <div class="output-block"><div class="output-label">Output</div>Robert, 35, BI Developer</div>
+  </div>
+</div>
+
+<div class="section" id="strings" data-tags="basics">
+  <div class="section-title">Strings & Interpolation <span>strings</span></div>
+  <div class="card" data-tags="basics">
+    <div class="card-header">
+      <div><div class="card-title">String Interpolation & Common Methods <span class="badge badge-interview">Interview Fav</span></div></div>
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    </div>
+    <pre><span class="bi">string</span> name <span class="op">=</span> <span class="st">"Robert"</span>;
+<span class="bi">int</span> age <span class="op">=</span> <span class="nm">35</span>;
+
+<span class="cm">// string interpolation (recommended)</span>
+Console.WriteLine($<span class="st">"Name: {name}, Age: {age}"</span>);
+
+<span class="cm">// formatting numbers</span>
+<span class="bi">double</span> salary <span class="op">=</span> <span class="nm">90000.5</span>;
+Console.WriteLine($<span class="st">"Salary: {salary:C}"</span>);      <span class="cm">// currency: $90,000.50</span>
+Console.WriteLine($<span class="st">"Salary: {salary:N0}"</span>);     <span class="cm">// 90,001 (rounded)</span>
+
+<span class="cm">// common string methods</span>
+<span class="bi">string</span> text <span class="op">=</span> <span class="st">"  Hello, World!  "</span>;
+Console.WriteLine(text.Trim());
+Console.WriteLine(text.ToUpper());
+Console.WriteLine(text.Replace(<span class="st">"World"</span>, <span class="st">"C#"</span>));
+Console.WriteLine(text.Contains(<span class="st">"World"</span>));
+Console.WriteLine(<span class="bi">string</span>.Join(<span class="st">", "</span>, <span class="kw">new</span>[] { <span class="st">"A"</span>, <span class="st">"B"</span>, <span class="st">"C"</span> }));</pre>
+    <div class="output-block"><div class="output-label">Output</div>Name: Robert, Age: 35<br>Salary: $90,000.50<br>Salary: 90,001<br>Hello, World!<br>HELLO, WORLD!<br>Hello, C#!<br>True<br>A, B, C</div>
+  </div>
+</div>
+
+<div class="section" id="conditionals" data-tags="control">
+  <div class="section-title">If / Switch <span>control flow</span></div>
+  <div class="card" data-tags="control">
+    <div class="card-header">
+      <div><div class="card-title">If Statements & Switch Expressions <span class="badge badge-interview">Interview Fav</span></div><div class="card-desc">Modern switch expressions (C# 8+) are much cleaner than switch statements</div></div>
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    </div>
+    <pre><span class="bi">int</span> score <span class="op">=</span> <span class="nm">85</span>;
+
+<span class="kw">if</span> (score <span class="op">>=</span> <span class="nm">90</span>) Console.WriteLine(<span class="st">"A"</span>);
+<span class="kw">else if</span> (score <span class="op">>=</span> <span class="nm">80</span>) Console.WriteLine(<span class="st">"B"</span>);
+<span class="kw">else</span> Console.WriteLine(<span class="st">"C"</span>);
+
+<span class="cm">// ternary</span>
+<span class="bi">string</span> result <span class="op">=</span> score <span class="op">>=</span> <span class="nm">60</span> ? <span class="st">"Pass"</span> : <span class="st">"Fail"</span>;
+
+<span class="cm">// classic switch statement</span>
+<span class="kw">switch</span> (score / <span class="nm">10</span>)
+{
+    <span class="kw">case</span> <span class="nm">10</span>:
+    <span class="kw">case</span> <span class="nm">9</span>: Console.WriteLine(<span class="st">"A"</span>); <span class="kw">break</span>;
+    <span class="kw">case</span> <span class="nm">8</span>: Console.WriteLine(<span class="st">"B"</span>); <span class="kw">break</span>;
+    <span class="kw">default</span>: Console.WriteLine(<span class="st">"C or below"</span>); <span class="kw">break</span>;
+}
+
+<span class="cm">// switch EXPRESSION (C# 8+) — no break statements, returns a value</span>
+<span class="bi">string</span> grade <span class="op">=</span> score <span class="kw">switch</span>
+{
+    <span class="op">>=</span> <span class="nm">90</span> <span class="op">=></span> <span class="st">"A"</span>,
+    <span class="op">>=</span> <span class="nm">80</span> <span class="op">=></span> <span class="st">"B"</span>,
+    <span class="op">>=</span> <span class="nm">70</span> <span class="op">=></span> <span class="st">"C"</span>,
+    _ <span class="op">=></span> <span class="st">"F"</span>
+};
+Console.WriteLine(grade);</pre>
+    <div class="output-block"><div class="output-label">Output</div>B<br>B<br>B</div>
+  </div>
+</div>
+
+<div class="section" id="loops" data-tags="control">
+  <div class="section-title">Loops <span>control flow</span></div>
+  <div class="card" data-tags="control">
+    <div class="card-header">
+      <div><div class="card-title">for, foreach, while</div></div>
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    </div>
+    <pre><span class="kw">for</span> (<span class="bi">int</span> i <span class="op">=</span> <span class="nm">0</span>; i <span class="op">&lt;</span> <span class="nm">5</span>; i<span class="op">++</span>)
+    Console.Write($<span class="st">"{i} "</span>);
+Console.WriteLine();
+
+<span class="bi">var</span> fruits <span class="op">=</span> <span class="kw">new</span> List<<span class="bi">string</span>> { <span class="st">"apple"</span>, <span class="st">"banana"</span>, <span class="st">"mango"</span> };
+<span class="kw">foreach</span> (<span class="bi">var</span> fruit <span class="kw">in</span> fruits)
+    Console.WriteLine(fruit);
+
+<span class="bi">int</span> count <span class="op">=</span> <span class="nm">0</span>;
+<span class="kw">while</span> (count <span class="op">&lt;</span> <span class="nm">3</span>)
+{
+    Console.WriteLine($<span class="st">"count = {count}"</span>);
+    count<span class="op">++</span>;
+}
+
+<span class="cm">// break and continue work the same as most C-family languages</span>
+<span class="kw">for</span> (<span class="bi">int</span> i <span class="op">=</span> <span class="nm">0</span>; i <span class="op">&lt;</span> <span class="nm">10</span>; i<span class="op">++</span>)
+{
+    <span class="kw">if</span> (i <span class="op">==</span> <span class="nm">3</span>) <span class="kw">continue</span>;
+    <span class="kw">if</span> (i <span class="op">==</span> <span class="nm">6</span>) <span class="kw">break</span>;
+    Console.Write($<span class="st">"{i} "</span>);
+}</pre>
+    <div class="output-block"><div class="output-label">Output</div>0 1 2 3 4 <br>apple<br>banana<br>mango<br>count = 0<br>count = 1<br>count = 2<br>0 1 2 4 5 </div>
+  </div>
+</div>
+
+<div class="section" id="arrays" data-tags="collections">
+  <div class="section-title">Arrays & Lists <span>collections</span></div>
+  <div class="card" data-tags="collections">
+    <div class="card-header">
+      <div><div class="card-title">Array & List&lt;T&gt; Operations <span class="badge badge-interview">Interview Fav</span></div><div class="card-desc">List&lt;T&gt; is what you'll use 95% of the time — arrays are fixed size</div></div>
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    </div>
+    <pre><span class="cm">// fixed-size array</span>
+<span class="bi">int</span>[] arr <span class="op">=</span> { <span class="nm">1</span>, <span class="nm">2</span>, <span class="nm">3</span> };
+
+<span class="cm">// List&lt;T&gt; — dynamic, generic collection</span>
+<span class="bi">var</span> nums <span class="op">=</span> <span class="kw">new</span> List<<span class="bi">int</span>> { <span class="nm">3</span>, <span class="nm">1</span>, <span class="nm">4</span>, <span class="nm">1</span>, <span class="nm">5</span> };
+nums.Add(<span class="nm">9</span>);
+nums.Remove(<span class="nm">1</span>);       <span class="cm">// removes first occurrence</span>
+nums.Sort();
+nums.Reverse();
+
+Console.WriteLine(<span class="bi">string</span>.Join(<span class="st">", "</span>, nums));
+Console.WriteLine(nums.Count);
+Console.WriteLine(nums.Max());
+Console.WriteLine(nums.Contains(<span class="nm">9</span>));
+
+<span class="cm">// slicing with ranges (C# 8+)</span>
+<span class="bi">var</span> first3 <span class="op">=</span> nums[<span class="nm">0</span>..<span class="nm">3</span>];
+Console.WriteLine(<span class="bi">string</span>.Join(<span class="st">", "</span>, first3));</pre>
+    <div class="output-block"><div class="output-label">Output</div>9, 5, 4, 3, 1<br>5<br>9<br>True<br>9, 5, 4</div>
+  </div>
+</div>
+
+<div class="section" id="dicts" data-tags="collections">
+  <div class="section-title">Dictionaries <span>collections</span></div>
+  <div class="card" data-tags="collections">
+    <div class="card-header">
+      <div><div class="card-title">Dictionary&lt;TKey, TValue&gt; <span class="badge badge-interview">Interview Fav</span></div></div>
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    </div>
+    <pre><span class="bi">var</span> employee <span class="op">=</span> <span class="kw">new</span> Dictionary<<span class="bi">string</span>, <span class="bi">string</span>>
+{
+    [<span class="st">"name"</span>] <span class="op">=</span> <span class="st">"Robert"</span>,
+    [<span class="st">"role"</span>] <span class="op">=</span> <span class="st">"BI Developer"</span>
+};
+
+<span class="cm">// safe access — TryGetValue avoids exceptions</span>
+<span class="kw">if</span> (employee.TryGetValue(<span class="st">"salary"</span>, <span class="kw">out</span> <span class="bi">var</span> salary))
+    Console.WriteLine(salary);
+<span class="kw">else</span>
+    Console.WriteLine(<span class="st">"N/A"</span>);
+
+<span class="cm">// add / update</span>
+employee[<span class="st">"salary"</span>] <span class="op">=</span> <span class="st">"90000"</span>;
+
+<span class="cm">// loop through</span>
+<span class="kw">foreach</span> (<span class="bi">var</span> kvp <span class="kw">in</span> employee)
+    Console.WriteLine($<span class="st">"{kvp.Key} = {kvp.Value}"</span>);
+
+Console.WriteLine(employee.ContainsKey(<span class="st">"name"</span>));</pre>
+    <div class="output-block"><div class="output-label">Output</div>N/A<br>name = Robert<br>role = BI Developer<br>salary = 90000<br>True</div>
+  </div>
+</div>
+
+<div class="section" id="classes" data-tags="oop">
+  <div class="section-title">Classes & Objects <span>oop</span></div>
+  <div class="card" data-tags="oop">
+    <div class="card-header">
+      <div><div class="card-title">Class Basics <span class="badge badge-interview">Interview Fav</span></div><div class="card-desc">Fields, constructors, methods</div></div>
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    </div>
+    <pre><span class="kw">public class</span> Employee
+{
+    <span class="kw">public string</span> Name { <span class="kw">get</span>; <span class="kw">set</span>; }
+    <span class="kw">public string</span> Role { <span class="kw">get</span>; <span class="kw">set</span>; }
+    <span class="kw">public decimal</span> Salary { <span class="kw">get</span>; <span class="kw">set</span>; }
+
+    <span class="cm">// constructor</span>
+    <span class="kw">public</span> Employee(<span class="kw">string</span> name, <span class="kw">string</span> role, <span class="kw">decimal</span> salary)
+    {
+        Name <span class="op">=</span> name;
+        Role <span class="op">=</span> role;
+        Salary <span class="op">=</span> salary;
+    }
+
+    <span class="kw">public string</span> Describe() <span class="op">=></span> $<span class="st">"{Name} — {Role}"</span>;
+
+    <span class="kw">public void</span> RaiseSalary(<span class="kw">decimal</span> pct) <span class="op">=></span> Salary <span class="op">*=</span> (<span class="nm">1</span> <span class="op">+</span> pct / <span class="nm">100</span>);
+}
+
+<span class="bi">var</span> emp <span class="op">=</span> <span class="kw">new</span> Employee(<span class="st">"Robert"</span>, <span class="st">"BI Developer"</span>, <span class="nm">80000</span>);
+Console.WriteLine(emp.Describe());
+emp.RaiseSalary(<span class="nm">10</span>);
+Console.WriteLine($<span class="st">"New salary: {emp.Salary:C}"</span>);</pre>
+    <div class="output-block"><div class="output-label">Output</div>Robert — BI Developer<br>New salary: $88,000.00</div>
+  </div>
+</div>
+
+<div class="section" id="inheritance" data-tags="oop">
+  <div class="section-title">Inheritance & Polymorphism <span>oop</span></div>
+  <div class="card" data-tags="oop">
+    <div class="card-header">
+      <div><div class="card-title">base, override, virtual <span class="badge badge-interview">Interview Fav</span></div></div>
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    </div>
+    <pre><span class="kw">public class</span> Employee
+{
+    <span class="kw">public string</span> Name { <span class="kw">get</span>; <span class="kw">set</span>; }
+    <span class="kw">public virtual string</span> Describe() <span class="op">=></span> $<span class="st">"{Name} — Employee"</span>;
+}
+
+<span class="kw">public class</span> SeniorDev : Employee
+{
+    <span class="kw">public int</span> TeamSize { <span class="kw">get</span>; <span class="kw">set</span>; }
+
+    <span class="kw">public override string</span> Describe()
+        <span class="op">=></span> <span class="kw">base</span>.Describe() <span class="op">+</span> $<span class="st">", leads {TeamSize} people"</span>;
+}
+
+Employee emp <span class="op">=</span> <span class="kw">new</span> SeniorDev { Name <span class="op">=</span> <span class="st">"Robert"</span>, TeamSize <span class="op">=</span> <span class="nm">5</span> };
+Console.WriteLine(emp.Describe());   <span class="cm">// polymorphism: calls the overridden version</span>
+Console.WriteLine(emp <span class="kw">is</span> SeniorDev);</pre>
+    <div class="output-block"><div class="output-label">Output</div>Robert — Employee, leads 5 people<br>True</div>
+  </div>
+</div>
+
+<div class="section" id="interfaces" data-tags="oop">
+  <div class="section-title">Interfaces & Abstract Classes <span>oop</span></div>
+  <div class="card" data-tags="oop">
+    <div class="card-header">
+      <div><div class="card-title">interface vs abstract class <span class="badge badge-interview">Interview Fav</span></div><div class="card-desc">A class can implement many interfaces but only inherit one base class</div></div>
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    </div>
+    <pre><span class="kw">public interface</span> IShape
+{
+    <span class="kw">double</span> Area();
+}
+
+<span class="kw">public class</span> Rectangle : IShape
+{
+    <span class="kw">public double</span> Width, Height;
+    <span class="kw">public double</span> Area() <span class="op">=></span> Width <span class="op">*</span> Height;
+}
+
+<span class="cm">// abstract class — can have implementation + abstract members</span>
+<span class="kw">public abstract class</span> Animal
+{
+    <span class="kw">public abstract string</span> MakeSound();
+    <span class="kw">public string</span> Describe() <span class="op">=></span> $<span class="st">"I say: {MakeSound()}"</span>;
+}
+<span class="kw">public class</span> Dog : Animal
+{
+    <span class="kw">public override string</span> MakeSound() <span class="op">=></span> <span class="st">"Woof"</span>;
+}
+
+IShape rect <span class="op">=</span> <span class="kw">new</span> Rectangle { Width <span class="op">=</span> <span class="nm">4</span>, Height <span class="op">=</span> <span class="nm">5</span> };
+Console.WriteLine(rect.Area());
+Console.WriteLine(<span class="kw">new</span> Dog().Describe());</pre>
+    <div class="output-block"><div class="output-label">Output</div>20<br>I say: Woof</div>
+  </div>
+</div>
+
+<div class="section" id="properties" data-tags="oop">
+  <div class="section-title">Properties & Auto-Properties <span>oop</span></div>
+  <div class="card" data-tags="oop">
+    <div class="card-header">
+      <div><div class="card-title">get / set, Computed & Read-Only Properties</div></div>
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    </div>
+    <pre><span class="kw">public class</span> Employee
+{
+    <span class="cm">// auto-property — compiler generates the backing field</span>
+    <span class="kw">public string</span> Name { <span class="kw">get</span>; <span class="kw">set</span>; }
+
+    <span class="cm">// read-only property (init-only, C# 9+)</span>
+    <span class="kw">public string</span> Id { <span class="kw">get</span>; <span class="kw">init</span>; }
+
+    <span class="cm">// computed property — no backing field</span>
+    <span class="kw">public string</span> Greeting <span class="op">=></span> $<span class="st">"Hello, {Name}!"</span>;
+
+    <span class="cm">// property with custom logic + private backing field</span>
+    <span class="kw">private decimal</span> _salary;
+    <span class="kw">public decimal</span> Salary
+    {
+        <span class="kw">get</span> <span class="op">=></span> _salary;
+        <span class="kw">set</span> <span class="op">=></span> _salary <span class="op">=</span> value <span class="op">&lt;</span> <span class="nm">0</span> ? <span class="nm">0</span> : value;
+    }
+}
+
+<span class="bi">var</span> emp <span class="op">=</span> <span class="kw">new</span> Employee { Name <span class="op">=</span> <span class="st">"Robert"</span>, Id <span class="op">=</span> <span class="st">"E001"</span>, Salary <span class="op">=</span> <span class="op">-</span><span class="nm">100</span> };
+Console.WriteLine(emp.Greeting);
+Console.WriteLine(emp.Salary);   <span class="cm">// 0 — the setter clamped it</span></pre>
+    <div class="output-block"><div class="output-label">Output</div>Hello, Robert!<br>0</div>
+  </div>
+</div>
+
+<div class="section" id="records" data-tags="oop">
+  <div class="section-title">Records & Structs <span>oop</span></div>
+  <div class="card" data-tags="oop">
+    <div class="card-header">
+      <div><div class="card-title">record vs class vs struct <span class="badge badge-important">Modern C#</span></div><div class="card-desc">Records (C# 9+) give you value-equality and immutability for free</div></div>
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    </div>
+    <pre><span class="cm">// record — reference type, built-in value equality, easy immutability</span>
+<span class="kw">public record</span> EmployeeRecord(<span class="kw">string</span> Name, <span class="kw">string</span> Role);
+
+<span class="bi">var</span> a <span class="op">=</span> <span class="kw">new</span> EmployeeRecord(<span class="st">"Robert"</span>, <span class="st">"BI Developer"</span>);
+<span class="bi">var</span> b <span class="op">=</span> <span class="kw">new</span> EmployeeRecord(<span class="st">"Robert"</span>, <span class="st">"BI Developer"</span>);
+Console.WriteLine(a <span class="op">==</span> b);        <span class="cm">// True — compares values, not references</span>
+
+<span class="cm">// "with" expression — copy with one field changed</span>
+<span class="bi">var</span> promoted <span class="op">=</span> a <span class="kw">with</span> { Role <span class="op">=</span> <span class="st">"Senior BI Developer"</span> };
+Console.WriteLine(promoted);
+
+<span class="cm">// struct — value type, good for small, simple data (like a Point)</span>
+<span class="kw">public struct</span> Point
+{
+    <span class="kw">public int</span> X, Y;
+    <span class="kw">public</span> Point(<span class="kw">int</span> x, <span class="kw">int</span> y) { X <span class="op">=</span> x; Y <span class="op">=</span> y; }
+}
+<span class="bi">var</span> p1 <span class="op">=</span> <span class="kw">new</span> Point(<span class="nm">1</span>, <span class="nm">2</span>);</pre>
+    <div class="output-block"><div class="output-label">Output</div>True<br>EmployeeRecord { Name = Robert, Role = Senior BI Developer }</div>
+  </div>
+</div>
+
+<div class="section" id="errors" data-tags="errors">
+  <div class="section-title">Try / Catch / Finally <span>error handling</span></div>
+  <div class="card" data-tags="errors">
+    <div class="card-header">
+      <div><div class="card-title">Exception Handling <span class="badge badge-interview">Interview Fav</span></div></div>
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    </div>
+    <pre><span class="kw">try</span>
+{
+    <span class="bi">int</span> result <span class="op">=</span> <span class="nm">10</span> / <span class="bi">int</span>.Parse(<span class="st">"0"</span>);
+}
+<span class="kw">catch</span> (DivideByZeroException ex)
+{
+    Console.WriteLine($<span class="st">"Cannot divide by zero: {ex.Message}"</span>);
+}
+<span class="kw">catch</span> (FormatException)
+{
+    Console.WriteLine(<span class="st">"Invalid number format"</span>);
+}
+<span class="kw">finally</span>
+{
+    Console.WriteLine(<span class="st">"Always runs"</span>);
+}
+
+<span class="cm">// throwing your own exception</span>
+<span class="kw">void</span> ValidateAge(<span class="kw">int</span> age)
+{
+    <span class="kw">if</span> (age <span class="op">&lt;</span> <span class="nm">0</span>)
+        <span class="kw">throw new</span> ArgumentException(<span class="st">"Age cannot be negative"</span>);
+}
+
+<span class="kw">try</span> { ValidateAge(<span class="op">-</span><span class="nm">5</span>); }
+<span class="kw">catch</span> (ArgumentException ex) { Console.WriteLine($<span class="st">"Caught: {ex.Message}"</span>); }</pre>
+    <div class="output-block"><div class="output-label">Output</div>Cannot divide by zero: Attempted to divide by zero.<br>Always runs<br>Caught: Age cannot be negative</div>
+  </div>
+</div>
+
+<div class="section" id="nullable" data-tags="errors">
+  <div class="section-title">Nullable Types & Null-Coalescing <span>error handling</span></div>
+  <div class="card" data-tags="errors">
+    <div class="card-header">
+      <div><div class="card-title">?, ??, ??=, ?.  <span class="badge badge-important">Very Common</span></div><div class="card-desc">C#'s tools for avoiding NullReferenceException</div></div>
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    </div>
+    <pre><span class="cm">// nullable value type</span>
+<span class="bi">int</span>? age <span class="op">=</span> <span class="kw">null</span>;
+Console.WriteLine(age.HasValue);      <span class="cm">// False</span>
+
+<span class="cm">// null-coalescing operator — default if null</span>
+<span class="bi">int</span> safeAge <span class="op">=</span> age <span class="op">??</span> <span class="nm">0</span>;
+Console.WriteLine(safeAge);
+
+<span class="cm">// null-coalescing assignment (C# 8+)</span>
+<span class="bi">string</span> role <span class="op">=</span> <span class="kw">null</span>;
+role <span class="op">??=</span> <span class="st">"Unassigned"</span>;
+Console.WriteLine(role);
+
+<span class="cm">// null-conditional operator — avoids exceptions on null chains</span>
+<span class="bi">string</span> city <span class="op">=</span> <span class="kw">null</span>;
+Console.WriteLine(city<span class="op">?.</span>ToUpper() <span class="op">??</span> <span class="st">"Unknown"</span>);</pre>
+    <div class="output-block"><div class="output-label">Output</div>False<br>0<br>Unassigned<br>Unknown</div>
+  </div>
+</div>
+
+<div class="section" id="linq" data-tags="linq">
+  <div class="section-title">LINQ Query Methods <span>linq</span></div>
+  <div class="card" data-tags="linq">
+    <div class="card-header">
+      <div><div class="card-title">Where, Select, OrderBy, GroupBy <span class="badge badge-important">BI Essential</span></div><div class="card-desc">Think of LINQ as writing SQL directly against in-memory collections</div></div>
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    </div>
+    <pre><span class="kw">using</span> System.Linq;
+
+<span class="bi">var</span> employees <span class="op">=</span> <span class="kw">new</span> List<(<span class="kw">string</span> Name, <span class="kw">string</span> Dept, <span class="kw">decimal</span> Salary)>
+{
+    (<span class="st">"Alice"</span>, <span class="st">"IT"</span>, <span class="nm">90000</span>),
+    (<span class="st">"Bob"</span>, <span class="st">"HR"</span>, <span class="nm">70000</span>),
+    (<span class="st">"Carol"</span>, <span class="st">"IT"</span>, <span class="nm">85000</span>),
+};
+
+<span class="cm">// SELECT * WHERE</span>
+<span class="bi">var</span> itTeam <span class="op">=</span> employees.Where(e <span class="op">=></span> e.Dept <span class="op">==</span> <span class="st">"IT"</span>).ToList();
+
+<span class="cm">// SELECT (projection)</span>
+<span class="bi">var</span> names <span class="op">=</span> employees.Select(e <span class="op">=></span> e.Name).ToList();
+
+<span class="cm">// ORDER BY</span>
+<span class="bi">var</span> bySalary <span class="op">=</span> employees.OrderByDescending(e <span class="op">=></span> e.Salary);
+
+<span class="cm">// GROUP BY + aggregate</span>
+<span class="bi">var</span> avgByDept <span class="op">=</span> employees
+    .GroupBy(e <span class="op">=></span> e.Dept)
+    .Select(g <span class="op">=></span> <span class="kw">new</span> { Dept <span class="op">=</span> g.Key, Avg <span class="op">=</span> g.Average(e <span class="op">=></span> e.Salary) });
+
+<span class="kw">foreach</span> (<span class="bi">var</span> row <span class="kw">in</span> avgByDept)
+    Console.WriteLine($<span class="st">"{row.Dept}: {row.Avg:C}"</span>);
+
+<span class="cm">// First/FirstOrDefault, Any, Count</span>
+Console.WriteLine(employees.Any(e <span class="op">=></span> e.Salary <span class="op">></span> <span class="nm">88000</span>));
+Console.WriteLine(employees.Count(e <span class="op">=></span> e.Dept <span class="op">==</span> <span class="st">"IT"</span>));</pre>
+    <div class="output-block"><div class="output-label">Output</div>IT: $87,500.00<br>HR: $70,000.00<br>True<br>2</div>
+  </div>
+</div>
+
+<div class="section" id="async" data-tags="async">
+  <div class="section-title">async / await / Task <span>async</span></div>
+  <div class="card" data-tags="async">
+    <div class="card-header">
+      <div><div class="card-title">Asynchronous Programming <span class="badge badge-interview">Interview Fav</span></div><div class="card-desc">Doesn't block the calling thread while waiting on I/O</div></div>
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    </div>
+    <pre><span class="kw">public async</span> Task<<span class="bi">string</span>> FetchReportAsync()
+{
+    <span class="kw">await</span> Task.Delay(<span class="nm">500</span>);  <span class="cm">// simulate I/O (API call, DB query, file read...)</span>
+    <span class="kw">return</span> <span class="st">"Report data"</span>;
+}
+
+<span class="kw">public async</span> Task RunAsync()
+{
+    Console.WriteLine(<span class="st">"Starting..."</span>);
+    <span class="bi">string</span> result <span class="op">=</span> <span class="kw">await</span> FetchReportAsync();
+    Console.WriteLine(result);
+
+    <span class="cm">// run multiple tasks concurrently</span>
+    <span class="bi">var</span> task1 <span class="op">=</span> FetchReportAsync();
+    <span class="bi">var</span> task2 <span class="op">=</span> FetchReportAsync();
+    <span class="bi">var</span> results <span class="op">=</span> <span class="kw">await</span> Task.WhenAll(task1, task2);
+    Console.WriteLine($<span class="st">"Got {results.Length} results"</span>);
+}
+
+<span class="kw">await</span> RunAsync();</pre>
+    <div class="output-block"><div class="output-label">Output</div>Starting...<br>Report data<br>Got 2 results</div>
+  </div>
+</div>
+
+<div class="section" id="generics" data-tags="oop">
+  <div class="section-title">Generics <span>advanced</span></div>
+  <div class="card" data-tags="oop">
+    <div class="card-header">
+      <div><div class="card-title">Generic Methods & Classes</div><div class="card-desc">Write one implementation that works with any type</div></div>
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    </div>
+    <pre><span class="kw">public static</span> T Max<T>(T a, T b) <span class="kw">where</span> T : IComparable<T>
+    <span class="op">=></span> a.CompareTo(b) <span class="op">></span> <span class="nm">0</span> ? a : b;
+
+Console.WriteLine(Max(<span class="nm">3</span>, <span class="nm">7</span>));
+Console.WriteLine(Max(<span class="st">"apple"</span>, <span class="st">"banana"</span>));
+
+<span class="cm">// generic class — a simple typed container</span>
+<span class="kw">public class</span> Box<T>
+{
+    <span class="kw">public</span> T Value { <span class="kw">get</span>; <span class="kw">set</span>; }
+    <span class="kw">public</span> Box(T value) <span class="op">=></span> Value <span class="op">=</span> value;
+}
+
+<span class="bi">var</span> intBox <span class="op">=</span> <span class="kw">new</span> Box<<span class="bi">int</span>>(<span class="nm">42</span>);
+Console.WriteLine(intBox.Value);</pre>
+    <div class="output-block"><div class="output-label">Output</div>7<br>banana<br>42</div>
+  </div>
+</div>
+
+<div class="section" id="delegates" data-tags="oop">
+  <div class="section-title">Delegates & Events <span>advanced</span></div>
+  <div class="card" data-tags="oop">
+    <div class="card-header">
+      <div><div class="card-title">Func, Action, Delegates, Events</div><div class="card-desc">C#'s way of passing functions as values / building pub-sub patterns</div></div>
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    </div>
+    <pre><span class="cm">// Func&lt;T, TResult&gt; — a function that returns a value</span>
+Func<<span class="bi">int</span>, <span class="bi">int</span>, <span class="bi">int</span>> add <span class="op">=</span> (a, b) <span class="op">=></span> a <span class="op">+</span> b;
+Console.WriteLine(add(<span class="nm">3</span>, <span class="nm">4</span>));
+
+<span class="cm">// Action — a function with no return value</span>
+Action<<span class="bi">string</span>> log <span class="op">=</span> msg <span class="op">=></span> Console.WriteLine($<span class="st">"LOG: {msg}"</span>);
+log(<span class="st">"Report generated"</span>);
+
+<span class="cm">// events — the standard pub-sub pattern</span>
+<span class="kw">public class</span> Report
+{
+    <span class="kw">public event</span> Action<<span class="bi">string</span>> OnGenerated;
+    <span class="kw">public void</span> Generate() <span class="op">=></span> OnGenerated?.Invoke(<span class="st">"Sales Report"</span>);
+}
+
+<span class="bi">var</span> report <span class="op">=</span> <span class="kw">new</span> Report();
+report.OnGenerated <span class="op">+=</span> name <span class="op">=></span> Console.WriteLine($<span class="st">"Notified: {name} is ready"</span>);
+report.Generate();</pre>
+    <div class="output-block"><div class="output-label">Output</div>7<br>LOG: Report generated<br>Notified: Sales Report is ready</div>
+  </div>
+</div>
+
+<div class="section" id="ado" data-tags="db">
+  <div class="section-title">ADO.NET — SQL Server <span>data / sql server</span></div>
+  <div class="card" data-tags="db">
+    <div class="card-header">
+      <div><div class="card-title">SqlConnection / SqlCommand <span class="badge badge-important">BI Essential</span></div><div class="card-desc">The classic way to query SQL Server directly from C# (WebForms-era and still common)</div></div>
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    </div>
+    <pre><span class="kw">using</span> System.Data.SqlClient;
+
+<span class="bi">string</span> connStr <span class="op">=</span> <span class="st">"Server=YOUR_SERVER;Database=YOUR_DB;Trusted_Connection=True;"</span>;
+
+<span class="kw">using</span> (<span class="bi">var</span> conn <span class="op">=</span> <span class="kw">new</span> SqlConnection(connStr))
+{
+    conn.Open();
+    <span class="bi">string</span> sql <span class="op">=</span> <span class="st">"SELECT TOP 10 ProductID, ProductName, Sales FROM dbo.SalesFact"</span>;
+
+    <span class="kw">using</span> (<span class="bi">var</span> cmd <span class="op">=</span> <span class="kw">new</span> SqlCommand(sql, conn))
+    <span class="kw">using</span> (<span class="bi">var</span> reader <span class="op">=</span> cmd.ExecuteReader())
+    {
+        <span class="kw">while</span> (reader.Read())
+        {
+            Console.WriteLine($<span class="st">"{reader["ProductName"]}: {reader["Sales"]:C}"</span>);
+        }
+    }
+}
+
+<span class="cm">// parameterized query — always use parameters, never string-concat SQL</span>
+<span class="bi">using</span> (<span class="bi">var</span> cmd <span class="op">=</span> <span class="kw">new</span> SqlCommand(<span class="st">"SELECT * FROM Employees WHERE Id = @id"</span>, conn))
+{
+    cmd.Parameters.AddWithValue(<span class="st">"@id"</span>, <span class="nm">42</span>);
+}</pre>
+    <div class="output-block"><div class="output-label">Output</div>(depends on your database content)</div>
+  </div>
+</div>
+
+<div class="section" id="files" data-tags="db">
+  <div class="section-title">File I/O <span>data / sql server</span></div>
+  <div class="card" data-tags="db">
+    <div class="card-header">
+      <div><div class="card-title">Reading & Writing Files</div></div>
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    </div>
+    <pre><span class="kw">using</span> System.IO;
+
+<span class="cm">// write</span>
+File.WriteAllText(<span class="st">"report.txt"</span>, <span class="st">"Sales Summary\n"</span>);
+File.AppendAllText(<span class="st">"report.txt"</span>, <span class="st">"Q1: $120,000\n"</span>);
+
+<span class="cm">// read entire file</span>
+<span class="bi">string</span> content <span class="op">=</span> File.ReadAllText(<span class="st">"report.txt"</span>);
+Console.WriteLine(content);
+
+<span class="cm">// read line by line</span>
+<span class="kw">foreach</span> (<span class="bi">var</span> line <span class="kw">in</span> File.ReadLines(<span class="st">"report.txt"</span>))
+    Console.WriteLine(line);
+
+Console.WriteLine(File.Exists(<span class="st">"report.txt"</span>));</pre>
+    <div class="output-block"><div class="output-label">Output</div>Sales Summary<br>Q1: $120,000<br><br>Sales Summary<br>Q1: $120,000<br>True</div>
+  </div>
+</div>
+
+</main>
+</div>
+
+<script>
+function copyCode(btn) {
+  const pre = btn.closest('.card').querySelector('pre');
+  const text = pre.innerText;
+  navigator.clipboard.writeText(text).then(() => {
+    btn.textContent = 'Copied!';
+    btn.classList.add('copied');
+    setTimeout(() => {
+      btn.textContent = 'Copy';
+      btn.classList.remove('copied');
+    }, 2000);
+  });
+}
+
+function filterCards() {
+  const query = document.getElementById('searchInput').value.toLowerCase();
+  const sections = document.querySelectorAll('.section');
+
+  sections.forEach(section => {
+    let sectionHasMatch = false;
+    const sectionCards = section.querySelectorAll('.card');
+    sectionCards.forEach(card => {
+      const text = card.innerText.toLowerCase();
+      if (text.includes(query)) {
+        card.classList.remove('hidden');
+        sectionHasMatch = true;
+      } else {
+        card.classList.add('hidden');
+      }
+    });
+    section.style.display = sectionHasMatch ? '' : 'none';
+  });
+}
+
+function filterTag(tag, el) {
+  document.querySelectorAll('.tag').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('searchInput').value = '';
+
+  const sections = document.querySelectorAll('.section');
+  sections.forEach(section => {
+    const sectionTags = section.getAttribute('data-tags') || '';
+    const cards = section.querySelectorAll('.card');
+    let sectionVisible = false;
+
+    cards.forEach(card => {
+      card.classList.remove('hidden');
+      const cardTags = card.getAttribute('data-tags') || '';
+      if (tag === 'all' || sectionTags.includes(tag) || cardTags.includes(tag)) {
+        card.classList.remove('hidden');
+        sectionVisible = true;
+      } else {
+        card.classList.add('hidden');
+      }
+    });
+    section.style.display = (tag === 'all' || sectionVisible) ? '' : 'none';
+  });
+}
+</script>
+</body>
+</html>

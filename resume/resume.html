@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Robert Allan Bolista — Resume</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;700&family=Barlow+Condensed:wght@400;600&display=swap" rel="stylesheet">
+<!--
+  Source for public/resume.pdf. To regenerate after editing:
+  "/Applications/Microsoft Edge.app/Contents/MacOS/Microsoft Edge" --headless --disable-gpu \
+    --no-pdf-header-footer --print-to-pdf=public/resume.pdf resume/resume.html
+-->
+<style>
+  :root {
+    --ink: #1d1f20;
+    --body: #5d5d60;
+    --muted: #7a7a7d;
+    --rule: #d4d4d7;
+    --accent: #416180;
+  }
+  @page { size: letter; margin: 0.6in 0.65in; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "Barlow", sans-serif;
+    font-size: 9.5pt;
+    line-height: 1.45;
+    color: var(--body);
+    background: #fff;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .cond { font-family: "Barlow Condensed", sans-serif; }
+
+  header { border-bottom: 2px solid var(--accent); padding-bottom: 10pt; margin-bottom: 14pt; }
+  h1 { font-family: "Barlow", sans-serif; font-weight: 700; font-size: 24pt; letter-spacing: 0.04em; color: var(--ink); line-height: 1.1; }
+  .tagline { font-family: "Barlow Condensed", sans-serif; font-weight: 600; font-size: 11pt; letter-spacing: 0.25em; text-transform: uppercase; color: var(--accent); margin-top: 3pt; }
+  .contact { margin-top: 6pt; font-size: 9pt; color: var(--muted); }
+
+  section { margin-bottom: 14pt; }
+  h2 {
+    font-family: "Barlow Condensed", sans-serif; font-weight: 600; font-size: 11pt;
+    letter-spacing: 0.3em; text-transform: uppercase; color: var(--accent);
+    border-bottom: 1px solid var(--rule); padding-bottom: 3pt; margin-bottom: 8pt;
+  }
+
+  .skills { display: grid; grid-template-columns: 1.35in 1fr; row-gap: 3pt; }
+  .skills dt { font-family: "Barlow Condensed", sans-serif; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink); }
+
+  .job { display: grid; grid-template-columns: 1fr auto; column-gap: 12pt; padding: 5pt 0; border-bottom: 1px solid #eee; break-inside: avoid; }
+  .job:last-child { border-bottom: none; }
+  .role { font-weight: 700; color: var(--ink); font-size: 10pt; }
+  .company { color: var(--body); }
+  .period { font-family: "Barlow Condensed", sans-serif; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); white-space: nowrap; text-align: right; }
+
+  .item { margin-bottom: 6pt; break-inside: avoid; }
+  .item .title { font-weight: 700; color: var(--ink); }
+  .edu-row { display: grid; grid-template-columns: 1fr auto; column-gap: 12pt; }
+  ul.plain { list-style: none; }
+  ul.plain li { margin-bottom: 2pt; }
+
+  .links { display: grid; grid-template-columns: 1.35in 1fr; row-gap: 2pt; }
+  .links dt { font-family: "Barlow Condensed", sans-serif; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink); }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>ROBERT ALLAN BOLISTA</h1>
+  <div class="tagline">Full-Stack Software Developer / BI Developer</div>
+  <div class="contact">London, ON / (647) 470-0157 / robert.bolista@gmail.com / linkedin.com/in/robert-allan-bolista / github.com/rabolista / rabolista.com</div>
+</header>
+
+<section>
+  <h2>Professional Summary</h2>
+  <p>Two tracks, run in parallel for a decade. 15+ years in business intelligence and data engineering — SQL Server and Oracle, T-SQL and PL/SQL, SSIS ETL, Power BI, and enterprise integration across JD Edwards and Cognos — for retail, manufacturing, telecom, insurance, and financial-services clients, currently as de facto technical lead at Masco Canada. Alongside it, almost 10 years as a freelance mobile and web developer: ten apps published on the Apple App Store and six on Google Play, independently designed and built since 2016, plus full-stack web platforms in React, React Native, TypeScript, ASP.NET, and Laravel on PostgreSQL and SQL Server backends. The combination means one person who can model the data, build the service, and ship the client.</p>
+</section>
+
+<section>
+  <h2>Core Skills</h2>
+  <dl class="skills">
+    <dt>BI &amp; Data</dt><dd>SSIS ETL pipelines, data warehousing, Power BI, Cognos, dimensional modelling, query and index tuning, reconciliation and data-integrity processes</dd>
+    <dt>Languages</dt><dd>C#, Go, Python, JavaScript, TypeScript, PHP, SQL</dd>
+    <dt>Frameworks &amp; Web</dt><dd>ASP.NET (WebForms), Laravel, Angular, React, jQuery</dd>
+    <dt>Databases</dt><dd>SQL Server (T-SQL, stored procedures, performance tuning), Oracle/PL-SQL, DB2, AS400, PostgreSQL, MySQL</dd>
+    <dt>Mobile</dt><dd>Flutter, React Native, Swift, Ionic — apps published on App Store and Google Play</dd>
+    <dt>Integration</dt><dd>JD Edwards, Cognos, ERP data integration, system-to-system integrations</dd>
+    <dt>Tools &amp; Practices</dt><dd>Git/GitHub, TFS, Docker, Agile/Scrum, Power BI, SSIS (ETL)</dd>
+  </dl>
+</section>
+
+<section>
+  <h2>Professional Experience</h2>
+  <div class="job">
+    <div><div class="role">Business Intelligence / System Application Developer</div><div class="company">Masco Canada · St. Thomas, ON</div></div>
+    <div class="period">Sep 2021 — Present</div>
+  </div>
+  <div class="job">
+    <div><div class="role">Freelance Mobile &amp; Web Developer</div><div class="company">Self-employed / Digital Dimensions</div></div>
+    <div class="period">2016 — Present</div>
+  </div>
+  <div class="job">
+    <div><div class="role">BI Support Developer</div><div class="company">Gryphtech · Toronto, ON</div></div>
+    <div class="period">Mar 2019 — May 2021</div>
+  </div>
+  <div class="job">
+    <div><div class="role">Web Application Developer / Application Support</div><div class="company">Collega · Toronto, ON</div></div>
+    <div class="period">Sep 2015 — Mar 2019</div>
+  </div>
+  <div class="job">
+    <div><div class="role">Application Developer, Oracle / Backend Developer</div><div class="company">IBM Philippines · Manila, PH</div></div>
+    <div class="period">Apr 2012 — Mar 2015</div>
+  </div>
+  <div class="job">
+    <div><div class="role">IT Consultant — Database &amp; Application Development</div><div class="company">PLDT Global, HP Enterprise, SunLife UK, Prime@ Technology, IDEIN Consulting · Metro Manila, PH</div></div>
+    <div class="period">Jun 2005 — Mar 2012</div>
+  </div>
+</section>
+
+<section>
+  <h2>Selected Projects</h2>
+  <div class="item">
+    <div class="title">Christianster.net — full-stack social platform</div>
+    <p>Web plus iOS and Android, with real-time chat, community forums, and Faith AI, an assistant answering biblical questions. Built in React, React Native, and TypeScript on a PostgreSQL backend — schema design, API architecture, and cross-platform mobile release.</p>
+  </div>
+  <div class="item">
+    <div class="title">rabolista.com — interactive portfolio</div>
+    <p>Self-directed React project designed and built as a desktop-style interactive portfolio.</p>
+  </div>
+  <div class="item">
+    <div class="title">Toronto Crime Prediction — capstone</div>
+    <p>ML pipeline in Python — feature engineering, linear regression, ensemble models — on Toronto open-data crime indicators, visualized with Matplotlib and Seaborn.</p>
+  </div>
+</section>
+
+<section>
+  <h2>Education &amp; Certifications</h2>
+  <div class="item">
+    <div class="edu-row"><div class="title">Professional Certificate in Data Science — University of Waterloo</div><div class="period">May 2025 — Sep 2026</div></div>
+    <p>Certified Data Science</p>
+  </div>
+  <div class="item">
+    <div class="title">Bachelor of Science in Computer Science — Adamson University, Manila</div>
+  </div>
+  <ul class="plain">
+    <li>IBM Data Engineering Foundation Specialization, including Data Engineering Essentials</li>
+    <li>Data Warehouse Fundamentals · Database &amp; SQL for Data Science with Python (Coursera)</li>
+    <li>Scrum Master Certification · Git &amp; GitHub Essentials</li>
+    <li>Google AI Essentials · IBM Generative AI Essentials</li>
+  </ul>
+</section>
+
+<section>
+  <h2>Portfolio</h2>
+  <dl class="links">
+    <dt>Personal Site</dt><dd>rabolista.com</dd>
+    <dt>Social Platform</dt><dd>christianster.net</dd>
+    <dt>GitHub</dt><dd>github.com/rabolista</dd>
+    <dt>Google Play</dt><dd>play.google.com — Digital Dimensions LLC</dd>
+    <dt>App Store</dt><dd>apps.apple.com/us/developer/robert-allan-bolista</dd>
+  </dl>
+</section>
+
+</body>
+</html>

@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Flutter & Dart Cheatsheet</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Inter:wght@400;500;600;700&display=swap');
+
+  :root {
+    --bg: #0f1117;
+    --surface: #1a1d27;
+    --surface2: #22263a;
+    --border: #2e3250;
+    --accent: #027DFB;
+    --accent2: #4fc3f7;
+    --green: #4ade80;
+    --yellow: #fbbf24;
+    --red: #f87171;
+    --text: #e2e8f0;
+    --muted: #8892b0;
+    --code-bg: #0d1117;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  header {
+    background: linear-gradient(135deg, #1a1d27 0%, #12152a 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 32px 40px 24px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    backdrop-filter: blur(10px);
+  }
+
+  header h1 { font-size: 22px; font-weight: 700; color: var(--accent); letter-spacing: -0.5px; }
+  header p { color: var(--muted); font-size: 13px; margin-top: 4px; }
+
+  .search-bar { margin-top: 14px; display: flex; gap: 10px; align-items: center; }
+  .search-bar input {
+    background: var(--code-bg); border: 1px solid var(--border); color: var(--text);
+    padding: 8px 14px; border-radius: 8px; font-family: 'Inter', sans-serif; font-size: 13px;
+    width: 280px; outline: none; transition: border-color 0.2s;
+  }
+  .search-bar input:focus { border-color: var(--accent); }
+
+  .tags { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
+  .tag {
+    background: var(--surface2); border: 1px solid var(--border); color: var(--muted);
+    padding: 4px 12px; border-radius: 20px; font-size: 12px; cursor: pointer;
+    transition: all 0.2s; user-select: none;
+  }
+  .tag:hover, .tag.active { background: var(--accent); color: white; border-color: var(--accent); }
+
+  .layout { display: grid; grid-template-columns: 220px 1fr; min-height: calc(100vh - 160px); }
+  .section { scroll-margin-top: 190px; margin-bottom: 48px; }
+
+  .sidebar {
+    background: var(--surface); border-right: 1px solid var(--border); padding: 20px 0;
+    position: sticky; top: 160px; height: calc(100vh - 160px); overflow-y: auto;
+  }
+  .sidebar::-webkit-scrollbar { width: 4px; }
+  .sidebar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+  .sidebar-label {
+    font-size: 10px; font-weight: 700; letter-spacing: 1.5px; color: var(--muted);
+    padding: 8px 20px 4px; text-transform: uppercase;
+  }
+  .sidebar a {
+    display: block; padding: 7px 20px; color: var(--muted); text-decoration: none;
+    font-size: 13px; transition: all 0.15s; border-left: 2px solid transparent;
+  }
+  .sidebar a:hover { color: var(--text); background: var(--surface2); border-left-color: var(--accent); }
+
+  .main { padding: 32px 40px; max-width: 1000px; }
+
+  .section-title {
+    font-size: 18px; font-weight: 700; color: var(--accent); margin-bottom: 20px;
+    padding-bottom: 10px; border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 10px;
+  }
+  .section-title span {
+    font-size: 12px; background: var(--surface2); color: var(--muted);
+    padding: 2px 10px; border-radius: 20px; font-weight: 500;
+  }
+
+  .card {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
+    margin-bottom: 16px; overflow: hidden; transition: border-color 0.2s;
+  }
+  .card:hover { border-color: var(--accent); }
+
+  .card-header {
+    padding: 12px 16px; background: var(--surface2); display: flex;
+    justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border);
+  }
+  .card-title { font-size: 13px; font-weight: 600; color: var(--accent2); }
+  .card-desc { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+  .copy-btn {
+    background: var(--code-bg); border: 1px solid var(--border); color: var(--muted);
+    padding: 4px 12px; border-radius: 6px; font-size: 11px; cursor: pointer;
+    font-family: 'Inter', sans-serif; transition: all 0.2s; white-space: nowrap;
+  }
+  .copy-btn:hover { background: var(--accent); color: white; border-color: var(--accent); }
+  .copy-btn.copied { background: var(--green); color: #0f1117; border-color: var(--green); }
+
+  pre {
+    background: var(--code-bg); padding: 16px; overflow-x: auto;
+    font-family: 'JetBrains Mono', monospace; font-size: 13px; line-height: 1.7;
+  }
+  pre::-webkit-scrollbar { height: 4px; }
+  pre::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+  .kw { color: #c792ea; }
+  .fn { color: #82aaff; }
+  .st { color: #c3e88d; }
+  .cm { color: #546e7a; font-style: italic; }
+  .nm { color: #f78c6c; }
+  .op { color: #89ddff; }
+  .bi { color: #ffcb6b; }
+
+  .output-block {
+    background: #0a0f0a; border-top: 1px solid var(--border); padding: 10px 16px;
+    font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--green);
+  }
+  .output-label {
+    font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: var(--muted);
+    margin-bottom: 4px; font-family: 'Inter', sans-serif;
+  }
+
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+  @media (max-width: 900px) {
+    .layout { grid-template-columns: 1fr; }
+    .sidebar { display: none; }
+    .grid2 { grid-template-columns: 1fr; }
+    header { padding: 20px; }
+    .main { padding: 20px; }
+  }
+
+  .hidden { display: none !important; }
+
+  .badge {
+    display: inline-block; font-size: 10px; padding: 2px 8px; border-radius: 4px;
+    font-weight: 600; margin-left: 8px;
+  }
+  .badge-interview { background: #027DFB20; color: var(--accent); border: 1px solid #027DFB40; }
+  .badge-important { background: #fbbf2420; color: var(--yellow); border: 1px solid #fbbf2440; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🎨 Flutter &amp; Dart Cheatsheet</h1>
+  <p>Dart language basics, plus the core Flutter widgets you'll reach for in almost every app</p>
+  <div class="search-bar">
+    <input type="text" id="searchInput" placeholder="Search topics, widgets, keywords..." oninput="filterCards()">
+  </div>
+  <div class="tags">
+    <div class="tag active" onclick="filterTag('all', this)">All</div>
+    <div class="tag" onclick="filterTag('dart', this)">Dart Basics</div>
+    <div class="tag" onclick="filterTag('collections', this)">Collections</div>
+    <div class="tag" onclick="filterTag('oop', this)">OOP</div>
+    <div class="tag" onclick="filterTag('async', this)">Async</div>
+    <div class="tag" onclick="filterTag('widgets', this)">Widgets</div>
+    <div class="tag" onclick="filterTag('layout', this)">Layout</div>
+    <div class="tag" onclick="filterTag('state', this)">State</div>
+    <div class="tag" onclick="filterTag('navigation', this)">Navigation</div>
+    <div class="tag" onclick="filterTag('networking', this)">Networking</div>
+  </div>
+</header>
+
+<div class="layout">
+<nav class="sidebar">
+  <div class="sidebar-label">Dart Basics</div>
+  <a href="#variables">Variables & Null Safety</a>
+  <a href="#functions">Functions</a>
+  <a href="#control">Control Flow</a>
+  <div class="sidebar-label">Collections</div>
+  <a href="#collections">List, Map, Set</a>
+  <div class="sidebar-label">OOP</div>
+  <a href="#classes">Classes & Constructors</a>
+  <a href="#mixins">Mixins & Interfaces</a>
+  <div class="sidebar-label">Async</div>
+  <a href="#futures">Future & async/await</a>
+  <a href="#streams">Streams</a>
+  <div class="sidebar-label">Flutter Widgets</div>
+  <a href="#widgettypes">Stateless vs Stateful</a>
+  <a href="#basicwidgets">Scaffold, Text, Container</a>
+  <div class="sidebar-label">Layout</div>
+  <a href="#layout">Row, Column, Stack</a>
+  <a href="#listview">ListView & Scrolling</a>
+  <div class="sidebar-label">State</div>
+  <a href="#setstate">setState</a>
+  <div class="sidebar-label">Navigation</div>
+  <a href="#navigation">Navigator & Routes</a>
+  <div class="sidebar-label">Forms & Networking</div>
+  <a href="#forms">TextField & Forms</a>
+  <a href="#http">HTTP Requests</a>
+</nav>
+
+<main class="main" id="mainContent">
+
+<div class="section" id="variables" data-tags="dart">
+  <div class="section-title">Variables & Null Safety <span>dart basics</span></div>
+  <div class="card" data-tags="dart">
+    <div class="card-header">
+      <div><div class="card-title">var, final, const & Null Safety <span class="badge badge-interview">Interview Fav</span></div><div class="card-desc">Dart is sound null-safe by default since Dart 2.12</div></div>
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    </div>
+    <pre><span class="kw">void</span> <span class="fn">main</span>() {
+  <span class="cm">// var — type inferred, can be reassigned</span>
+  <span class="kw">var</span> name <span class="op">=</span> <span class="st">'Robert'</span>;
+
+  <span class="cm">// final — set once at runtime</span>
+  <span class="kw">final</span> age <span class="op">=</span> <span class="nm">35</span>;
+
+  <span class="cm">// const — compile-time constant</span>
+  <span class="kw">const</span> pi <span class="op">=</span> <span class="nm">3.14159</span>;
+
+  <span class="cm">// explicit types</span>
+  <span class="bi">String</span> role <span class="op">=</span> <span class="st">'BI Developer'</span>;
+  <span class="bi">int</span> years <span class="op">=</span> <span class="nm">15</span>;
+
+  <span class="cm">// null safety — a type is non-nullable unless marked with ?</span>
+  <span class="bi">String</span><span class="op">?</span> nickname; <span class="cm">// nullable — defaults to null</span>
+  <span class="bi">String</span> greeting <span class="op">=</span> nickname <span class="op">??</span> <span class="st">'friend'</span>; <span class="cm">// ?? = null-coalescing</span>
+
+  print(<span class="st">'$name, $age, $role, $years, $greeting'</span>);
+}</pre>
+    <div class="output-block"><div class="output-label">Output</div>Robert, 35, BI Developer, 15, friend</div>
+  </div>
+</div>
+
+<div class="section" id="functions" data-tags="dart">
+  <div class="section-title">Functions <span>dart basics</span></div>
+  <div class="card" data-tags="dart">
+    <div class="card-header">
+      <div><div class="card-title">Functions, Named & Optional Parameters <span class="badge badge-interview">Interview Fav</span></div></div>
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    </div>
+    <pre><span class="bi">String</span> <span class="fn">greet</span>(<span class="bi">String</span> name) {
+  <span class="kw">return</span> <span class="st">'Hello, $name!'</span>;
+}
+
+<span class="cm">// optional positional parameters — []</span>
+<span class="bi">int</span> <span class="fn">power</span>(<span class="bi">int</span> base, [<span class="bi">int</span> exp <span class="op">=</span> <span class="nm">2</span>]) <span class="op">=></span> base ~/ <span class="nm">1</span> <span class="op">*</span> <span class="nm">1</span> <span class="op">+</span> (exp <span class="op">-</span> <span class="nm">2</span>) <span class="op">*</span> <span class="nm">0</span> <span class="op">+</span> base * exp;
+
+<span class="cm">// named parameters — {} — great for readability with many args</span>
+<span class="kw">void</span> <span class="fn">createUser</span>({<span class="kw">required</span> <span class="bi">String</span> name, <span class="bi">int</span> age <span class="op">=</span> <span class="nm">18</span>}) {
+  print(<span class="st">'$name is $age years old'</span>);
+}
+
+<span class="cm">// arrow function syntax for one-liners</span>
+<span class="bi">int</span> <span class="fn">square</span>(<span class="bi">int</span> x) <span class="op">=></span> x <span class="op">*</span> x;
+
+print(<span class="fn">greet</span>(<span class="st">'Robert'</span>));
+<span class="fn">createUser</span>(name: <span class="st">'Alice'</span>, age: <span class="nm">30</span>);
+print(<span class="fn">square</span>(<span class="nm">5</span>));</pre>
+    <div class="output-block"><div class="output-label">Output</div>Hello, Robert!<br>Alice is 30 years old<br>25</div>
+  </div>
+</div>
+
+<div class="section" id="control" data-tags="dart">
+  <div class="section-title">Control Flow <span>dart basics</span></div>
+  <div class="card" data-tags="dart">
+    <div class="card-header">
+      <div><div class="card-title">If / Switch / Loops</div></div>
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    </div>
+    <pre><span class="bi">int</span> score <span class="op">=</span> <span class="nm">85</span>;
+
+<span class="kw">if</span> (score <span class="op">>=</span> <span class="nm">90</span>) {
+  print(<span class="st">'A'</span>);
+} <span class="kw">else if</span> (score <span class="op">>=</span> <span class="nm">80</span>) {
+  print(<span class="st">'B'</span>);
+} <span class="kw">else</span> {
+  print(<span class="st">'C'</span>);
+}
+
+<span class="cm">// switch expression (Dart 3+)</span>
+<span class="bi">String</span> grade <span class="op">=</span> <span class="kw">switch</span> (score) {
+  >= <span class="nm">90</span> <span class="op">=></span> <span class="st">'A'</span>,
+  >= <span class="nm">80</span> <span class="op">=></span> <span class="st">'B'</span>,
+  _ <span class="op">=></span> <span class="st">'C'</span>,
+};
+print(grade);
+
+<span class="cm">// for and for-in loops</span>
+<span class="kw">for</span> (<span class="bi">int</span> i <span class="op">=</span> <span class="nm">0</span>; i <span class="op">&lt;</span> <span class="nm">3</span>; i<span class="op">++</span>) {
+  print(<span class="st">'i = $i'</span>);
+}
+
+<span class="kw">for</span> (<span class="kw">final</span> fruit <span class="kw">in</span> [<span class="st">'apple'</span>, <span class="st">'mango'</span>]) {
+  print(fruit);
+}</pre>
+    <div class="output-block"><div class="output-label">Output</div>B<br>B<br>i = 0<br>i = 1<br>i = 2<br>apple<br>mango</div>
+  </div>
+</div>
+
+<div class="section" id="collections" data-tags="collections">
+  <div class="section-title">List, Map, Set <span>collections</span></div>
+  <div class="card" data-tags="collections">
+    <div class="card-header">
+      <div><div class="card-title">Collection Operations <span class="badge badge-interview">Interview Fav</span></div><div class="card-desc">Includes collection-if / collection-for spread syntax</div></div>
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    </div>
+    <pre><span class="cm">// List — ordered, index-based</span>
+<span class="kw">var</span> nums <span class="op">=</span> [<span class="nm">3</span>, <span class="nm">1</span>, <span class="nm">4</span>, <span class="nm">1</span>, <span class="nm">5</span>];
+nums.add(<span class="nm">9</span>);
+nums.sort();
+print(nums);
+print(nums.where((n) <span class="op">=></span> n <span class="op">%</span> <span class="nm">2</span> <span class="op">==</span> <span class="nm">0</span>).toList()); <span class="cm">// filter</span>
+print(nums.map((n) <span class="op">=></span> n <span class="op">*</span> <span class="nm">2</span>).toList());          <span class="cm">// transform</span>
+
+<span class="cm">// Map — key/value pairs</span>
+<span class="kw">var</span> employee <span class="op">=</span> {<span class="st">'name'</span>: <span class="st">'Robert'</span>, <span class="st">'role'</span>: <span class="st">'BI Developer'</span>};
+employee[<span class="st">'salary'</span>] <span class="op">=</span> <span class="st">'90000'</span>;
+employee.forEach((k, v) <span class="op">=></span> print(<span class="st">'$k: $v'</span>));
+
+<span class="cm">// Set — unique values only</span>
+<span class="kw">var</span> unique <span class="op">=</span> {<span class="nm">1</span>, <span class="nm">2</span>, <span class="nm">2</span>, <span class="nm">3</span>}.toSet();
+print(unique);
+
+<span class="cm">// spread + collection-if (used a lot inside widget lists)</span>
+<span class="kw">bool</span> showExtra <span class="op">=</span> <span class="kw">true</span>;
+<span class="kw">var</span> items <span class="op">=</span> [<span class="st">'a'</span>, <span class="st">'b'</span>, <span class="kw">if</span> (showExtra) <span class="st">'c'</span>];
+print(items);</pre>
+    <div class="output-block"><div class="output-label">Output</div>[1, 1, 3, 4, 5, 9]<br>[4]<br>[2, 2, 6, 8, 10, 18]<br>name: Robert<br>role: BI Developer<br>salary: 90000<br>{1, 2, 3}<br>[a, b, c]</div>
+  </div>
+</div>
+
+<div class="section" id="classes" data-tags="oop">
+  <div class="section-title">Classes & Constructors <span>oop</span></div>
+  <div class="card" data-tags="oop">
+    <div class="card-header">
+      <div><div class="card-title">Classes, Named & Factory Constructors <span class="badge badge-interview">Interview Fav</span></div></div>
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    </div>
+    <pre><span class="kw">class</span> Employee {
+  <span class="bi">final</span> <span class="bi">String</span> name;
+  <span class="bi">final</span> <span class="bi">String</span> role;
+
+  <span class="cm">// standard constructor with shorthand field assignment</span>
+  Employee(<span class="kw">this</span>.name, <span class="kw">this</span>.role);
+
+  <span class="cm">// named constructor</span>
+  Employee.intern(<span class="bi">String</span> name) : name <span class="op">=</span> name, role <span class="op">=</span> <span class="st">'Intern'</span>;
+
+  <span class="bi">String</span> <span class="fn">describe</span>() <span class="op">=></span> <span class="st">'$name — $role'</span>;
+
+  <span class="op">@</span>override
+  <span class="bi">String</span> <span class="fn">toString</span>() <span class="op">=></span> describe();
+}
+
+<span class="cm">// inheritance</span>
+<span class="kw">class</span> SeniorDev <span class="kw">extends</span> Employee {
+  <span class="bi">final</span> <span class="bi">int</span> teamSize;
+  SeniorDev(<span class="bi">String</span> name, <span class="kw">this</span>.teamSize) : <span class="kw">super</span>(name, <span class="st">'Senior BI Developer'</span>);
+
+  <span class="op">@</span>override
+  <span class="bi">String</span> <span class="fn">describe</span>() <span class="op">=></span> <span class="st">'${super.describe()}, leads $teamSize people'</span>;
+}
+
+<span class="kw">var</span> emp <span class="op">=</span> Employee(<span class="st">'Robert'</span>, <span class="st">'BI Developer'</span>);
+print(emp);
+print(SeniorDev(<span class="st">'Robert'</span>, <span class="nm">5</span>));</pre>
+    <div class="output-block"><div class="output-label">Output</div>Robert — BI Developer<br>Robert — Senior BI Developer, leads 5 people</div>
+  </div>
+</div>
+
+<div class="section" id="mixins" data-tags="oop">
+  <div class="section-title">Mixins & Interfaces <span>oop</span></div>
+  <div class="card" data-tags="oop">
+    <div class="card-header">
+      <div><div class="card-title">mixin, implements, abstract <span class="badge badge-important">Key Concept</span></div><div class="card-desc">Dart doesn't have multiple inheritance — mixins fill that gap</div></div>
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    </div>
+    <pre><span class="cm">// mixin — reusable behavior added to a class without inheritance</span>
+<span class="kw">mixin</span> Logger {
+  <span class="kw">void</span> <span class="fn">log</span>(<span class="bi">String</span> msg) <span class="op">=></span> print(<span class="st">'[LOG] $msg'</span>);
+}
+
+<span class="kw">class</span> ReportService <span class="kw">with</span> Logger {
+  <span class="kw">void</span> <span class="fn">generate</span>() {
+    log(<span class="st">'Generating report...'</span>);
+  }
+}
+
+ReportService().generate();
+
+<span class="cm">// abstract class as an interface — implements requires you provide every method</span>
+<span class="kw">abstract class</span> Shape {
+  <span class="bi">double</span> <span class="fn">area</span>();
+}
+<span class="kw">class</span> Square <span class="kw">implements</span> Shape {
+  <span class="bi">final</span> <span class="bi">double</span> side;
+  Square(<span class="kw">this</span>.side);
+  <span class="op">@</span>override
+  <span class="bi">double</span> <span class="fn">area</span>() <span class="op">=></span> side <span class="op">*</span> side;
+}
+print(Square(<span class="nm">4</span>).area());</pre>
+    <div class="output-block"><div class="output-label">Output</div>[LOG] Generating report...<br>16.0</div>
+  </div>
+</div>
+
+<div class="section" id="futures" data-tags="async">
+  <div class="section-title">Future & async/await <span>async</span></div>
+  <div class="card" data-tags="async">
+    <div class="card-header">
+      <div><div class="card-title">Working with Future&lt;T&gt; <span class="badge badge-interview">Interview Fav</span></div><div class="card-desc">Dart's version of a Promise — represents a value that arrives later</div></div>
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    </div>
+    <pre>Future<<span class="bi">String</span>> <span class="fn">fetchReport</span>() <span class="kw">async</span> {
+  <span class="kw">await</span> Future.delayed(<span class="bi">Duration</span>(milliseconds: <span class="nm">500</span>)); <span class="cm">// simulate network/DB call</span>
+  <span class="kw">return</span> <span class="st">'Report data'</span>;
+}
+
+<span class="kw">void</span> <span class="fn">main</span>() <span class="kw">async</span> {
+  print(<span class="st">'Fetching...'</span>);
+  <span class="bi">String</span> result <span class="op">=</span> <span class="kw">await</span> fetchReport();
+  print(result);
+
+  <span class="cm">// run multiple futures concurrently</span>
+  <span class="kw">var</span> results <span class="op">=</span> <span class="kw">await</span> Future.wait([fetchReport(), fetchReport()]);
+  print(<span class="st">'Got ${results.length} results'</span>);
+
+  <span class="cm">// error handling with futures</span>
+  <span class="kw">try</span> {
+    <span class="kw">await</span> Future.error(<span class="st">'Something failed'</span>);
+  } <span class="kw">catch</span> (e) {
+    print(<span class="st">'Caught: $e'</span>);
+  }
+}</pre>
+    <div class="output-block"><div class="output-label">Output</div>Fetching...<br>Report data<br>Got 2 results<br>Caught: Something failed</div>
+  </div>
+</div>
+
+<div class="section" id="streams" data-tags="async">
+  <div class="section-title">Streams <span>async</span></div>
+  <div class="card" data-tags="async">
+    <div class="card-header">
+      <div><div class="card-title">Stream&lt;T&gt; — Multiple Async Values Over Time</div><div class="card-desc">Used heavily for real-time data — sockets, Firestore, sensor data</div></div>
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    </div>
+    <pre>Stream<<span class="bi">int</span>> <span class="fn">countStream</span>() <span class="kw">async*</span> {
+  <span class="kw">for</span> (<span class="bi">int</span> i <span class="op">=</span> <span class="nm">1</span>; i <span class="op">&lt;=</span> <span class="nm">3</span>; i<span class="op">++</span>) {
+    <span class="kw">await</span> Future.delayed(<span class="bi">Duration</span>(milliseconds: <span class="nm">200</span>));
+    <span class="kw">yield</span> i;
+  }
+}
+
+<span class="kw">void</span> <span class="fn">main</span>() <span class="kw">async</span> {
+  <span class="kw">await for</span> (<span class="kw">final</span> value <span class="kw">in</span> countStream()) {
+    print(<span class="st">'Received: $value'</span>);
+  }
+
+  <span class="cm">// StreamController — for imperative stream creation (common in state mgmt)</span>
+  <span class="kw">final</span> controller <span class="op">=</span> StreamController<<span class="bi">String</span>>();
+  controller.stream.listen((event) => print(<span class="st">'Event: $event'</span>));
+  controller.add(<span class="st">'hello'</span>);
+  controller.close();
+}</pre>
+    <div class="output-block"><div class="output-label">Output</div>Received: 1<br>Received: 2<br>Received: 3<br>Event: hello</div>
+  </div>
+</div>
+
+<div class="section" id="widgettypes" data-tags="widgets">
+  <div class="section-title">Stateless vs Stateful <span>flutter widgets</span></div>
+  <div class="card" data-tags="widgets">
+    <div class="card-header">
+      <div><div class="card-title">StatelessWidget vs StatefulWidget <span class="badge badge-interview">Interview Fav</span></div><div class="card-desc">Everything in Flutter's UI is a widget</div></div>
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    </div>
+    <pre><span class="cm">// StatelessWidget — immutable, rebuilt fresh from its constructor args</span>
+<span class="kw">class</span> Greeting <span class="kw">extends</span> StatelessWidget {
+  <span class="bi">final</span> <span class="bi">String</span> name;
+  <span class="kw">const</span> Greeting({<span class="kw">super</span>.key, <span class="kw">required</span> <span class="kw">this</span>.name});
+
+  <span class="op">@</span>override
+  Widget <span class="fn">build</span>(BuildContext context) {
+    <span class="kw">return</span> Text(<span class="st">'Hello, $name!'</span>);
+  }
+}
+
+<span class="cm">// StatefulWidget — holds mutable state that persists across rebuilds</span>
+<span class="kw">class</span> Counter <span class="kw">extends</span> StatefulWidget {
+  <span class="kw">const</span> Counter({<span class="kw">super</span>.key});
+  <span class="op">@</span>override
+  State<Counter> <span class="fn">createState</span>() <span class="op">=></span> _CounterState();
+}
+
+<span class="kw">class</span> _CounterState <span class="kw">extends</span> State<Counter> {
+  <span class="bi">int</span> _count <span class="op">=</span> <span class="nm">0</span>;
+
+  <span class="op">@</span>override
+  Widget <span class="fn">build</span>(BuildContext context) {
+    <span class="kw">return</span> ElevatedButton(
+      onPressed: () <span class="op">=></span> setState(() <span class="op">=></span> _count<span class="op">++</span>),
+      child: Text(<span class="st">'Count: $_count'</span>),
+    );
+  }
+}</pre>
+    <div class="output-block"><div class="output-label">Output</div>(renders UI — StatelessWidget shows text, Counter increments on tap)</div>
+  </div>
+</div>
+
+<div class="section" id="basicwidgets" data-tags="widgets">
+  <div class="section-title">Scaffold, Text, Container <span>flutter widgets</span></div>
+  <div class="card" data-tags="widgets">
+    <div class="card-header">
+      <div><div class="card-title">The Building Blocks of Every Screen <span class="badge badge-important">BI/App Essential</span></div></div>
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    </div>
+    <pre><span class="kw">class</span> HomePage <span class="kw">extends</span> StatelessWidget {
+  <span class="kw">const</span> HomePage({<span class="kw">super</span>.key});
+
+  <span class="op">@</span>override
+  Widget <span class="fn">build</span>(BuildContext context) {
+    <span class="kw">return</span> Scaffold(
+      appBar: AppBar(title: <span class="kw">const</span> Text(<span class="st">'My App'</span>)),
+      body: Center(
+        child: Container(
+          padding: <span class="kw">const</span> EdgeInsets.all(<span class="nm">16</span>),
+          decoration: BoxDecoration(
+            color: Colors.blue.shade50,
+            borderRadius: BorderRadius.circular(<span class="nm">12</span>),
+          ),
+          child: <span class="kw">const</span> Text(
+            <span class="st">'Welcome!'</span>,
+            style: TextStyle(fontSize: <span class="nm">20</span>, fontWeight: FontWeight.bold),
+          ),
+        ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {},
+        child: <span class="kw">const</span> Icon(Icons.add),
+      ),
+    );
+  }
+}</pre>
+    <div class="output-block"><div class="output-label">Output</div>(renders a screen with an app bar, styled centered text, and a floating action button)</div>
+  </div>
+</div>
+
+<div class="section" id="layout" data-tags="layout">
+  <div class="section-title">Row, Column, Stack <span>layout</span></div>
+  <div class="card" data-tags="layout">
+    <div class="card-header">
+      <div><div class="card-title">Layout Widgets <span class="badge badge-interview">Interview Fav</span></div><div class="card-desc">Row = horizontal, Column = vertical, Stack = overlapping (z-index)</div></div>
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    </div>
+    <pre>Column(
+  mainAxisAlignment: MainAxisAlignment.center,
+  crossAxisAlignment: CrossAxisAlignment.start,
+  children: [
+    <span class="kw">const</span> Text(<span class="st">'Dashboard'</span>),
+    Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        <span class="kw">const</span> Icon(Icons.bar_chart),
+        Expanded(child: <span class="kw">const</span> Text(<span class="st">'Sales Report'</span>)), <span class="cm">// fills remaining space</span>
+        <span class="kw">const</span> Icon(Icons.arrow_forward),
+      ],
+    ),
+    Stack(
+      children: [
+        Container(width: <span class="nm">100</span>, height: <span class="nm">100</span>, color: Colors.blue),
+        Positioned(
+          top: <span class="nm">10</span>, right: <span class="nm">10</span>,
+          child: <span class="kw">const</span> Icon(Icons.star, color: Colors.yellow), <span class="cm">// overlaps on top</span>
+        ),
+      ],
+    ),
+  ],
+)</pre>
+    <div class="output-block"><div class="output-label">Output</div>(renders a vertical layout with a row and an overlapping stack)</div>
+  </div>
+</div>
+
+<div class="section" id="listview" data-tags="layout">
+  <div class="section-title">ListView & Scrolling <span>layout</span></div>
+  <div class="card" data-tags="layout">
+    <div class="card-header">
+      <div><div class="card-title">ListView.builder <span class="badge badge-important">BI/App Essential</span></div><div class="card-desc">Lazily builds only the items currently visible — efficient for long lists</div></div>
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    </div>
+    <pre><span class="kw">final</span> reports <span class="op">=</span> [<span class="st">'Sales Q1'</span>, <span class="st">'Sales Q2'</span>, <span class="st">'Inventory'</span>, <span class="st">'Forecast'</span>];
+
+ListView.builder(
+  itemCount: reports.length,
+  itemBuilder: (context, index) {
+    <span class="kw">return</span> ListTile(
+      leading: <span class="kw">const</span> Icon(Icons.description),
+      title: Text(reports[index]),
+      trailing: <span class="kw">const</span> Icon(Icons.chevron_right),
+      onTap: () <span class="op">=></span> print(<span class="st">'Tapped: ${reports[index]}'</span>),
+    );
+  },
+)</pre>
+    <div class="output-block"><div class="output-label">Output</div>(renders a scrollable list of 4 tappable rows)</div>
+  </div>
+</div>
+
+<div class="section" id="setstate" data-tags="state">
+  <div class="section-title">setState <span>state management</span></div>
+  <div class="card" data-tags="state">
+    <div class="card-header">
+      <div><div class="card-title">setState — Local Widget State <span class="badge badge-interview">Interview Fav</span></div><div class="card-desc">The simplest state management — tells Flutter to rebuild this widget</div></div>
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    </div>
+    <pre><span class="kw">class</span> TodoList <span class="kw">extends</span> StatefulWidget {
+  <span class="kw">const</span> TodoList({<span class="kw">super</span>.key});
+  <span class="op">@</span>override
+  State<TodoList> <span class="fn">createState</span>() <span class="op">=></span> _TodoListState();
+}
+
+<span class="kw">class</span> _TodoListState <span class="kw">extends</span> State<TodoList> {
+  <span class="bi">final</span> List<<span class="bi">String</span>> _items <span class="op">=</span> [];
+
+  <span class="kw">void</span> <span class="fn">_addItem</span>(<span class="bi">String</span> text) {
+    setState(() {
+      _items.add(text); <span class="cm">// mutate state INSIDE setState so Flutter knows to rebuild</span>
+    });
+  }
+
+  <span class="op">@</span>override
+  Widget <span class="fn">build</span>(BuildContext context) {
+    <span class="kw">return</span> Column(
+      children: _items.map((item) <span class="op">=></span> Text(item)).toList(),
+    );
+  }
+}</pre>
+    <div class="output-block"><div class="output-label">Output</div>(re-renders the list every time _addItem is called)</div>
+  </div>
+</div>
+
+<div class="section" id="navigation" data-tags="navigation">
+  <div class="section-title">Navigator & Routes <span>navigation</span></div>
+  <div class="card" data-tags="navigation">
+    <div class="card-header">
+      <div><div class="card-title">Navigating Between Screens <span class="badge badge-interview">Interview Fav</span></div></div>
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    </div>
+    <pre><span class="cm">// push a new screen onto the stack</span>
+Navigator.push(
+  context,
+  MaterialPageRoute(builder: (context) <span class="op">=></span> <span class="kw">const</span> DetailPage()),
+);
+
+<span class="cm">// go back</span>
+Navigator.pop(context);
+
+<span class="cm">// pass data forward, and get a result back</span>
+<span class="bi">final</span> result <span class="op">=</span> <span class="kw">await</span> Navigator.push(
+  context,
+  MaterialPageRoute(builder: (context) <span class="op">=></span> ProjectDetail(projectId: <span class="nm">42</span>)),
+);
+print(<span class="st">'Returned: $result'</span>);
+
+<span class="cm">// named routes (declared in MaterialApp.routes)</span>
+Navigator.pushNamed(context, <span class="st">'/settings'</span>);</pre>
+    <div class="output-block"><div class="output-label">Output</div>(navigates to a new screen; returns "Returned: &lt;value&gt;" once popped with a result)</div>
+  </div>
+</div>
+
+<div class="section" id="forms" data-tags="widgets">
+  <div class="section-title">TextField & Forms <span>forms</span></div>
+  <div class="card" data-tags="widgets">
+    <div class="card-header">
+      <div><div class="card-title">TextField, TextEditingController, Form Validation <span class="badge badge-important">BI/App Essential</span></div></div>
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    </div>
+    <pre><span class="bi">final</span> emailController <span class="op">=</span> TextEditingController();
+<span class="bi">final</span> formKey <span class="op">=</span> GlobalKey<FormState>();
+
+Form(
+  key: formKey,
+  child: TextFormField(
+    controller: emailController,
+    decoration: <span class="kw">const</span> InputDecoration(labelText: <span class="st">'Email'</span>),
+    validator: (value) {
+      <span class="kw">if</span> (value <span class="op">==</span> <span class="kw">null</span> <span class="op">||</span> !value.contains(<span class="st">'@'</span>)) {
+        <span class="kw">return</span> <span class="st">'Enter a valid email'</span>;
+      }
+      <span class="kw">return</span> <span class="kw">null</span>; <span class="cm">// null = valid</span>
+    },
+  ),
+)
+
+<span class="cm">// validate and read the value</span>
+<span class="kw">if</span> (formKey.currentState!.validate()) {
+  print(<span class="st">'Submitted: ${emailController.text}'</span>);
+}</pre>
+    <div class="output-block"><div class="output-label">Output</div>Submitted: user@example.com</div>
+  </div>
+</div>
+
+<div class="section" id="http" data-tags="networking">
+  <div class="section-title">HTTP Requests <span>networking</span></div>
+  <div class="card" data-tags="networking">
+    <div class="card-header">
+      <div><div class="card-title">Calling APIs with the http package <span class="badge badge-important">BI/App Essential</span></div><div class="card-desc">Run: flutter pub add http</div></div>
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    </div>
+    <pre><span class="kw">import</span> <span class="st">'package:http/http.dart'</span> <span class="kw">as</span> http;
+<span class="kw">import</span> <span class="st">'dart:convert'</span>;
+
+Future<<span class="bi">void</span>> <span class="fn">fetchSalesData</span>() <span class="kw">async</span> {
+  <span class="bi">final</span> response <span class="op">=</span> <span class="kw">await</span> http.get(
+    Uri.parse(<span class="st">'https://api.example.com/sales'</span>),
+  );
+
+  <span class="kw">if</span> (response.statusCode <span class="op">==</span> <span class="nm">200</span>) {
+    <span class="bi">final</span> data <span class="op">=</span> jsonDecode(response.body);
+    print(<span class="st">'Got ${data.length} records'</span>);
+  } <span class="kw">else</span> {
+    <span class="kw">throw</span> Exception(<span class="st">'Failed to load sales data'</span>);
+  }
+}</pre>
+    <div class="output-block"><div class="output-label">Output</div>Got 42 records</div>
+  </div>
+</div>
+
+</main>
+</div>
+
+<script>
+function copyCode(btn) {
+  const pre = btn.closest('.card').querySelector('pre');
+  const text = pre.innerText;
+  navigator.clipboard.writeText(text).then(() => {
+    btn.textContent = 'Copied!';
+    btn.classList.add('copied');
+    setTimeout(() => {
+      btn.textContent = 'Copy';
+      btn.classList.remove('copied');
+    }, 2000);
+  });
+}
+
+function filterCards() {
+  const query = document.getElementById('searchInput').value.toLowerCase();
+  const sections = document.querySelectorAll('.section');
+
+  sections.forEach(section => {
+    let sectionHasMatch = false;
+    const sectionCards = section.querySelectorAll('.card');
+    sectionCards.forEach(card => {
+      const text = card.innerText.toLowerCase();
+      if (text.includes(query)) {
+        card.classList.remove('hidden');
+        sectionHasMatch = true;
+      } else {
+        card.classList.add('hidden');
+      }
+    });
+    section.style.display = sectionHasMatch ? '' : 'none';
+  });
+}
+
+function filterTag(tag, el) {
+  document.querySelectorAll('.tag').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('searchInput').value = '';
+
+  const sections = document.querySelectorAll('.section');
+  sections.forEach(section => {
+    const sectionTags = section.getAttribute('data-tags') || '';
+    const cards = section.querySelectorAll('.card');
+    let sectionVisible = false;
+
+    cards.forEach(card => {
+      card.classList.remove('hidden');
+      const cardTags = card.getAttribute('data-tags') || '';
+      if (tag === 'all' || sectionTags.includes(tag) || cardTags.includes(tag)) {
+        card.classList.remove('hidden');
+        sectionVisible = true;
+      } else {
+        card.classList.add('hidden');
+      }
+    });
+    section.style.display = (tag === 'all' || sectionVisible) ? '' : 'none';
+  });
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SQL Cheatsheet</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Inter:wght@400;500;600;700&display=swap');
+
+  :root {
+    --bg: #0f1117;
+    --surface: #1a1d27;
+    --surface2: #22263a;
+    --border: #2e3250;
+    --accent: #F5A524;
+    --accent2: #4fc3f7;
+    --green: #4ade80;
+    --yellow: #fbbf24;
+    --red: #f87171;
+    --text: #e2e8f0;
+    --muted: #8892b0;
+    --code-bg: #0d1117;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  header {
+    background: linear-gradient(135deg, #1a1d27 0%, #12152a 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 32px 40px 24px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    backdrop-filter: blur(10px);
+  }
+
+  header h1 { font-size: 22px; font-weight: 700; color: var(--accent); letter-spacing: -0.5px; }
+  header p { color: var(--muted); font-size: 13px; margin-top: 4px; }
+
+  .search-bar { margin-top: 14px; display: flex; gap: 10px; align-items: center; }
+  .search-bar input {
+    background: var(--code-bg); border: 1px solid var(--border); color: var(--text);
+    padding: 8px 14px; border-radius: 8px; font-family: 'Inter', sans-serif; font-size: 13px;
+    width: 280px; outline: none; transition: border-color 0.2s;
+  }
+  .search-bar input:focus { border-color: var(--accent); }
+
+  .tags { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
+  .tag {
+    background: var(--surface2); border: 1px solid var(--border); color: var(--muted);
+    padding: 4px 12px; border-radius: 20px; font-size: 12px; cursor: pointer;
+    transition: all 0.2s; user-select: none;
+  }
+  .tag:hover, .tag.active { background: var(--accent); color: #0f1117; border-color: var(--accent); }
+
+  .layout { display: grid; grid-template-columns: 220px 1fr; min-height: calc(100vh - 160px); }
+  .section { scroll-margin-top: 190px; margin-bottom: 48px; }
+
+  .sidebar {
+    background: var(--surface); border-right: 1px solid var(--border); padding: 20px 0;
+    position: sticky; top: 160px; height: calc(100vh - 160px); overflow-y: auto;
+  }
+  .sidebar::-webkit-scrollbar { width: 4px; }
+  .sidebar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+  .sidebar-label {
+    font-size: 10px; font-weight: 700; letter-spacing: 1.5px; color: var(--muted);
+    padding: 8px 20px 4px; text-transform: uppercase;
+  }
+  .sidebar a {
+    display: block; padding: 7px 20px; color: var(--muted); text-decoration: none;
+    font-size: 13px; transition: all 0.15s; border-left: 2px solid transparent;
+  }
+  .sidebar a:hover { color: var(--text); background: var(--surface2); border-left-color: var(--accent); }
+
+  .main { padding: 32px 40px; max-width: 1000px; }
+
+  .section-title {
+    font-size: 18px; font-weight: 700; color: var(--accent); margin-bottom: 20px;
+    padding-bottom: 10px; border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 10px;
+  }
+  .section-title span {
+    font-size: 12px; background: var(--surface2); color: var(--muted);
+    padding: 2px 10px; border-radius: 20px; font-weight: 500;
+  }
+
+  .card {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
+    margin-bottom: 16px; overflow: hidden; transition: border-color 0.2s;
+  }
+  .card:hover { border-color: var(--accent); }
+
+  .card-header {
+    padding: 12px 16px; background: var(--surface2); display: flex;
+    justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border);
+  }
+  .card-title { font-size: 13px; font-weight: 600; color: var(--accent2); }
+  .card-desc { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+  .copy-btn {
+    background: var(--code-bg); border: 1px solid var(--border); color: var(--muted);
+    padding: 4px 12px; border-radius: 6px; font-size: 11px; cursor: pointer;
+    font-family: 'Inter', sans-serif; transition: all 0.2s; white-space: nowrap;
+  }
+  .copy-btn:hover { background: var(--accent); color: #0f1117; border-color: var(--accent); }
+  .copy-btn.copied { background: var(--green); color: #0f1117; border-color: var(--green); }
+
+  pre {
+    background: var(--code-bg); padding: 16px; overflow-x: auto;
+    font-family: 'JetBrains Mono', monospace; font-size: 13px; line-height: 1.7;
+  }
+  pre::-webkit-scrollbar { height: 4px; }
+  pre::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+  .kw { color: #c792ea; }
+  .fn { color: #82aaff; }
+  .st { color: #c3e88d; }
+  .cm { color: #546e7a; font-style: italic; }
+  .nm { color: #f78c6c; }
+  .op { color: #89ddff; }
+  .bi { color: #ffcb6b; }
+
+  .output-block {
+    background: #0a0f0a; border-top: 1px solid var(--border); padding: 10px 16px;
+    font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--green);
+  }
+  .output-label {
+    font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: var(--muted);
+    margin-bottom: 4px; font-family: 'Inter', sans-serif;
+  }
+
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+  @media (max-width: 900px) {
+    .layout { grid-template-columns: 1fr; }
+    .sidebar { display: none; }
+    .grid2 { grid-template-columns: 1fr; }
+    header { padding: 20px; }
+    .main { padding: 20px; }
+  }
+
+  .hidden { display: none !important; }
+
+  .badge {
+    display: inline-block; font-size: 10px; padding: 2px 8px; border-radius: 4px;
+    font-weight: 600; margin-left: 8px;
+  }
+  .badge-interview { background: #F5A52420; color: var(--accent); border: 1px solid #F5A52440; }
+  .badge-important { background: #fbbf2420; color: var(--yellow); border: 1px solid #fbbf2440; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🗄️ SQL Cheatsheet</h1>
+  <p>T-SQL flavored (SQL Server) — every query below is ready to run in SSMS</p>
+  <div class="search-bar">
+    <input type="text" id="searchInput" placeholder="Search topics, clauses, keywords..." oninput="filterCards()">
+  </div>
+  <div class="tags">
+    <div class="tag active" onclick="filterTag('all', this)">All</div>
+    <div class="tag" onclick="filterTag('basics', this)">Basics</div>
+    <div class="tag" onclick="filterTag('joins', this)">Joins</div>
+    <div class="tag" onclick="filterTag('aggregation', this)">Aggregation</div>
+    <div class="tag" onclick="filterTag('subqueries', this)">Subqueries & CTEs</div>
+    <div class="tag" onclick="filterTag('window', this)">Window Functions</div>
+    <div class="tag" onclick="filterTag('dml', this)">Insert / Update / Delete</div>
+    <div class="tag" onclick="filterTag('functions', this)">Functions</div>
+    <div class="tag" onclick="filterTag('objects', this)">Views & Procedures</div>
+    <div class="tag" onclick="filterTag('admin', this)">Indexes & Transactions</div>
+  </div>
+</header>
+
+<div class="layout">
+<nav class="sidebar">
+  <div class="sidebar-label">Basics</div>
+  <a href="#select">SELECT & WHERE</a>
+  <a href="#orderby">ORDER BY & TOP</a>
+  <a href="#distinct">DISTINCT & NULL</a>
+  <div class="sidebar-label">Joins</div>
+  <a href="#joins">INNER / LEFT / RIGHT / FULL</a>
+  <a href="#union">UNION vs UNION ALL</a>
+  <div class="sidebar-label">Aggregation</div>
+  <a href="#groupby">GROUP BY & HAVING</a>
+  <a href="#aggregates">Aggregate Functions</a>
+  <div class="sidebar-label">Subqueries & CTEs</div>
+  <a href="#subqueries">Subqueries</a>
+  <a href="#ctes">CTEs — WITH</a>
+  <div class="sidebar-label">Window Functions</div>
+  <a href="#window">ROW_NUMBER, RANK, OVER</a>
+  <div class="sidebar-label">Insert / Update / Delete</div>
+  <a href="#dml">INSERT / UPDATE / DELETE</a>
+  <a href="#merge">MERGE (Upsert)</a>
+  <div class="sidebar-label">Functions</div>
+  <a href="#casewhen">CASE Expressions</a>
+  <a href="#strings">String Functions</a>
+  <a href="#dates">Date Functions</a>
+  <div class="sidebar-label">Views & Procedures</div>
+  <a href="#views">Views</a>
+  <a href="#procedures">Stored Procedures</a>
+  <div class="sidebar-label">Admin</div>
+  <a href="#indexes">Indexes</a>
+  <a href="#transactions">Transactions</a>
+</nav>
+
+<main class="main" id="mainContent">
+
+<div class="section" id="select" data-tags="basics">
+  <div class="section-title">SELECT & WHERE <span>basics</span></div>
+  <div class="card" data-tags="basics">
+    <div class="card-header">
+      <div><div class="card-title">Basic Queries & Filtering <span class="badge badge-interview">Interview Fav</span></div></div>
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    </div>
+    <pre><span class="kw">SELECT</span> ProductID, ProductName, Sales
+<span class="kw">FROM</span> dbo.SalesFact
+<span class="kw">WHERE</span> Sales <span class="op">></span> <span class="nm">1000</span>
+  <span class="kw">AND</span> Region <span class="op">=</span> <span class="st">'East'</span>;
+
+<span class="cm">-- multiple conditions</span>
+<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> dbo.Employees
+<span class="kw">WHERE</span> Department <span class="kw">IN</span> (<span class="st">'IT'</span>, <span class="st">'HR'</span>)
+  <span class="kw">AND</span> Salary <span class="kw">BETWEEN</span> <span class="nm">60000</span> <span class="kw">AND</span> <span class="nm">100000</span>;
+
+<span class="cm">-- pattern matching</span>
+<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> dbo.Customers
+<span class="kw">WHERE</span> Email <span class="kw">LIKE</span> <span class="st">'%@masco.com'</span>;
+
+<span class="cm">-- column alias</span>
+<span class="kw">SELECT</span> ProductName <span class="kw">AS</span> Product, Sales <span class="kw">AS</span> Revenue
+<span class="kw">FROM</span> dbo.SalesFact;</pre>
+    <div class="output-block"><div class="output-label">Output</div>(returns matching rows from SalesFact / Employees / Customers)</div>
+  </div>
+</div>
+
+<div class="section" id="orderby" data-tags="basics">
+  <div class="section-title">ORDER BY & TOP <span>basics</span></div>
+  <div class="card" data-tags="basics">
+    <div class="card-header">
+      <div><div class="card-title">Sorting & Limiting Rows <span class="badge badge-interview">Interview Fav</span></div></div>
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    </div>
+    <pre><span class="cm">-- sort descending, then ascending as a tiebreaker</span>
+<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> dbo.SalesFact
+<span class="kw">ORDER BY</span> Sales <span class="kw">DESC</span>, ProductName <span class="kw">ASC</span>;
+
+<span class="cm">-- TOP N (SQL Server syntax — MySQL/Postgres use LIMIT)</span>
+<span class="kw">SELECT TOP</span> <span class="nm">10</span> <span class="op">*</span> <span class="kw">FROM</span> dbo.SalesFact
+<span class="kw">ORDER BY</span> Sales <span class="kw">DESC</span>;
+
+<span class="cm">-- TOP with ties — includes rows tied with the last one</span>
+<span class="kw">SELECT TOP</span> <span class="nm">5</span> <span class="kw">WITH TIES</span> <span class="op">*</span> <span class="kw">FROM</span> dbo.SalesFact
+<span class="kw">ORDER BY</span> Sales <span class="kw">DESC</span>;
+
+<span class="cm">-- paging with OFFSET / FETCH (SQL Server 2012+)</span>
+<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> dbo.SalesFact
+<span class="kw">ORDER BY</span> SaleDate
+<span class="kw">OFFSET</span> <span class="nm">20</span> <span class="kw">ROWS FETCH NEXT</span> <span class="nm">10</span> <span class="kw">ROWS ONLY</span>;</pre>
+    <div class="output-block"><div class="output-label">Output</div>(returns sorted / paged rows)</div>
+  </div>
+</div>
+
+<div class="section" id="distinct" data-tags="basics">
+  <div class="section-title">DISTINCT & NULL <span>basics</span></div>
+  <div class="card" data-tags="basics">
+    <div class="card-header">
+      <div><div class="card-title">DISTINCT, ISNULL, COALESCE <span class="badge badge-interview">Interview Fav</span></div></div>
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    </div>
+    <pre><span class="cm">-- unique values only</span>
+<span class="kw">SELECT DISTINCT</span> Department <span class="kw">FROM</span> dbo.Employees;
+
+<span class="cm">-- NULL checks — never use = NULL, always IS NULL</span>
+<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> dbo.Orders <span class="kw">WHERE</span> ShippedDate <span class="kw">IS NULL</span>;
+<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> dbo.Orders <span class="kw">WHERE</span> ShippedDate <span class="kw">IS NOT NULL</span>;
+
+<span class="cm">-- ISNULL — replace a null with a default (SQL Server specific)</span>
+<span class="kw">SELECT</span> ProductName, <span class="fn">ISNULL</span>(Discount, <span class="nm">0</span>) <span class="kw">AS</span> Discount
+<span class="kw">FROM</span> dbo.Products;
+
+<span class="cm">-- COALESCE — first non-null value from a list (ANSI standard, works everywhere)</span>
+<span class="kw">SELECT</span> <span class="fn">COALESCE</span>(NickName, FirstName, <span class="st">'Unknown'</span>) <span class="kw">AS</span> DisplayName
+<span class="kw">FROM</span> dbo.Customers;</pre>
+    <div class="output-block"><div class="output-label">Output</div>(returns rows with null-safe defaults applied)</div>
+  </div>
+</div>
+
+<div class="section" id="joins" data-tags="joins">
+  <div class="section-title">INNER / LEFT / RIGHT / FULL <span>joins</span></div>
+  <div class="card" data-tags="joins">
+    <div class="card-header">
+      <div><div class="card-title">All Join Types <span class="badge badge-interview">Interview Fav</span></div><div class="card-desc">The single most-asked SQL interview topic</div></div>
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    </div>
+    <pre><span class="cm">-- INNER JOIN — only matching rows in both tables</span>
+<span class="kw">SELECT</span> o.OrderID, c.CustomerName
+<span class="kw">FROM</span> dbo.Orders o
+<span class="kw">INNER JOIN</span> dbo.Customers c <span class="kw">ON</span> o.CustomerID <span class="op">=</span> c.CustomerID;
+
+<span class="cm">-- LEFT JOIN — all rows from the left table, matched or not</span>
+<span class="kw">SELECT</span> c.CustomerName, o.OrderID
+<span class="kw">FROM</span> dbo.Customers c
+<span class="kw">LEFT JOIN</span> dbo.Orders o <span class="kw">ON</span> c.CustomerID <span class="op">=</span> o.CustomerID;
+
+<span class="cm">-- find customers with NO orders (classic anti-join pattern)</span>
+<span class="kw">SELECT</span> c.CustomerName
+<span class="kw">FROM</span> dbo.Customers c
+<span class="kw">LEFT JOIN</span> dbo.Orders o <span class="kw">ON</span> c.CustomerID <span class="op">=</span> o.CustomerID
+<span class="kw">WHERE</span> o.OrderID <span class="kw">IS NULL</span>;
+
+<span class="cm">-- RIGHT JOIN — all rows from the right table</span>
+<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> dbo.Orders o
+<span class="kw">RIGHT JOIN</span> dbo.Customers c <span class="kw">ON</span> o.CustomerID <span class="op">=</span> c.CustomerID;
+
+<span class="cm">-- FULL OUTER JOIN — all rows from both sides</span>
+<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> dbo.Orders o
+<span class="kw">FULL OUTER JOIN</span> dbo.Customers c <span class="kw">ON</span> o.CustomerID <span class="op">=</span> c.CustomerID;</pre>
+    <div class="output-block"><div class="output-label">Output</div>(returns joined result sets per the join type)</div>
+  </div>
+</div>
+
+<div class="section" id="union" data-tags="joins">
+  <div class="section-title">UNION vs UNION ALL <span>joins</span></div>
+  <div class="card" data-tags="joins">
+    <div class="card-header">
+      <div><div class="card-title">Combining Result Sets <span class="badge badge-important">Common Gotcha</span></div><div class="card-desc">UNION removes duplicates (slower); UNION ALL keeps everything (faster)</div></div>
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    </div>
+    <pre><span class="cm">-- both queries must return the same number/type of columns</span>
+<span class="kw">SELECT</span> CustomerName, <span class="st">'Current'</span> <span class="kw">AS</span> Status <span class="kw">FROM</span> dbo.ActiveCustomers
+<span class="kw">UNION</span>
+<span class="kw">SELECT</span> CustomerName, <span class="st">'Archived'</span> <span class="kw">AS</span> Status <span class="kw">FROM</span> dbo.ArchivedCustomers;
+
+<span class="cm">-- UNION ALL — keeps duplicates, much cheaper performance-wise</span>
+<span class="kw">SELECT</span> ProductID <span class="kw">FROM</span> dbo.SalesFact_2025
+<span class="kw">UNION ALL</span>
+<span class="kw">SELECT</span> ProductID <span class="kw">FROM</span> dbo.SalesFact_2026;</pre>
+    <div class="output-block"><div class="output-label">Output</div>(combined result set, deduplicated for UNION, not for UNION ALL)</div>
+  </div>
+</div>
+
+<div class="section" id="groupby" data-tags="aggregation">
+  <div class="section-title">GROUP BY & HAVING <span>aggregation</span></div>
+  <div class="card" data-tags="aggregation">
+    <div class="card-header">
+      <div><div class="card-title">Grouping & Filtering Groups <span class="badge badge-interview">Interview Fav</span></div><div class="card-desc">WHERE filters rows before grouping; HAVING filters groups after</div></div>
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    </div>
+    <pre><span class="cm">-- total sales per product</span>
+<span class="kw">SELECT</span> ProductName, <span class="fn">SUM</span>(Sales) <span class="kw">AS</span> TotalSales
+<span class="kw">FROM</span> dbo.SalesFact
+<span class="kw">GROUP BY</span> ProductName;
+
+<span class="cm">-- HAVING — filter AFTER aggregation (WHERE can't reference aggregates)</span>
+<span class="kw">SELECT</span> ProductName, <span class="fn">SUM</span>(Sales) <span class="kw">AS</span> TotalSales
+<span class="kw">FROM</span> dbo.SalesFact
+<span class="kw">GROUP BY</span> ProductName
+<span class="kw">HAVING</span> <span class="fn">SUM</span>(Sales) <span class="op">></span> <span class="nm">50000</span>;
+
+<span class="cm">-- group by multiple columns</span>
+<span class="kw">SELECT</span> Region, ProductCategory, <span class="fn">COUNT</span>(<span class="op">*</span>) <span class="kw">AS</span> OrderCount
+<span class="kw">FROM</span> dbo.SalesFact
+<span class="kw">GROUP BY</span> Region, ProductCategory
+<span class="kw">ORDER BY</span> OrderCount <span class="kw">DESC</span>;</pre>
+    <div class="output-block"><div class="output-label">Output</div>(returns grouped/aggregated rows)</div>
+  </div>
+</div>
+
+<div class="section" id="aggregates" data-tags="aggregation">
+  <div class="section-title">Aggregate Functions <span>aggregation</span></div>
+  <div class="card" data-tags="aggregation">
+    <div class="card-header">
+      <div><div class="card-title">COUNT, SUM, AVG, MIN, MAX</div></div>
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    </div>
+    <pre><span class="kw">SELECT</span>
+    <span class="fn">COUNT</span>(<span class="op">*</span>)          <span class="kw">AS</span> TotalOrders,
+    <span class="fn">COUNT</span>(<span class="kw">DISTINCT</span> CustomerID) <span class="kw">AS</span> UniqueCustomers,
+    <span class="fn">SUM</span>(Sales)         <span class="kw">AS</span> TotalRevenue,
+    <span class="fn">AVG</span>(Sales)         <span class="kw">AS</span> AvgOrderValue,
+    <span class="fn">MIN</span>(Sales)         <span class="kw">AS</span> SmallestOrder,
+    <span class="fn">MAX</span>(Sales)         <span class="kw">AS</span> LargestOrder
+<span class="kw">FROM</span> dbo.SalesFact;</pre>
+    <div class="output-block"><div class="output-label">Output</div>TotalOrders: 15420 | UniqueCustomers: 3200 | TotalRevenue: 2,450,000.00 | AvgOrderValue: 158.90 | SmallestOrder: 4.99 | LargestOrder: 12,400.00</div>
+  </div>
+</div>
+
+<div class="section" id="subqueries" data-tags="subqueries">
+  <div class="section-title">Subqueries <span>subqueries & CTEs</span></div>
+  <div class="card" data-tags="subqueries">
+    <div class="card-header">
+      <div><div class="card-title">Subqueries in WHERE, FROM, SELECT <span class="badge badge-interview">Interview Fav</span></div></div>
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    </div>
+    <pre><span class="cm">-- subquery in WHERE</span>
+<span class="kw">SELECT</span> ProductName <span class="kw">FROM</span> dbo.Products
+<span class="kw">WHERE</span> ProductID <span class="kw">IN</span> (
+    <span class="kw">SELECT</span> ProductID <span class="kw">FROM</span> dbo.SalesFact <span class="kw">WHERE</span> Sales <span class="op">></span> <span class="nm">10000</span>
+);
+
+<span class="cm">-- correlated subquery — references the outer query</span>
+<span class="kw">SELECT</span> e.Name, e.Salary
+<span class="kw">FROM</span> dbo.Employees e
+<span class="kw">WHERE</span> e.Salary <span class="op">></span> (
+    <span class="kw">SELECT</span> <span class="fn">AVG</span>(e2.Salary) <span class="kw">FROM</span> dbo.Employees e2 <span class="kw">WHERE</span> e2.Department <span class="op">=</span> e.Department
+);
+
+<span class="cm">-- subquery in FROM (derived table)</span>
+<span class="kw">SELECT</span> Department, AvgSalary
+<span class="kw">FROM</span> (
+    <span class="kw">SELECT</span> Department, <span class="fn">AVG</span>(Salary) <span class="kw">AS</span> AvgSalary
+    <span class="kw">FROM</span> dbo.Employees
+    <span class="kw">GROUP BY</span> Department
+) <span class="kw">AS</span> DeptAverages
+<span class="kw">WHERE</span> AvgSalary <span class="op">></span> <span class="nm">70000</span>;
+
+<span class="cm">-- EXISTS — often faster than IN for existence checks</span>
+<span class="kw">SELECT</span> c.CustomerName <span class="kw">FROM</span> dbo.Customers c
+<span class="kw">WHERE EXISTS</span> (<span class="kw">SELECT</span> <span class="nm">1</span> <span class="kw">FROM</span> dbo.Orders o <span class="kw">WHERE</span> o.CustomerID <span class="op">=</span> c.CustomerID);</pre>
+    <div class="output-block"><div class="output-label">Output</div>(returns filtered/derived rows)</div>
+  </div>
+</div>
+
+<div class="section" id="ctes" data-tags="subqueries">
+  <div class="section-title">CTEs — WITH <span>subqueries & CTEs</span></div>
+  <div class="card" data-tags="subqueries">
+    <div class="card-header">
+      <div><div class="card-title">Common Table Expressions <span class="badge badge-important">BI Essential</span></div><div class="card-desc">Cleaner than nested subqueries, and required for recursive queries</div></div>
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    </div>
+    <pre><span class="cm">-- basic CTE — makes multi-step logic readable</span>
+<span class="kw">WITH</span> DeptAverages <span class="kw">AS</span> (
+    <span class="kw">SELECT</span> Department, <span class="fn">AVG</span>(Salary) <span class="kw">AS</span> AvgSalary
+    <span class="kw">FROM</span> dbo.Employees
+    <span class="kw">GROUP BY</span> Department
+)
+<span class="kw">SELECT</span> e.Name, e.Department, d.AvgSalary
+<span class="kw">FROM</span> dbo.Employees e
+<span class="kw">JOIN</span> DeptAverages d <span class="kw">ON</span> e.Department <span class="op">=</span> d.Department
+<span class="kw">WHERE</span> e.Salary <span class="op">></span> d.AvgSalary;
+
+<span class="cm">-- multiple CTEs chained together</span>
+<span class="kw">WITH</span> HighSales <span class="kw">AS</span> (
+    <span class="kw">SELECT</span> ProductID, <span class="fn">SUM</span>(Sales) <span class="kw">AS</span> Total <span class="kw">FROM</span> dbo.SalesFact <span class="kw">GROUP BY</span> ProductID
+),
+TopProducts <span class="kw">AS</span> (
+    <span class="kw">SELECT TOP</span> <span class="nm">5</span> <span class="op">*</span> <span class="kw">FROM</span> HighSales <span class="kw">ORDER BY</span> Total <span class="kw">DESC</span>
+)
+<span class="kw">SELECT</span> p.ProductName, t.Total
+<span class="kw">FROM</span> TopProducts t
+<span class="kw">JOIN</span> dbo.Products p <span class="kw">ON</span> t.ProductID <span class="op">=</span> p.ProductID;
+
+<span class="cm">-- recursive CTE — walking a hierarchy (e.g., org chart)</span>
+<span class="kw">WITH</span> OrgChart <span class="kw">AS</span> (
+    <span class="kw">SELECT</span> EmployeeID, ManagerID, Name, <span class="nm">0</span> <span class="kw">AS</span> Level
+    <span class="kw">FROM</span> dbo.Employees <span class="kw">WHERE</span> ManagerID <span class="kw">IS NULL</span>
+    <span class="kw">UNION ALL</span>
+    <span class="kw">SELECT</span> e.EmployeeID, e.ManagerID, e.Name, o.Level <span class="op">+</span> <span class="nm">1</span>
+    <span class="kw">FROM</span> dbo.Employees e
+    <span class="kw">JOIN</span> OrgChart o <span class="kw">ON</span> e.ManagerID <span class="op">=</span> o.EmployeeID
+)
+<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> OrgChart <span class="kw">ORDER BY</span> Level;</pre>
+    <div class="output-block"><div class="output-label">Output</div>(returns readable multi-step / hierarchical results)</div>
+  </div>
+</div>
+
+<div class="section" id="window" data-tags="window">
+  <div class="section-title">ROW_NUMBER, RANK, OVER <span>window functions</span></div>
+  <div class="card" data-tags="window">
+    <div class="card-header">
+      <div><div class="card-title">Window Functions <span class="badge badge-interview">Interview Fav</span></div><div class="card-desc">Calculate across a set of rows without collapsing them like GROUP BY does</div></div>
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    </div>
+    <pre><span class="cm">-- ROW_NUMBER — unique sequential number per partition</span>
+<span class="kw">SELECT</span> ProductName, Region, Sales,
+    <span class="fn">ROW_NUMBER</span>() <span class="kw">OVER</span> (<span class="kw">PARTITION BY</span> Region <span class="kw">ORDER BY</span> Sales <span class="kw">DESC</span>) <span class="kw">AS</span> RowNum
+<span class="kw">FROM</span> dbo.SalesFact;
+
+<span class="cm">-- RANK / DENSE_RANK — ties share the same rank (RANK skips numbers after a tie)</span>
+<span class="kw">SELECT</span> ProductName, Sales,
+    <span class="fn">RANK</span>()       <span class="kw">OVER</span> (<span class="kw">ORDER BY</span> Sales <span class="kw">DESC</span>) <span class="kw">AS</span> SalesRank,
+    <span class="fn">DENSE_RANK</span>() <span class="kw">OVER</span> (<span class="kw">ORDER BY</span> Sales <span class="kw">DESC</span>) <span class="kw">AS</span> DenseSalesRank
+<span class="kw">FROM</span> dbo.SalesFact;
+
+<span class="cm">-- running total — classic BI pattern</span>
+<span class="kw">SELECT</span> SaleDate, Sales,
+    <span class="fn">SUM</span>(Sales) <span class="kw">OVER</span> (<span class="kw">ORDER BY</span> SaleDate <span class="kw">ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW</span>) <span class="kw">AS</span> RunningTotal
+<span class="kw">FROM</span> dbo.SalesFact;
+
+<span class="cm">-- LAG / LEAD — compare to previous/next row (e.g., month-over-month)</span>
+<span class="kw">SELECT</span> SaleMonth, Revenue,
+    <span class="fn">LAG</span>(Revenue) <span class="kw">OVER</span> (<span class="kw">ORDER BY</span> SaleMonth) <span class="kw">AS</span> PrevMonthRevenue,
+    Revenue <span class="op">-</span> <span class="fn">LAG</span>(Revenue) <span class="kw">OVER</span> (<span class="kw">ORDER BY</span> SaleMonth) <span class="kw">AS</span> Change
+<span class="kw">FROM</span> dbo.MonthlyRevenue;
+
+<span class="cm">-- use ROW_NUMBER to pick the top row per group ("greatest-n-per-group")</span>
+<span class="kw">WITH</span> Ranked <span class="kw">AS</span> (
+    <span class="kw">SELECT</span> <span class="op">*</span>, <span class="fn">ROW_NUMBER</span>() <span class="kw">OVER</span> (<span class="kw">PARTITION BY</span> Region <span class="kw">ORDER BY</span> Sales <span class="kw">DESC</span>) <span class="kw">AS</span> rn
+    <span class="kw">FROM</span> dbo.SalesFact
+)
+<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> Ranked <span class="kw">WHERE</span> rn <span class="op">=</span> <span class="nm">1</span>;</pre>
+    <div class="output-block"><div class="output-label">Output</div>(returns ranked/running-total rows without collapsing detail)</div>
+  </div>
+</div>
+
+<div class="section" id="dml" data-tags="dml">
+  <div class="section-title">INSERT / UPDATE / DELETE <span>insert / update / delete</span></div>
+  <div class="card" data-tags="dml">
+    <div class="card-header">
+      <div><div class="card-title">Data Manipulation Statements <span class="badge badge-interview">Interview Fav</span></div></div>
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    </div>
+    <pre><span class="cm">-- INSERT single row</span>
+<span class="kw">INSERT INTO</span> dbo.Employees (Name, Department, Salary)
+<span class="kw">VALUES</span> (<span class="st">'Robert'</span>, <span class="st">'IT'</span>, <span class="nm">90000</span>);
+
+<span class="cm">-- INSERT multiple rows</span>
+<span class="kw">INSERT INTO</span> dbo.Employees (Name, Department, Salary)
+<span class="kw">VALUES</span>
+    (<span class="st">'Alice'</span>, <span class="st">'HR'</span>, <span class="nm">70000</span>),
+    (<span class="st">'Bob'</span>, <span class="st">'IT'</span>, <span class="nm">85000</span>);
+
+<span class="cm">-- INSERT from a SELECT (great for staging -> warehouse loads)</span>
+<span class="kw">INSERT INTO</span> dbo.EmployeeArchive (Name, Department, Salary)
+<span class="kw">SELECT</span> Name, Department, Salary <span class="kw">FROM</span> dbo.Employees <span class="kw">WHERE</span> Terminated <span class="op">=</span> <span class="nm">1</span>;
+
+<span class="cm">-- UPDATE — always use WHERE unless you mean to update every row!</span>
+<span class="kw">UPDATE</span> dbo.Employees
+<span class="kw">SET</span> Salary <span class="op">=</span> Salary <span class="op">*</span> <span class="nm">1.1</span>
+<span class="kw">WHERE</span> Department <span class="op">=</span> <span class="st">'IT'</span>;
+
+<span class="cm">-- DELETE — same warning applies</span>
+<span class="kw">DELETE FROM</span> dbo.Employees
+<span class="kw">WHERE</span> Terminated <span class="op">=</span> <span class="nm">1</span> <span class="kw">AND</span> TerminationDate <span class="op">&lt;</span> <span class="fn">DATEADD</span>(<span class="kw">YEAR</span>, <span class="op">-</span><span class="nm">2</span>, <span class="fn">GETDATE</span>());
+
+<span class="cm">-- TRUNCATE — faster than DELETE, wipes the whole table, resets identity</span>
+<span class="kw">TRUNCATE TABLE</span> dbo.StagingImport;</pre>
+    <div class="output-block"><div class="output-label">Output</div>(rows affected — always check row counts before running UPDATE/DELETE in prod)</div>
+  </div>
+</div>
+
+<div class="section" id="merge" data-tags="dml">
+  <div class="section-title">MERGE (Upsert) <span>insert / update / delete</span></div>
+  <div class="card" data-tags="dml">
+    <div class="card-header">
+      <div><div class="card-title">MERGE — Insert or Update in One Statement <span class="badge badge-important">ETL Essential</span></div><div class="card-desc">Very common in SSIS/ETL loads to sync a staging table into a dimension table</div></div>
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    </div>
+    <pre><span class="kw">MERGE</span> dbo.DimCustomer <span class="kw">AS</span> target
+<span class="kw">USING</span> dbo.StagingCustomer <span class="kw">AS</span> source
+<span class="kw">ON</span> target.CustomerID <span class="op">=</span> source.CustomerID
+
+<span class="kw">WHEN MATCHED THEN</span>
+    <span class="kw">UPDATE SET</span>
+        target.CustomerName <span class="op">=</span> source.CustomerName,
+        target.Email <span class="op">=</span> source.Email
+
+<span class="kw">WHEN NOT MATCHED BY TARGET THEN</span>
+    <span class="kw">INSERT</span> (CustomerID, CustomerName, Email)
+    <span class="kw">VALUES</span> (source.CustomerID, source.CustomerName, source.Email)
+
+<span class="kw">WHEN NOT MATCHED BY SOURCE THEN</span>
+    <span class="kw">DELETE</span>;</pre>
+    <div class="output-block"><div class="output-label">Output</div>(syncs DimCustomer to match StagingCustomer exactly)</div>
+  </div>
+</div>
+
+<div class="section" id="casewhen" data-tags="functions">
+  <div class="section-title">CASE Expressions <span>functions</span></div>
+  <div class="card" data-tags="functions">
+    <div class="card-header">
+      <div><div class="card-title">CASE WHEN — SQL's if/else <span class="badge badge-interview">Interview Fav</span></div></div>
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    </div>
+    <pre><span class="kw">SELECT</span> ProductName, Sales,
+    <span class="kw">CASE</span>
+        <span class="kw">WHEN</span> Sales <span class="op">>=</span> <span class="nm">10000</span> <span class="kw">THEN</span> <span class="st">'High'</span>
+        <span class="kw">WHEN</span> Sales <span class="op">>=</span> <span class="nm">5000</span>  <span class="kw">THEN</span> <span class="st">'Medium'</span>
+        <span class="kw">ELSE</span> <span class="st">'Low'</span>
+    <span class="kw">END</span> <span class="kw">AS</span> SalesTier
+<span class="kw">FROM</span> dbo.SalesFact;
+
+<span class="cm">-- conditional aggregation — pivot-like counts in one row</span>
+<span class="kw">SELECT</span>
+    <span class="fn">SUM</span>(<span class="kw">CASE WHEN</span> Region <span class="op">=</span> <span class="st">'East'</span> <span class="kw">THEN</span> Sales <span class="kw">ELSE</span> <span class="nm">0</span> <span class="kw">END</span>) <span class="kw">AS</span> EastSales,
+    <span class="fn">SUM</span>(<span class="kw">CASE WHEN</span> Region <span class="op">=</span> <span class="st">'West'</span> <span class="kw">THEN</span> Sales <span class="kw">ELSE</span> <span class="nm">0</span> <span class="kw">END</span>) <span class="kw">AS</span> WestSales
+<span class="kw">FROM</span> dbo.SalesFact;</pre>
+    <div class="output-block"><div class="output-label">Output</div>EastSales: 1,200,000.00 | WestSales: 980,000.00</div>
+  </div>
+</div>
+
+<div class="section" id="strings" data-tags="functions">
+  <div class="section-title">String Functions <span>functions</span></div>
+  <div class="card" data-tags="functions">
+    <div class="card-header">
+      <div><div class="card-title">CONCAT, SUBSTRING, TRIM, LEN</div></div>
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    </div>
+    <pre><span class="kw">SELECT</span>
+    <span class="fn">CONCAT</span>(FirstName, <span class="st">' '</span>, LastName)      <span class="kw">AS</span> FullName,
+    <span class="fn">UPPER</span>(Email)                          <span class="kw">AS</span> EmailUpper,
+    <span class="fn">LEN</span>(ProductName)                      <span class="kw">AS</span> NameLength,
+    <span class="fn">SUBSTRING</span>(ProductCode, <span class="nm">1</span>, <span class="nm">3</span>)             <span class="kw">AS</span> CodePrefix,
+    <span class="fn">TRIM</span>(<span class="st">'  padded  '</span>)                    <span class="kw">AS</span> Trimmed,
+    <span class="fn">REPLACE</span>(Phone, <span class="st">'-'</span>, <span class="st">''</span>)                <span class="kw">AS</span> PhoneDigitsOnly,
+    <span class="fn">LEFT</span>(ProductName, <span class="nm">5</span>)                  <span class="kw">AS</span> First5Chars,
+    <span class="fn">RIGHT</span>(ProductCode, <span class="nm">4</span>)                 <span class="kw">AS</span> Last4Chars
+<span class="kw">FROM</span> dbo.Customers c
+<span class="kw">JOIN</span> dbo.Products p <span class="kw">ON</span> <span class="nm">1</span><span class="op">=</span><span class="nm">1</span>;</pre>
+    <div class="output-block"><div class="output-label">Output</div>(returns formatted/cleaned text columns)</div>
+  </div>
+</div>
+
+<div class="section" id="dates" data-tags="functions">
+  <div class="section-title">Date Functions <span>functions</span></div>
+  <div class="card" data-tags="functions">
+    <div class="card-header">
+      <div><div class="card-title">GETDATE, DATEADD, DATEDIFF, FORMAT <span class="badge badge-important">BI Essential</span></div></div>
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    </div>
+    <pre><span class="kw">SELECT</span>
+    <span class="fn">GETDATE</span>()                                  <span class="kw">AS</span> Now,
+    <span class="fn">DATEADD</span>(<span class="kw">DAY</span>, <span class="nm">30</span>, OrderDate)                <span class="kw">AS</span> DueDate,
+    <span class="fn">DATEDIFF</span>(<span class="kw">DAY</span>, OrderDate, ShippedDate)    <span class="kw">AS</span> DaysToShip,
+    <span class="fn">FORMAT</span>(OrderDate, <span class="st">'yyyy-MM-dd'</span>)             <span class="kw">AS</span> FormattedDate,
+    <span class="fn">YEAR</span>(OrderDate)                            <span class="kw">AS</span> OrderYear,
+    <span class="fn">MONTH</span>(OrderDate)                           <span class="kw">AS</span> OrderMonth,
+    <span class="fn">DATENAME</span>(<span class="kw">WEEKDAY</span>, OrderDate)              <span class="kw">AS</span> DayName
+<span class="kw">FROM</span> dbo.Orders;
+
+<span class="cm">-- date truncation — group by month</span>
+<span class="kw">SELECT</span>
+    <span class="fn">DATEFROMPARTS</span>(<span class="fn">YEAR</span>(OrderDate), <span class="fn">MONTH</span>(OrderDate), <span class="nm">1</span>) <span class="kw">AS</span> MonthStart,
+    <span class="fn">SUM</span>(Sales) <span class="kw">AS</span> MonthlySales
+<span class="kw">FROM</span> dbo.SalesFact
+<span class="kw">GROUP BY</span> <span class="fn">DATEFROMPARTS</span>(<span class="fn">YEAR</span>(OrderDate), <span class="fn">MONTH</span>(OrderDate), <span class="nm">1</span>);</pre>
+    <div class="output-block"><div class="output-label">Output</div>(returns calculated/grouped date columns)</div>
+  </div>
+</div>
+
+<div class="section" id="views" data-tags="objects">
+  <div class="section-title">Views <span>views & procedures</span></div>
+  <div class="card" data-tags="objects">
+    <div class="card-header">
+      <div><div class="card-title">CREATE VIEW <span class="badge badge-important">BI Essential</span></div><div class="card-desc">A saved, reusable query — great for exposing clean semantic layers to Power BI</div></div>
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    </div>
+    <pre><span class="kw">CREATE VIEW</span> dbo.vw_SalesSummary <span class="kw">AS</span>
+<span class="kw">SELECT</span>
+    p.ProductName,
+    r.RegionName,
+    <span class="fn">SUM</span>(s.Sales) <span class="kw">AS</span> TotalSales
+<span class="kw">FROM</span> dbo.SalesFact s
+<span class="kw">JOIN</span> dbo.Products p <span class="kw">ON</span> s.ProductID <span class="op">=</span> p.ProductID
+<span class="kw">JOIN</span> dbo.Regions r <span class="kw">ON</span> s.RegionID <span class="op">=</span> r.RegionID
+<span class="kw">GROUP BY</span> p.ProductName, r.RegionName;
+
+<span class="cm">-- query it just like a table</span>
+<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> dbo.vw_SalesSummary <span class="kw">WHERE</span> TotalSales <span class="op">></span> <span class="nm">100000</span>;
+
+<span class="cm">-- update / drop</span>
+<span class="kw">ALTER VIEW</span> dbo.vw_SalesSummary <span class="kw">AS</span> <span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> dbo.SalesFact;
+<span class="kw">DROP VIEW</span> dbo.vw_SalesSummary;</pre>
+    <div class="output-block"><div class="output-label">Output</div>(creates/queries a reusable virtual table)</div>
+  </div>
+</div>
+
+<div class="section" id="procedures" data-tags="objects">
+  <div class="section-title">Stored Procedures <span>views & procedures</span></div>
+  <div class="card" data-tags="objects">
+    <div class="card-header">
+      <div><div class="card-title">CREATE PROCEDURE — Parameterized, Reusable Logic <span class="badge badge-important">BI Essential</span></div></div>
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    </div>
+    <pre><span class="kw">CREATE PROCEDURE</span> dbo.usp_GetSalesByRegion
+    <span class="op">@</span>RegionName <span class="bi">NVARCHAR</span>(<span class="nm">50</span>),
+    <span class="op">@</span>StartDate  <span class="bi">DATE</span>,
+    <span class="op">@</span>EndDate    <span class="bi">DATE</span>
+<span class="kw">AS</span>
+<span class="kw">BEGIN</span>
+    <span class="kw">SET NOCOUNT ON</span>;
+
+    <span class="kw">SELECT</span> ProductName, <span class="fn">SUM</span>(Sales) <span class="kw">AS</span> TotalSales
+    <span class="kw">FROM</span> dbo.SalesFact s
+    <span class="kw">JOIN</span> dbo.Regions r <span class="kw">ON</span> s.RegionID <span class="op">=</span> r.RegionID
+    <span class="kw">WHERE</span> r.RegionName <span class="op">=</span> <span class="op">@</span>RegionName
+      <span class="kw">AND</span> s.SaleDate <span class="kw">BETWEEN</span> <span class="op">@</span>StartDate <span class="kw">AND</span> <span class="op">@</span>EndDate
+    <span class="kw">GROUP BY</span> ProductName;
+<span class="kw">END</span>;
+
+<span class="cm">-- execute it</span>
+<span class="kw">EXEC</span> dbo.usp_GetSalesByRegion
+    <span class="op">@</span>RegionName <span class="op">=</span> <span class="st">'East'</span>,
+    <span class="op">@</span>StartDate <span class="op">=</span> <span class="st">'2026-01-01'</span>,
+    <span class="op">@</span>EndDate <span class="op">=</span> <span class="st">'2026-06-30'</span>;</pre>
+    <div class="output-block"><div class="output-label">Output</div>(returns filtered sales for the given region/date range)</div>
+  </div>
+</div>
+
+<div class="section" id="indexes" data-tags="admin">
+  <div class="section-title">Indexes <span>indexes & transactions</span></div>
+  <div class="card" data-tags="admin">
+    <div class="card-header">
+      <div><div class="card-title">CREATE INDEX — Speeding Up Queries <span class="badge badge-important">Performance</span></div><div class="card-desc">Clustered = physical row order (one per table); Nonclustered = a separate lookup structure</div></div>
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    </div>
+    <pre><span class="cm">-- nonclustered index on a frequently filtered column</span>
+<span class="kw">CREATE NONCLUSTERED INDEX</span> IX_SalesFact_ProductID
+<span class="kw">ON</span> dbo.SalesFact (ProductID);
+
+<span class="cm">-- covering index — includes extra columns so SQL doesn't need to look up the row</span>
+<span class="kw">CREATE NONCLUSTERED INDEX</span> IX_SalesFact_Region_Covering
+<span class="kw">ON</span> dbo.SalesFact (RegionID)
+<span class="kw">INCLUDE</span> (ProductID, Sales);
+
+<span class="cm">-- check how a query uses (or ignores) indexes</span>
+<span class="kw">SET STATISTICS IO ON</span>;
+<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> dbo.SalesFact <span class="kw">WHERE</span> ProductID <span class="op">=</span> <span class="nm">1001</span>;
+
+<span class="kw">DROP INDEX</span> IX_SalesFact_ProductID <span class="kw">ON</span> dbo.SalesFact;</pre>
+    <div class="output-block"><div class="output-label">Output</div>(subsequent queries on ProductID become an index seek instead of a table scan)</div>
+  </div>
+</div>
+
+<div class="section" id="transactions" data-tags="admin">
+  <div class="section-title">Transactions <span>indexes & transactions</span></div>
+  <div class="card" data-tags="admin">
+    <div class="card-header">
+      <div><div class="card-title">BEGIN TRAN / COMMIT / ROLLBACK <span class="badge badge-interview">Interview Fav</span></div><div class="card-desc">Keeps multi-step writes all-or-nothing</div></div>
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    </div>
+    <pre><span class="kw">BEGIN TRANSACTION</span>;
+
+<span class="kw">BEGIN TRY</span>
+    <span class="kw">UPDATE</span> dbo.Accounts <span class="kw">SET</span> Balance <span class="op">=</span> Balance <span class="op">-</span> <span class="nm">500</span> <span class="kw">WHERE</span> AccountID <span class="op">=</span> <span class="nm">1</span>;
+    <span class="kw">UPDATE</span> dbo.Accounts <span class="kw">SET</span> Balance <span class="op">=</span> Balance <span class="op">+</span> <span class="nm">500</span> <span class="kw">WHERE</span> AccountID <span class="op">=</span> <span class="nm">2</span>;
+
+    <span class="kw">COMMIT TRANSACTION</span>;
+    <span class="kw">PRINT</span> <span class="st">'Transfer succeeded'</span>;
+<span class="kw">END TRY</span>
+<span class="kw">BEGIN CATCH</span>
+    <span class="kw">ROLLBACK TRANSACTION</span>;
+    <span class="kw">PRINT</span> <span class="fn">ERROR_MESSAGE</span>();
+<span class="kw">END CATCH</span>;</pre>
+    <div class="output-block"><div class="output-label">Output</div>Transfer succeeded — or fully rolled back if either UPDATE fails</div>
+  </div>
+</div>
+
+</main>
+</div>
+
+<script>
+function copyCode(btn) {
+  const pre = btn.closest('.card').querySelector('pre');
+  const text = pre.innerText;
+  navigator.clipboard.writeText(text).then(() => {
+    btn.textContent = 'Copied!';
+    btn.classList.add('copied');
+    setTimeout(() => {
+      btn.textContent = 'Copy';
+      btn.classList.remove('copied');
+    }, 2000);
+  });
+}
+
+function filterCards() {
+  const query = document.getElementById('searchInput').value.toLowerCase();
+  const sections = document.querySelectorAll('.section');
+
+  sections.forEach(section => {
+    let sectionHasMatch = false;
+    const sectionCards = section.querySelectorAll('.card');
+    sectionCards.forEach(card => {
+      const text = card.innerText.toLowerCase();
+      if (text.includes(query)) {
+        card.classList.remove('hidden');
+        sectionHasMatch = true;
+      } else {
+        card.classList.add('hidden');
+      }
+    });
+    section.style.display = sectionHasMatch ? '' : 'none';
+  });
+}
+
+function filterTag(tag, el) {
+  document.querySelectorAll('.tag').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('searchInput').value = '';
+
+  const sections = document.querySelectorAll('.section');
+  sections.forEach(section => {
+    const sectionTags = section.getAttribute('data-tags') || '';
+    const cards = section.querySelectorAll('.card');
+    let sectionVisible = false;
+
+    cards.forEach(card => {
+      card.classList.remove('hidden');
+      const cardTags = card.getAttribute('data-tags') || '';
+      if (tag === 'all' || sectionTags.includes(tag) || cardTags.includes(tag)) {
+        card.classList.remove('hidden');
+        sectionVisible = true;
+      } else {
+        card.classList.add('hidden');
+      }
+    });
+    section.style.display = (tag === 'all' || sectionVisible) ? '' : 'none';
+  });
+}
+</script>
+</body>
+</html>

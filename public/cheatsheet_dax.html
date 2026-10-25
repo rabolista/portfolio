@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Power BI DAX Cheatsheet</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Inter:wght@400;500;600;700&display=swap');
+
+  :root {
+    --bg: #0f1117;
+    --surface: #1a1d27;
+    --surface2: #22263a;
+    --border: #2e3250;
+    --accent: #F2C811;
+    --accent2: #4fc3f7;
+    --green: #4ade80;
+    --yellow: #fbbf24;
+    --red: #f87171;
+    --text: #e2e8f0;
+    --muted: #8892b0;
+    --code-bg: #0d1117;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  header {
+    background: linear-gradient(135deg, #1a1d27 0%, #12152a 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 32px 40px 24px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    backdrop-filter: blur(10px);
+  }
+
+  header h1 { font-size: 22px; font-weight: 700; color: var(--accent); letter-spacing: -0.5px; }
+  header p { color: var(--muted); font-size: 13px; margin-top: 4px; }
+
+  .search-bar { margin-top: 14px; display: flex; gap: 10px; align-items: center; }
+  .search-bar input {
+    background: var(--code-bg); border: 1px solid var(--border); color: var(--text);
+    padding: 8px 14px; border-radius: 8px; font-family: 'Inter', sans-serif; font-size: 13px;
+    width: 280px; outline: none; transition: border-color 0.2s;
+  }
+  .search-bar input:focus { border-color: var(--accent); }
+
+  .tags { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
+  .tag {
+    background: var(--surface2); border: 1px solid var(--border); color: var(--muted);
+    padding: 4px 12px; border-radius: 20px; font-size: 12px; cursor: pointer;
+    transition: all 0.2s; user-select: none;
+  }
+  .tag:hover, .tag.active { background: var(--accent); color: #0f1117; border-color: var(--accent); }
+
+  .layout { display: grid; grid-template-columns: 220px 1fr; min-height: calc(100vh - 160px); }
+  .section { scroll-margin-top: 190px; margin-bottom: 48px; }
+
+  .sidebar {
+    background: var(--surface); border-right: 1px solid var(--border); padding: 20px 0;
+    position: sticky; top: 160px; height: calc(100vh - 160px); overflow-y: auto;
+  }
+  .sidebar::-webkit-scrollbar { width: 4px; }
+  .sidebar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+  .sidebar-label {
+    font-size: 10px; font-weight: 700; letter-spacing: 1.5px; color: var(--muted);
+    padding: 8px 20px 4px; text-transform: uppercase;
+  }
+  .sidebar a {
+    display: block; padding: 7px 20px; color: var(--muted); text-decoration: none;
+    font-size: 13px; transition: all 0.15s; border-left: 2px solid transparent;
+  }
+  .sidebar a:hover { color: var(--text); background: var(--surface2); border-left-color: var(--accent); }
+
+  .main { padding: 32px 40px; max-width: 1000px; }
+
+  .section-title {
+    font-size: 18px; font-weight: 700; color: var(--accent); margin-bottom: 20px;
+    padding-bottom: 10px; border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 10px;
+  }
+  .section-title span {
+    font-size: 12px; background: var(--surface2); color: var(--muted);
+    padding: 2px 10px; border-radius: 20px; font-weight: 500;
+  }
+
+  .card {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
+    margin-bottom: 16px; overflow: hidden; transition: border-color 0.2s;
+  }
+  .card:hover { border-color: var(--accent); }
+
+  .card-header {
+    padding: 12px 16px; background: var(--surface2); display: flex;
+    justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border);
+  }
+  .card-title { font-size: 13px; font-weight: 600; color: var(--accent2); }
+  .card-desc { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+  .copy-btn {
+    background: var(--code-bg); border: 1px solid var(--border); color: var(--muted);
+    padding: 4px 12px; border-radius: 6px; font-size: 11px; cursor: pointer;
+    font-family: 'Inter', sans-serif; transition: all 0.2s; white-space: nowrap;
+  }
+  .copy-btn:hover { background: var(--accent); color: #0f1117; border-color: var(--accent); }
+  .copy-btn.copied { background: var(--green); color: #0f1117; border-color: var(--green); }
+
+  pre {
+    background: var(--code-bg); padding: 16px; overflow-x: auto;
+    font-family: 'JetBrains Mono', monospace; font-size: 13px; line-height: 1.7;
+  }
+  pre::-webkit-scrollbar { height: 4px; }
+  pre::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+  .kw { color: #c792ea; }
+  .fn { color: #82aaff; }
+  .st { color: #c3e88d; }
+  .cm { color: #546e7a; font-style: italic; }
+  .nm { color: #f78c6c; }
+  .op { color: #89ddff; }
+  .bi { color: #ffcb6b; }
+
+  .output-block {
+    background: #0a0f0a; border-top: 1px solid var(--border); padding: 10px 16px;
+    font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--green);
+  }
+  .output-label {
+    font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: var(--muted);
+    margin-bottom: 4px; font-family: 'Inter', sans-serif;
+  }
+
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+  @media (max-width: 900px) {
+    .layout { grid-template-columns: 1fr; }
+    .sidebar { display: none; }
+    .grid2 { grid-template-columns: 1fr; }
+    header { padding: 20px; }
+    .main { padding: 20px; }
+  }
+
+  .hidden { display: none !important; }
+
+  .badge {
+    display: inline-block; font-size: 10px; padding: 2px 8px; border-radius: 4px;
+    font-weight: 600; margin-left: 8px;
+  }
+  .badge-interview { background: #F2C81120; color: var(--accent); border: 1px solid #F2C81140; }
+  .badge-important { background: #fbbf2420; color: var(--yellow); border: 1px solid #fbbf2440; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>📊 Power BI DAX Cheatsheet</h1>
+  <p>Every formula below is ready to paste into a Power BI measure or calculated column</p>
+  <div class="search-bar">
+    <input type="text" id="searchInput" placeholder="Search functions, patterns, keywords..." oninput="filterCards()">
+  </div>
+  <div class="tags">
+    <div class="tag active" onclick="filterTag('all', this)">All</div>
+    <div class="tag" onclick="filterTag('basics', this)">Basics</div>
+    <div class="tag" onclick="filterTag('context', this)">Context</div>
+    <div class="tag" onclick="filterTag('aggregation', this)">Aggregation</div>
+    <div class="tag" onclick="filterTag('iterators', this)">Iterators (X)</div>
+    <div class="tag" onclick="filterTag('filter', this)">Filter Functions</div>
+    <div class="tag" onclick="filterTag('time', this)">Time Intelligence</div>
+    <div class="tag" onclick="filterTag('relationships', this)">Relationships</div>
+    <div class="tag" onclick="filterTag('logical', this)">Logical & Text</div>
+    <div class="tag" onclick="filterTag('patterns', this)">Common Patterns</div>
+  </div>
+</header>
+
+<div class="layout">
+<nav class="sidebar">
+  <div class="sidebar-label">Basics</div>
+  <a href="#measures">Measures vs Columns</a>
+  <a href="#variables">Variables — VAR/RETURN</a>
+  <div class="sidebar-label">Context</div>
+  <a href="#rowcontext">Row Context vs Filter Context</a>
+  <a href="#calculate">CALCULATE</a>
+  <div class="sidebar-label">Aggregation</div>
+  <a href="#aggregates">SUM, AVERAGE, COUNT, DISTINCTCOUNT</a>
+  <div class="sidebar-label">Iterators (X)</div>
+  <a href="#iterators">SUMX, AVERAGEX, RANKX</a>
+  <div class="sidebar-label">Filter Functions</div>
+  <a href="#filterfns">FILTER, ALL, ALLEXCEPT, VALUES</a>
+  <div class="sidebar-label">Time Intelligence</div>
+  <a href="#timeintel">TOTALYTD, SAMEPERIODLASTYEAR, DATEADD</a>
+  <div class="sidebar-label">Relationships</div>
+  <a href="#related">RELATED, RELATEDTABLE, USERELATIONSHIP</a>
+  <div class="sidebar-label">Logical & Text</div>
+  <a href="#logical">IF, SWITCH, AND/OR</a>
+  <a href="#text">CONCATENATE, FORMAT</a>
+  <div class="sidebar-label">Common Patterns</div>
+  <a href="#pctoftotal">% of Total</a>
+  <a href="#runningtotal">Running Total</a>
+  <a href="#yoy">Year-over-Year Growth</a>
+</nav>
+
+<main class="main" id="mainContent">
+
+<div class="section" id="measures" data-tags="basics">
+  <div class="section-title">Measures vs Calculated Columns <span>basics</span></div>
+  <div class="card" data-tags="basics">
+    <div class="card-header">
+      <div><div class="card-title">When to Use Which <span class="badge badge-interview">Interview Fav</span></div><div class="card-desc">Measures are calculated at query time; columns are calculated at refresh time and stored</div></div>
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    </div>
+    <pre><span class="cm">// Measure — evaluated dynamically based on filter/slicer context, NOT stored in the model</span>
+Total Sales <span class="op">=</span> <span class="fn">SUM</span>(Sales[SalesAmount])
+
+<span class="cm">// Calculated Column — evaluated per-row at refresh time, stored in the model, uses row context</span>
+Sales[Profit] <span class="op">=</span> Sales[SalesAmount] <span class="op">-</span> Sales[Cost]
+
+<span class="cm">// rule of thumb:</span>
+<span class="cm">// - use a MEASURE for anything that should respond to slicers/filters (totals, ratios, KPIs)</span>
+<span class="cm">// - use a CALCULATED COLUMN only when you need the value in a slicer, sort, or relationship</span></pre>
+    <div class="output-block"><div class="output-label">Output</div>(measures recalculate live in visuals; columns are fixed per row until next refresh)</div>
+  </div>
+</div>
+
+<div class="section" id="variables" data-tags="basics">
+  <div class="section-title">Variables — VAR / RETURN <span>basics</span></div>
+  <div class="card" data-tags="basics">
+    <div class="card-header">
+      <div><div class="card-title">VAR / RETURN <span class="badge badge-important">Best Practice</span></div><div class="card-desc">Improves readability and performance by avoiding repeated calculations</div></div>
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    </div>
+    <pre>Profit Margin <span class="op">=</span>
+<span class="kw">VAR</span> TotalSales <span class="op">=</span> <span class="fn">SUM</span>(Sales[SalesAmount])
+<span class="kw">VAR</span> TotalCost <span class="op">=</span> <span class="fn">SUM</span>(Sales[Cost])
+<span class="kw">VAR</span> Profit <span class="op">=</span> TotalSales <span class="op">-</span> TotalCost
+<span class="kw">RETURN</span>
+    <span class="kw">DIVIDE</span>(Profit, TotalSales, <span class="nm">0</span>)   <span class="cm">// DIVIDE handles divide-by-zero gracefully</span></pre>
+    <div class="output-block"><div class="output-label">Output</div>0.34 <span class="cm">(34% margin, or 0 if TotalSales is 0 — no error)</span></div>
+  </div>
+</div>
+
+<div class="section" id="rowcontext" data-tags="context">
+  <div class="section-title">Row Context vs Filter Context <span>context</span></div>
+  <div class="card" data-tags="context">
+    <div class="card-header">
+      <div><div class="card-title">The Most Important DAX Concept <span class="badge badge-interview">Interview Fav</span></div><div class="card-desc">Almost every DAX bug traces back to misunderstanding this</div></div>
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    </div>
+    <pre><span class="cm">// ROW CONTEXT — exists inside calculated columns and iterator (X) functions.</span>
+<span class="cm">// "current row" is known, so you can reference other columns directly.</span>
+Sales[LineTotal] <span class="op">=</span> Sales[Quantity] <span class="op">*</span> Sales[UnitPrice]
+
+<span class="cm">// FILTER CONTEXT — the set of filters applied by slicers, visuals, or CALCULATE.</span>
+<span class="cm">// A measure has NO row context — it only "sees" the current filter context.</span>
+Total Sales <span class="op">=</span> <span class="fn">SUM</span>(Sales[SalesAmount])   <span class="cm">// respects whatever filters are active (region, year, etc.)</span>
+
+<span class="cm">// CALCULATE converts row context into filter context — this is the bridge between them</span>
+Sales Filtered <span class="op">=</span>
+<span class="fn">CALCULATE</span>(
+    <span class="fn">SUM</span>(Sales[SalesAmount]),
+    Sales[Region] <span class="op">=</span> <span class="st">"East"</span>
+)</pre>
+    <div class="output-block"><div class="output-label">Output</div>(Total Sales adapts automatically per visual; Sales Filtered always forces Region = East)</div>
+  </div>
+</div>
+
+<div class="section" id="calculate" data-tags="context">
+  <div class="section-title">CALCULATE <span>context</span></div>
+  <div class="card" data-tags="context">
+    <div class="card-header">
+      <div><div class="card-title">The Most Powerful (and Confusing) Function in DAX <span class="badge badge-interview">Interview Fav</span></div><div class="card-desc">Evaluates an expression in a modified filter context</div></div>
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    </div>
+    <pre><span class="cm">// basic — override/add a filter</span>
+East Sales <span class="op">=</span> <span class="fn">CALCULATE</span>(<span class="fn">SUM</span>(Sales[SalesAmount]), Sales[Region] <span class="op">=</span> <span class="st">"East"</span>)
+
+<span class="cm">// multiple filter conditions (implicit AND)</span>
+East 2026 Sales <span class="op">=</span>
+<span class="fn">CALCULATE</span>(
+    <span class="fn">SUM</span>(Sales[SalesAmount]),
+    Sales[Region] <span class="op">=</span> <span class="st">"East"</span>,
+    Sales[Year] <span class="op">=</span> <span class="nm">2026</span>
+)
+
+<span class="cm">// using a table filter with FILTER for more complex conditions</span>
+High Value Sales <span class="op">=</span>
+<span class="fn">CALCULATE</span>(
+    <span class="fn">SUM</span>(Sales[SalesAmount]),
+    <span class="fn">FILTER</span>(Sales, Sales[SalesAmount] <span class="op">></span> <span class="nm">1000</span>)
+)
+
+<span class="cm">// REMOVEFILTERS / ALL — ignore existing filters entirely (e.g. for a grand total)</span>
+Grand Total <span class="op">=</span> <span class="fn">CALCULATE</span>(<span class="fn">SUM</span>(Sales[SalesAmount]), <span class="fn">REMOVEFILTERS</span>(Sales))</pre>
+    <div class="output-block"><div class="output-label">Output</div>(returns totals scoped to the specified filter overrides)</div>
+  </div>
+</div>
+
+<div class="section" id="aggregates" data-tags="aggregation">
+  <div class="section-title">SUM, AVERAGE, COUNT, DISTINCTCOUNT <span>aggregation</span></div>
+  <div class="card" data-tags="aggregation">
+    <div class="card-header">
+      <div><div class="card-title">Standard Aggregate Functions <span class="badge badge-interview">Interview Fav</span></div></div>
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    </div>
+    <pre>Total Sales      <span class="op">=</span> <span class="fn">SUM</span>(Sales[SalesAmount])
+Avg Order Value  <span class="op">=</span> <span class="fn">AVERAGE</span>(Sales[SalesAmount])
+Order Count      <span class="op">=</span> <span class="fn">COUNTROWS</span>(Sales)
+Unique Customers <span class="op">=</span> <span class="fn">DISTINCTCOUNT</span>(Sales[CustomerID])
+Max Order        <span class="op">=</span> <span class="fn">MAX</span>(Sales[SalesAmount])
+Min Order        <span class="op">=</span> <span class="fn">MIN</span>(Sales[SalesAmount])
+
+<span class="cm">// COUNT vs COUNTA vs COUNTROWS</span>
+<span class="cm">// COUNT — counts numeric values in a column (ignores blanks/text)</span>
+<span class="cm">// COUNTA — counts non-blank values of any type</span>
+<span class="cm">// COUNTROWS — counts rows in a table (most commonly used)</span></pre>
+    <div class="output-block"><div class="output-label">Output</div>Total Sales: $2,450,000 | Avg Order Value: $158.90 | Order Count: 15,420 | Unique Customers: 3,200</div>
+  </div>
+</div>
+
+<div class="section" id="iterators" data-tags="iterators">
+  <div class="section-title">SUMX, AVERAGEX, RANKX <span>iterators (x)</span></div>
+  <div class="card" data-tags="iterators">
+    <div class="card-header">
+      <div><div class="card-title">Iterator Functions — Row-by-Row Calculations <span class="badge badge-interview">Interview Fav</span></div><div class="card-desc">Anything ending in X loops through a table row-by-row, then aggregates</div></div>
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    </div>
+    <pre><span class="cm">// SUMX — multiply two columns per row, THEN sum (can't do this with plain SUM)</span>
+Total Revenue <span class="op">=</span> <span class="fn">SUMX</span>(Sales, Sales[Quantity] <span class="op">*</span> Sales[UnitPrice])
+
+<span class="cm">// AVERAGEX — average of a row-by-row expression</span>
+Avg Line Profit <span class="op">=</span> <span class="fn">AVERAGEX</span>(Sales, Sales[SalesAmount] <span class="op">-</span> Sales[Cost])
+
+<span class="cm">// RANKX — rank each row/category by a measure</span>
+Product Rank <span class="op">=</span>
+<span class="fn">RANKX</span>(
+    <span class="kw">ALL</span>(Products[ProductName]),
+    <span class="fn">CALCULATE</span>(<span class="fn">SUM</span>(Sales[SalesAmount]))
+)
+
+<span class="cm">// MAXX / MINX — row-level max/min of an expression</span>
+Best Single Sale <span class="op">=</span> <span class="fn">MAXX</span>(Sales, Sales[Quantity] <span class="op">*</span> Sales[UnitPrice])</pre>
+    <div class="output-block"><div class="output-label">Output</div>(SUMX/AVERAGEX compute per-row before aggregating; RANKX assigns 1 = top product by sales)</div>
+  </div>
+</div>
+
+<div class="section" id="filterfns" data-tags="filter">
+  <div class="section-title">FILTER, ALL, ALLEXCEPT, VALUES <span>filter functions</span></div>
+  <div class="card" data-tags="filter">
+    <div class="card-header">
+      <div><div class="card-title">Table Filter Functions <span class="badge badge-interview">Interview Fav</span></div></div>
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    </div>
+    <pre><span class="cm">// FILTER — returns a filtered table, usually used inside CALCULATE</span>
+Big Orders <span class="op">=</span> <span class="fn">CALCULATE</span>(<span class="fn">COUNTROWS</span>(Sales), <span class="fn">FILTER</span>(Sales, Sales[SalesAmount] <span class="op">></span> <span class="nm">500</span>))
+
+<span class="cm">// ALL — removes all filters from a table/column (great for "% of total" patterns)</span>
+Pct Of All Sales <span class="op">=</span>
+<span class="kw">DIVIDE</span>(
+    <span class="fn">SUM</span>(Sales[SalesAmount]),
+    <span class="fn">CALCULATE</span>(<span class="fn">SUM</span>(Sales[SalesAmount]), <span class="fn">ALL</span>(Sales))
+)
+
+<span class="cm">// ALLEXCEPT — removes all filters EXCEPT the ones listed (keep Region, ignore everything else)</span>
+Sales Ignoring Product <span class="op">=</span>
+<span class="fn">CALCULATE</span>(<span class="fn">SUM</span>(Sales[SalesAmount]), <span class="fn">ALLEXCEPT</span>(Sales, Sales[Region]))
+
+<span class="cm">// VALUES — distinct values currently visible in filter context (also useful for checks)</span>
+Selected Regions <span class="op">=</span> <span class="fn">COUNTROWS</span>(<span class="fn">VALUES</span>(Sales[Region]))</pre>
+    <div class="output-block"><div class="output-label">Output</div>(returns filtered/unfiltered totals depending on which filter function is used)</div>
+  </div>
+</div>
+
+<div class="section" id="timeintel" data-tags="time">
+  <div class="section-title">TOTALYTD, SAMEPERIODLASTYEAR, DATEADD <span>time intelligence</span></div>
+  <div class="card" data-tags="time">
+    <div class="card-header">
+      <div><div class="card-title">Time Intelligence Functions <span class="badge badge-important">BI Essential</span></div><div class="card-desc">Requires a proper Date table marked as a Date Table in the model</div></div>
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    </div>
+    <pre><span class="cm">// Year-to-date total</span>
+Sales YTD <span class="op">=</span> <span class="fn">TOTALYTD</span>(<span class="fn">SUM</span>(Sales[SalesAmount]), 'Date'[Date])
+
+<span class="cm">// Same period, prior year — for year-over-year comparisons</span>
+Sales PY <span class="op">=</span>
+<span class="fn">CALCULATE</span>(
+    <span class="fn">SUM</span>(Sales[SalesAmount]),
+    <span class="fn">SAMEPERIODLASTYEAR</span>('Date'[Date])
+)
+
+<span class="cm">// DATEADD — shift the date context by any interval</span>
+Sales Prior Month <span class="op">=</span>
+<span class="fn">CALCULATE</span>(
+    <span class="fn">SUM</span>(Sales[SalesAmount]),
+    <span class="fn">DATEADD</span>('Date'[Date], <span class="op">-</span><span class="nm">1</span>, <span class="kw">MONTH</span>)
+)
+
+<span class="cm">// PARALLELPERIOD — similar to DATEADD but shifts by whole periods</span>
+Sales Prior Quarter <span class="op">=</span>
+<span class="fn">CALCULATE</span>(
+    <span class="fn">SUM</span>(Sales[SalesAmount]),
+    <span class="fn">PARALLELPERIOD</span>('Date'[Date], <span class="op">-</span><span class="nm">1</span>, <span class="kw">QUARTER</span>)
+)</pre>
+    <div class="output-block"><div class="output-label">Output</div>(each measure recalculates automatically as the report's date filter/slicer changes)</div>
+  </div>
+</div>
+
+<div class="section" id="related" data-tags="relationships">
+  <div class="section-title">RELATED, RELATEDTABLE, USERELATIONSHIP <span>relationships</span></div>
+  <div class="card" data-tags="relationships">
+    <div class="card-header">
+      <div><div class="card-title">Working Across Related Tables <span class="badge badge-interview">Interview Fav</span></div></div>
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    </div>
+    <pre><span class="cm">// RELATED — pull a column from the "one" side of a one-to-many relationship</span>
+<span class="cm">// (used in a calculated column on the "many" side, e.g. Sales -> Products)</span>
+Sales[ProductCategory] <span class="op">=</span> <span class="fn">RELATED</span>(Products[Category])
+
+<span class="cm">// RELATEDTABLE — the reverse: get related rows from the "many" side</span>
+Products[OrderCount] <span class="op">=</span> <span class="fn">COUNTROWS</span>(<span class="fn">RELATEDTABLE</span>(Sales))
+
+<span class="cm">// USERELATIONSHIP — activate an inactive relationship for one calculation</span>
+Sales By Ship Date <span class="op">=</span>
+<span class="fn">CALCULATE</span>(
+    <span class="fn">SUM</span>(Sales[SalesAmount]),
+    <span class="fn">USERELATIONSHIP</span>(Sales[ShipDateKey], 'Date'[DateKey])
+)</pre>
+    <div class="output-block"><div class="output-label">Output</div>(pulls related attributes across the model's star schema)</div>
+  </div>
+</div>
+
+<div class="section" id="logical" data-tags="logical">
+  <div class="section-title">IF, SWITCH, AND/OR <span>logical & text</span></div>
+  <div class="card" data-tags="logical">
+    <div class="card-header">
+      <div><div class="card-title">Logical Functions <span class="badge badge-interview">Interview Fav</span></div></div>
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    </div>
+    <pre><span class="cm">// IF — basic conditional</span>
+Sales Tier <span class="op">=</span> <span class="kw">IF</span>(<span class="fn">SUM</span>(Sales[SalesAmount]) <span class="op">></span> <span class="nm">10000</span>, <span class="st">"High"</span>, <span class="st">"Low"</span>)
+
+<span class="cm">// SWITCH — cleaner than nested IFs for multiple conditions</span>
+Sales Tier 2 <span class="op">=</span>
+<span class="kw">SWITCH</span>(
+    <span class="kw">TRUE</span>(),
+    <span class="fn">SUM</span>(Sales[SalesAmount]) <span class="op">>=</span> <span class="nm">10000</span>, <span class="st">"High"</span>,
+    <span class="fn">SUM</span>(Sales[SalesAmount]) <span class="op">>=</span> <span class="nm">5000</span>,  <span class="st">"Medium"</span>,
+    <span class="st">"Low"</span>
+)
+
+<span class="cm">// AND / OR (or use && / ||)</span>
+Is Priority Order <span class="op">=</span>
+<span class="kw">IF</span>(
+    <span class="kw">AND</span>(Sales[SalesAmount] <span class="op">></span> <span class="nm">1000</span>, Sales[Region] <span class="op">=</span> <span class="st">"East"</span>),
+    <span class="st">"Yes"</span>, <span class="st">"No"</span>
+)</pre>
+    <div class="output-block"><div class="output-label">Output</div>(returns tiered labels based on measure/column values)</div>
+  </div>
+</div>
+
+<div class="section" id="text" data-tags="logical">
+  <div class="section-title">CONCATENATE, FORMAT <span>logical & text</span></div>
+  <div class="card" data-tags="logical">
+    <div class="card-header">
+      <div><div class="card-title">Text & Formatting Functions</div></div>
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    </div>
+    <pre><span class="cm">// concatenation — & operator is more common than CONCATENATE()</span>
+Full Label <span class="op">=</span> Products[ProductName] <span class="op">&</span> <span class="st">" - "</span> <span class="op">&</span> Products[Category]
+
+<span class="cm">// FORMAT — turn a number/date into a formatted string</span>
+Formatted Sales <span class="op">=</span> <span class="fn">FORMAT</span>(<span class="fn">SUM</span>(Sales[SalesAmount]), <span class="st">"$#,##0.00"</span>)
+Formatted Date  <span class="op">=</span> <span class="fn">FORMAT</span>('Date'[Date], <span class="st">"MMM YYYY"</span>)
+
+<span class="cm">// dynamic label that changes with slicer context — common KPI card pattern</span>
+KPI Label <span class="op">=</span>
+<span class="st">"Sales for "</span> <span class="op">&</span> <span class="fn">SELECTEDVALUE</span>(Products[Category], <span class="st">"All Categories"</span>)</pre>
+    <div class="output-block"><div class="output-label">Output</div>Full Label: "Widget A - Hardware" | Formatted Sales: $2,450,000.00 | KPI Label: "Sales for Hardware"</div>
+  </div>
+</div>
+
+<div class="section" id="pctoftotal" data-tags="patterns">
+  <div class="section-title">% of Total <span>common patterns</span></div>
+  <div class="card" data-tags="patterns">
+    <div class="card-header">
+      <div><div class="card-title">Percent of Grand Total <span class="badge badge-important">Very Common</span></div></div>
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    </div>
+    <pre>Pct Of Total Sales <span class="op">=</span>
+<span class="kw">VAR</span> CurrentSales <span class="op">=</span> <span class="fn">SUM</span>(Sales[SalesAmount])
+<span class="kw">VAR</span> GrandTotal <span class="op">=</span> <span class="fn">CALCULATE</span>(<span class="fn">SUM</span>(Sales[SalesAmount]), <span class="fn">ALL</span>(Sales))
+<span class="kw">RETURN</span>
+    <span class="kw">DIVIDE</span>(CurrentSales, GrandTotal, <span class="nm">0</span>)
+
+<span class="cm">// format as percentage in the visual, or wrap with FORMAT():</span>
+Pct Of Total (Formatted) <span class="op">=</span> <span class="fn">FORMAT</span>([Pct Of Total Sales], <span class="st">"0.0%"</span>)</pre>
+    <div class="output-block"><div class="output-label">Output</div>0.238 <span class="cm">(23.8% — recalculates per row/category in a matrix visual)</span></div>
+  </div>
+</div>
+
+<div class="section" id="runningtotal" data-tags="patterns">
+  <div class="section-title">Running Total <span>common patterns</span></div>
+  <div class="card" data-tags="patterns">
+    <div class="card-header">
+      <div><div class="card-title">Cumulative Total Over Time <span class="badge badge-important">Very Common</span></div></div>
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    </div>
+    <pre>Running Total Sales <span class="op">=</span>
+<span class="kw">CALCULATE</span>(
+    <span class="fn">SUM</span>(Sales[SalesAmount]),
+    <span class="fn">FILTER</span>(
+        <span class="fn">ALL</span>('Date'[Date]),
+        'Date'[Date] <span class="op">&lt;=</span> <span class="kw">MAX</span>('Date'[Date])
+    )
+)</pre>
+    <div class="output-block"><div class="output-label">Output</div>(accumulates day-over-day / month-over-month depending on the visual's date grain)</div>
+  </div>
+</div>
+
+<div class="section" id="yoy" data-tags="patterns">
+  <div class="section-title">Year-over-Year Growth <span>common patterns</span></div>
+  <div class="card" data-tags="patterns">
+    <div class="card-header">
+      <div><div class="card-title">YoY % Growth <span class="badge badge-important">Very Common</span></div><div class="card-desc">Combines time intelligence with DIVIDE for a safe percentage</div></div>
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    </div>
+    <pre>Sales YoY % <span class="op">=</span>
+<span class="kw">VAR</span> CurrentYear <span class="op">=</span> <span class="fn">SUM</span>(Sales[SalesAmount])
+<span class="kw">VAR</span> PriorYear <span class="op">=</span>
+    <span class="fn">CALCULATE</span>(
+        <span class="fn">SUM</span>(Sales[SalesAmount]),
+        <span class="fn">SAMEPERIODLASTYEAR</span>('Date'[Date])
+    )
+<span class="kw">RETURN</span>
+    <span class="kw">DIVIDE</span>(CurrentYear <span class="op">-</span> PriorYear, PriorYear, <span class="nm">0</span>)</pre>
+    <div class="output-block"><div class="output-label">Output</div>0.12 <span class="cm">(12% growth vs. same period last year, or 0 if there's no prior-year data)</span></div>
+  </div>
+</div>
+
+</main>
+</div>
+
+<script>
+function copyCode(btn) {
+  const pre = btn.closest('.card').querySelector('pre');
+  const text = pre.innerText;
+  navigator.clipboard.writeText(text).then(() => {
+    btn.textContent = 'Copied!';
+    btn.classList.add('copied');
+    setTimeout(() => {
+      btn.textContent = 'Copy';
+      btn.classList.remove('copied');
+    }, 2000);
+  });
+}
+
+function filterCards() {
+  const query = document.getElementById('searchInput').value.toLowerCase();
+  const sections = document.querySelectorAll('.section');
+
+  sections.forEach(section => {
+    let sectionHasMatch = false;
+    const sectionCards = section.querySelectorAll('.card');
+    sectionCards.forEach(card => {
+      const text = card.innerText.toLowerCase();
+      if (text.includes(query)) {
+        card.classList.remove('hidden');
+        sectionHasMatch = true;
+      } else {
+        card.classList.add('hidden');
+      }
+    });
+    section.style.display = sectionHasMatch ? '' : 'none';
+  });
+}
+
+function filterTag(tag, el) {
+  document.querySelectorAll('.tag').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('searchInput').value = '';
+
+  const sections = document.querySelectorAll('.section');
+  sections.forEach(section => {
+    const sectionTags = section.getAttribute('data-tags') || '';
+    const cards = section.querySelectorAll('.card');
+    let sectionVisible = false;
+
+    cards.forEach(card => {
+      card.classList.remove('hidden');
+      const cardTags = card.getAttribute('data-tags') || '';
+      if (tag === 'all' || sectionTags.includes(tag) || cardTags.includes(tag)) {
+        card.classList.remove('hidden');
+        sectionVisible = true;
+      } else {
+        card.classList.add('hidden');
+      }
+    });
+    section.style.display = (tag === 'all' || sectionVisible) ? '' : 'none';
+  });
+}
+</script>
+</body>
+</html>

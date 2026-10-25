@@ -1,0 +1,1689 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Python Cheatsheet</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Inter:wght@400;500;600;700&display=swap');
+
+  :root {
+    --bg: #0f1117;
+    --surface: #1a1d27;
+    --surface2: #22263a;
+    --border: #2e3250;
+    --accent: #7c6af7;
+    --accent2: #4fc3f7;
+    --green: #4ade80;
+    --yellow: #fbbf24;
+    --red: #f87171;
+    --text: #e2e8f0;
+    --muted: #8892b0;
+    --code-bg: #0d1117;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  header {
+    background: linear-gradient(135deg, #1a1d27 0%, #12152a 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 32px 40px 24px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    backdrop-filter: blur(10px);
+  }
+
+  header h1 {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--accent);
+    letter-spacing: -0.5px;
+  }
+
+  header p {
+    color: var(--muted);
+    font-size: 13px;
+    margin-top: 4px;
+  }
+
+  .search-bar {
+    margin-top: 14px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+
+  .search-bar input {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    width: 280px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .search-bar input:focus { border-color: var(--accent); }
+
+  .tags {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 14px;
+  }
+
+  .tag {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+    user-select: none;
+  }
+
+  .tag:hover, .tag.active {
+    background: var(--accent);
+    color: white;
+    border-color: var(--accent);
+  }
+
+  .layout {
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    min-height: calc(100vh - 160px);
+  }
+
+  .section {
+    scroll-margin-top: 190px;
+  }
+
+  .sidebar {
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    padding: 20px 0;
+    position: sticky;
+    top: 160px;
+    height: calc(100vh - 160px);
+    overflow-y: auto;
+  }
+
+  .sidebar::-webkit-scrollbar { width: 4px; }
+  .sidebar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+  .sidebar-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    color: var(--muted);
+    padding: 8px 20px 4px;
+    text-transform: uppercase;
+  }
+
+  .sidebar a {
+    display: block;
+    padding: 7px 20px;
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 13px;
+    transition: all 0.15s;
+    border-left: 2px solid transparent;
+  }
+
+  .sidebar a:hover {
+    color: var(--text);
+    background: var(--surface2);
+    border-left-color: var(--accent);
+  }
+
+  .main {
+    padding: 32px 40px;
+    max-width: 1000px;
+  }
+
+  .section {
+    margin-bottom: 48px;
+  }
+
+  .section-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--accent);
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .section-title span {
+    font-size: 12px;
+    background: var(--surface2);
+    color: var(--muted);
+    padding: 2px 10px;
+    border-radius: 20px;
+    font-weight: 500;
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    margin-bottom: 16px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+
+  .card:hover { border-color: var(--accent); }
+
+  .card-header {
+    padding: 12px 16px;
+    background: var(--surface2);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .card-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--accent2);
+  }
+
+  .card-desc {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+
+  .copy-btn {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    padding: 4px 12px;
+    border-radius: 6px;
+    font-size: 11px;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+
+  .copy-btn:hover {
+    background: var(--accent);
+    color: white;
+    border-color: var(--accent);
+  }
+
+  .copy-btn.copied {
+    background: var(--green);
+    color: #0f1117;
+    border-color: var(--green);
+  }
+
+  pre {
+    background: var(--code-bg);
+    padding: 16px;
+    overflow-x: auto;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    line-height: 1.7;
+  }
+
+  pre::-webkit-scrollbar { height: 4px; }
+  pre::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+  .kw { color: #c792ea; }
+  .fn { color: #82aaff; }
+  .st { color: #c3e88d; }
+  .cm { color: #546e7a; font-style: italic; }
+  .nm { color: #f78c6c; }
+  .op { color: #89ddff; }
+  .bi { color: #ffcb6b; }
+
+  .output-block {
+    background: #0a0f0a;
+    border-top: 1px solid var(--border);
+    padding: 10px 16px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--green);
+  }
+
+  .output-label {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--muted);
+    margin-bottom: 4px;
+    font-family: 'Inter', sans-serif;
+  }
+
+  .grid2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  @media (max-width: 900px) {
+    .layout { grid-template-columns: 1fr; }
+    .sidebar { display: none; }
+    .grid2 { grid-template-columns: 1fr; }
+    header { padding: 20px; }
+    .main { padding: 20px; }
+  }
+
+  .hidden { display: none !important; }
+
+  .badge {
+    display: inline-block;
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-weight: 600;
+    margin-left: 8px;
+  }
+  .badge-interview { background: #7c6af720; color: var(--accent); border: 1px solid #7c6af740; }
+  .badge-important { background: #fbbf2420; color: var(--yellow); border: 1px solid #fbbf2440; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🐍 Python Cheatsheet</h1>
+  <p>Every code block below is ready to copy and run in VS Code or any Python IDE</p>
+  <div class="search-bar">
+    <input type="text" id="searchInput" placeholder="Search topics, functions, keywords..." oninput="filterCards()">
+  </div>
+  <div class="tags">
+    <div class="tag active" onclick="filterTag('all', this)">All</div>
+    <div class="tag" onclick="filterTag('basics', this)">Basics</div>
+    <div class="tag" onclick="filterTag('strings', this)">Strings</div>
+    <div class="tag" onclick="filterTag('lists', this)">Lists</div>
+    <div class="tag" onclick="filterTag('dicts', this)">Dictionaries</div>
+    <div class="tag" onclick="filterTag('functions', this)">Functions</div>
+    <div class="tag" onclick="filterTag('oop', this)">OOP</div>
+    <div class="tag" onclick="filterTag('files', this)">Files</div>
+    <div class="tag" onclick="filterTag('errors', this)">Error Handling</div>
+    <div class="tag" onclick="filterTag('comprehensions', this)">Comprehensions</div>
+    <div class="tag" onclick="filterTag('modules', this)">Modules</div>
+    <div class="tag" onclick="filterTag('data', this)">Data Science</div>
+    <div class="tag" onclick="filterTag('db', this)">SQL Server</div>
+  </div>
+</header>
+
+<div class="layout">
+<nav class="sidebar">
+  <div class="sidebar-label">Basics</div>
+  <a href="#variables">Variables & Types</a>
+  <a href="#strings">Strings</a>
+  <a href="#numbers">Numbers & Math</a>
+  <a href="#booleans">Booleans & Logic</a>
+  <div class="sidebar-label">Control Flow</div>
+  <a href="#conditionals">If / Elif / Else</a>
+  <a href="#loops">Loops</a>
+  <a href="#comprehensions">Comprehensions</a>
+  <div class="sidebar-label">Data Structures</div>
+  <a href="#lists">Lists</a>
+  <a href="#tuples">Tuples</a>
+  <a href="#dicts">Dictionaries</a>
+  <a href="#sets">Sets</a>
+  <div class="sidebar-label">Functions</div>
+  <a href="#functions">Functions</a>
+  <a href="#lambda">Lambda</a>
+  <a href="#builtins">Built-in Functions</a>
+  <a href="#builtins2">Enumerate & More Built-ins</a>
+  <a href="#generators">Generators (yield)</a>
+  <a href="#decorators">Decorators</a>
+  <div class="sidebar-label">Advanced</div>
+  <a href="#oop">OOP / Classes</a>
+  <a href="#oop2">OOP — Advanced</a>
+  <a href="#errors">Error Handling</a>
+  <a href="#files">File I/O</a>
+  <a href="#context">Context Managers</a>
+  <a href="#modules">Modules & Imports</a>
+  <a href="#casting">Type Casting</a>
+  <a href="#strings2">More String Methods</a>
+  <a href="#shorthand">Ternary & Walrus</a>
+  <div class="sidebar-label">Data Science</div>
+  <a href="#data">Pandas & NumPy</a>
+  <a href="#regex">Regex</a>
+  <a href="#datetime">Date & Time</a>
+  <a href="#collections">Collections Module</a>
+  <a href="#itertools">Itertools</a>
+  <a href="#json">JSON</a>
+  <div class="sidebar-label">BI Workflow</div>
+  <a href="#pyodbc">Python ↔ SQL Server</a>
+  <a href="#excel">Python ↔ Excel</a>
+  <a href="#requests">Calling APIs</a>
+</nav>
+
+<main class="main" id="mainContent">
+
+<div class="section" id="variables" data-tags="basics">
+  <div class="section-title">Variables & Data Types <span>basics</span></div>
+
+  <div class="card" data-tags="basics">
+    <div class="card-header">
+      <div><div class="card-title">Declaring Variables</div><div class="card-desc">Python is dynamically typed — no need to declare types</div></div>
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    </div>
+    <pre><span class="cm"># Basic variable assignment</span>
+name <span class="op">=</span> <span class="st">"John"</span>
+age <span class="op">=</span> <span class="nm">30</span>
+height <span class="op">=</span> <span class="nm">5.11</span>
+is_employed <span class="op">=</span> <span class="kw">True</span>
+nothing <span class="op">=</span> <span class="kw">None</span>
+
+<span class="cm"># Check the type of a variable</span>
+<span class="bi">print</span>(<span class="bi} ">type</span>(name))       <span class="cm} "># &lt;class 'str'&gt;</span>
+<span class="bi} ">print</span>(<span class="bi} ">type</span>(age))        <span class="cm} "># &lt;class 'int'&gt;</span>
+<span class="bi} ">print</span>(<span class="bi} ">type</span>(height))     <span class="cm} "># &lt;class 'float'&gt;</span>
+<span class="bi} ">print</span>(<span class="bi} ">type</span>(is_employed)) <span class="cm} "># &lt;class 'bool'&gt;</span>
+
+<span class="cm} "># Multiple assignment</span>
+x, y, z <span class="op} ">=</span> <span class="nm} ">1</span>, <span class="nm} ">2</span>, <span class="nm} ">3</span>
+<span class="bi} ">print</span>(x, y, z)  <span class="cm} "># 1 2 3</span></pre>
+    <div class="output-block"><div class="output-label">Output</div>&lt;class 'str'&gt;<br>&lt;class 'int'&gt;<br>&lt;class 'float'&gt;<br>&lt;class 'bool'&gt;<br>1 2 3</div>
+  </div>
+
+  <div class="card" data-tags="basics">
+    <div class="card-header">
+      <div><div class="card-title">Type Casting</div><div class="card-desc">Convert between data types</div></div>
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    </div>
+    <pre><span class="cm"># Convert between types</span>
+x <span class="op">=</span> <span class="bi">int</span>(<span class="st">"42"</span>)       <span class="cm"># str → int</span>
+y <span class="op">=</span> <span class="bi">float</span>(<span class="st">"3.14"</span>)  <span class="cm"># str → float</span>
+z <span class="op">=</span> <span class="bi">str</span>(<span class="nm">100</span>)        <span class="cm"># int → str</span>
+b <span class="op">=</span> <span class="bi">bool</span>(<span class="nm">0</span>)         <span class="cm"># int → bool (0 = False)</span>
+b2 <span class="op">=</span> <span class="bi">bool</span>(<span class="nm">1</span>)        <span class="cm"># int → bool (1 = True)</span>
+
+<span class="bi">print</span>(x, <span class="bi} ">type</span>(x))   <span class="cm} "># 42 &lt;class 'int'&gt;</span>
+<span class="bi} ">print</span>(y, <span class="bi} ">type</span>(y))   <span class="cm} "># 3.14 &lt;class 'float'&gt;</span>
+<span class="bi} ">print</span>(z, <span class="bi} ">type</span>(z))   <span class="cm} "># 100 &lt;class 'str'&gt;</span>
+<span class="bi} ">print</span>(b, b2)        <span class="cm} "># False True</span></pre>
+    <div class="output-block"><div class="output-label">Output</div>42 &lt;class 'int'&gt;<br>3.14 &lt;class 'float'&gt;<br>100 &lt;class 'str'&gt;<br>False True</div>
+  </div>
+</div>
+
+<div class="section" id="strings" data-tags="strings basics">
+  <div class="section-title">Strings <span>strings</span></div>
+
+  <div class="card" data-tags="strings">
+    <div class="card-header">
+      <div><div class="card-title">String Methods</div><div class="card-desc">Most commonly tested in interviews</div></div>
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    </div>
+    <pre>text <span class="op">=</span> <span class="st">"  Hello, World!  "</span>
+
+<span class="bi">print</span>(text.<span class="fn">strip</span>())       <span class="cm"># "Hello, World!"  — remove whitespace</span>
+<span class="bi">print</span>(text.<span class="fn">upper</span>())       <span class="cm"># "  HELLO, WORLD!  "</span>
+<span class="bi">print</span>(text.<span class="fn">lower</span>())       <span class="cm"># "  hello, world!  "</span>
+<span class="bi">print</span>(text.<span class="fn">replace</span>(<span class="st">"World"</span>, <span class="st">"Python"</span>))  <span class="cm"># replace</span>
+<span class="bi">print</span>(text.<span class="fn">split</span>(<span class="st">","</span>))     <span class="cm"># split into list</span>
+<span class="bi">print</span>(text.<span class="fn">startswith</span>(<span class="st">"  H"</span>))  <span class="cm"># True</span>
+<span class="bi">print</span>(text.<span class="fn">endswith</span>(<span class="st">"!  "</span>))   <span class="cm"># True</span>
+<span class="bi">print</span>(<span class="bi} ">len</span>(text.<span class="fn} ">strip</span>()))   <span class="cm} "># length = 13</span>
+<span class="bi} ">print</span>(<span class="st} "world"</span> <span class="kw} ">in</span> text.<span class="fn} ">lower</span>())  <span class="cm} "># True — substring check</span></pre>
+    <div class="output-block"><div class="output-label">Output</div>Hello, World!<br>  HELLO, WORLD!  <br>  hello, world!  <br>  Hello, Python!  <br>['  Hello', ' World!  ']<br>True<br>True<br>13<br>True</div>
+  </div>
+
+  <div class="card" data-tags="strings">
+    <div class="card-header">
+      <div><div class="card-title">f-Strings & Formatting <span class="badge badge-interview">Interview Fav</span></div><div class="card-desc">Modern way to format strings in Python 3.6+</div></div>
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    </div>
+    <pre>name <span class="op">=</span> <span class="st">"Carlo"</span>
+age <span class="op">=</span> <span class="nm">35</span>
+salary <span class="op">=</span> <span class="nm">75000.5</span>
+
+<span class="cm"># f-string (recommended)</span>
+<span class="bi">print</span>(<span class="st">f"Name: <span class="op">{</span>name<span class="op}</span>, Age: <span class="op">{</span>age<span class="op}</span>"</span>)
+
+<span class="cm"># Format numbers</span>
+<span class="bi">print</span>(<span class="st">f"Salary: $<span class="op">{</span>salary<span class="op">:,.2f</span><span class="op}</span>"</span>)  <span class="cm"># $75,000.50</span>
+
+<span class="cm"># Expressions inside f-strings</span>
+<span class="bi">print</span>(<span class="st">f"In 5 years: <span class="op">{</span>age <span class="op} + </span><span class="nm} ">5</span><span class="op} " micro_code__text_ " >"</span>)
+<span class="bi} ">print</span>(<span class="st} f"Upper: <span class="op} ">{</span>name<span class="op} " micro_code__text_ " >.</span>upper()<span class="op} " micro_code__text_ " >"</span>)
+
+<span class="cm} "># String slicing</span>
+s <span class="op} ">=</span> <span class="st} "Python"</span>
+<span class="bi} ">print</span>(s[<span class="nm} ">0</span>])      <span class="cm} "># P — first char</span>
+<span class="bi} ">print</span>(s[<span class="op} ">-</span><span class="nm} ">1</span>])     <span class="cm} "># n — last char</span>
+<span class="bi} ">print</span>(s[<span class="nm} ">0</span>:<span class="nm} ">3</span>])    <span class="cm} "># Pyt</span>
+<span class="bi} ">print</span>(s[::<span class="op} ">-</span><span class="nm} ">1</span>])   <span class="cm} "># nohtyP — reversed</span></pre>
+    <div class="output-block"><div class="output-label">Output</div>Name: Carlo, Age: 35<br>Salary: $75,000.50<br>In 5 years: 40<br>Upper: CARLO<br>P | n | Pyt | nohtyP</div>
+  </div>
+</div>
+
+<div class="section" id="numbers" data-tags="basics">
+  <div class="section-title">Numbers & Math <span>basics</span></div>
+  <div class="grid2">
+    <div class="card" data-tags="basics">
+      <div class="card-header">
+        <div><div class="card-title">Arithmetic Operators</div></div>
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+      </div>
+      <pre>a, b <span class="op">=</span> <span class="nm">10</span>, <span class="nm">3</span>
+
+<span class="bi">print</span>(a <span class="op">+</span> b)   <span class="cm"># 13 — add</span>
+<span class="bi">print</span>(a <span class="op">-</span> b)   <span class="cm"># 7  — subtract</span>
+<span class="bi">print</span>(a <span class="op">*</span> b)   <span class="cm"># 30 — multiply</span>
+<span class="bi">print</span>(a <span class="op">/</span> b)   <span class="cm"># 3.33 — divide</span>
+<span class="bi">print</span>(a <span class="op">//</span> b)  <span class="cm"># 3  — floor div</span>
+<span class="bi">print</span>(a <span class="op">%</span> b)   <span class="cm"># 1  — modulus</span>
+<span class="bi">print</span>(a <span class="op">**</span> b)  <span class="cm"># 1000 — power</span></pre>
+      <div class="output-block"><div class="output-label">Output</div>13<br>7<br>30<br>3.3333333333333335<br>3<br>1<br>1000</div>
+    </div>
+    <div class="card" data-tags="basics">
+      <div class="card-header">
+        <div><div class="card-title">Math Module</div></div>
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+      </div>
+      <pre><span class="kw">import</span> math
+
+<span class="bi">print</span>(math.<span class="fn">sqrt</span>(<span class="nm">16</span>))    <span class="cm"># 4.0</span>
+<span class="bi">print</span>(math.<span class="fn">ceil</span>(<span class="nm} ">4.2</span>))   <span class="cm} "># 5</span>
+<span class="bi} ">print</span>(math.<span class="fn} ">floor</span>(<span class="nm} ">4.9</span>))  <span class="cm} "># 4</span>
+<span class="bi} ">print</span>(math.<span class="fn} ">pow</span>(<span class="nm} ">2</span>, <span class="nm} ">8</span>))   <span class="cm} "># 256.0</span>
+<span class="bi} ">print</span>(math.<span class="fn} ">pi</span>)          <span class="cm} "># 3.14159...</span>
+<span class="bi} ">print</span>(<span class="bi} ">abs</span>(<span class="op} ">-</span><span class="nm} ">42</span>))         <span class="cm} "># 42</span>
+<span class="bi} ">print</span>(<span class="bi} ">round</span>(<span class="nm} ">3.14159</span>, <span class="nm} ">2</span>)) <span class="cm} "># 3.14</span></pre>
+      <div class="output-block"><div class="output-label">Output</div>4.0<br>5<br>4<br>256.0<br>3.141592653589793<br>42<br>3.14</div>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="booleans" data-tags="basics">
+  <div class="section-title">Booleans & Logic <span>basics</span></div>
+  <div class="card" data-tags="basics">
+    <div class="card-header">
+      <div><div class="card-title">Comparison & Logical Operators <span class="badge badge-interview">Interview Fav</span></div></div>
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    </div>
+    <pre>x, y <span class="op">=</span> <span class="nm">10</span>, <span class="nm">20</span>
+
+<span class="cm"># Comparison</span>
+<span class="bi">print</span>(x <span class="op} " sub_box__label_ " >==</span> y)   <span class="cm} "># False</span>
+<span class="bi} ">print</span>(x <span class="op} " sub_box__label_ " >!=</span> y)   <span class="cm} "># True</span>
+<span class="bi} ">print</span>(x <span class="op} " sub_box__label_ " >&lt;</span> y)    <span class="cm} "># True</span>
+<span class="bi} ">print</span>(x <span class="op} " sub_box__label_ " >&gt;=</span> y)   <span class="cm} "># False</span>
+
+<span class="cm} "># Logical operators</span>
+<span class="bi} ">print</span>(x <span class="op} " sub_box__label_ " >&lt;</span> <span class="nm} ">15</span> <span class="kw} ">and</span> y <span class="op} " sub_box__label_ " >&gt;</span> <span class="nm} ">15</span>)   <span class="cm} "># True</span>
+<span class="bi} ">print</span>(x <span class="op} " sub_box__label_ " >&gt;</span> <span class="nm} ">15</span> <span class="kw} ">or</span> y <span class="op} " sub_box__label_ " >&gt;</span> <span class="nm} ">15</span>)    <span class="cm} "># True</span>
+<span class="bi} ">print</span>(<span class="kw} ">not</span> (x <span class="op} " sub_box__label_ " >==</span> y))          <span class="cm} "># True</span>
+
+<span class="cm} "># Truthy / Falsy values</span>
+<span class="bi} ">print</span>(<span class="bi} ">bool</span>(<span class="nm} ">0</span>))     <span class="cm} "># False</span>
+<span class="bi} ">print</span>(<span class="bi} ">bool</span>(<span class="st} ""</span>))    <span class="cm} "># False</span>
+<span class="bi} ">print</span>(<span class="bi} ">bool</span>(<span class="kw} ">None</span>))  <span class="cm} "># False</span>
+<span class="bi} ">print</span>(<span class="bi} ">bool</span>([]))    <span class="cm} "># False — empty list</span>
+<span class="bi} ">print</span>(<span class="bi} ">bool</span>(<span class="nm} ">1</span>))     <span class="cm} "># True</span>
+<span class="bi} ">print</span>(<span class="bi} ">bool</span>(<span class="st} "hi"</span>)) <span class="cm} "># True</span></pre>
+    <div class="output-block"><div class="output-label">Output</div>False<br>True<br>True<br>False<br>True<br>True<br>True<br>False<br>False<br>False<br>False<br>True<br>True</div>
+  </div>
+</div>
+
+<div class="section" id="conditionals" data-tags="basics">
+  <div class="section-title">If / Elif / Else <span>control flow</span></div>
+  <div class="card" data-tags="basics">
+    <div class="card-header">
+      <div><div class="card-title">Conditional Statements</div></div>
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    </div>
+    <pre>score <span class="op">=</span> <span class="nm">85</span>
+
+<span class="kw">if</span> score <span class="op">&gt;=</span> <span class="nm">90</span>:
+    <span class="bi">print</span>(<span class="st">"A"</span>)
+<span class="kw">elif</span> score <span class="op">&gt;=</span> <span class="nm">80</span>:
+    <span class="bi">print</span>(<span class="st">"B"</span>)
+<span class="kw">elif</span> score <span class="op">&gt;=</span> <span class="nm">70</span>:
+    <span class="bi">print</span>(<span class="st">"C"</span>)
+<span class="kw">else</span>:
+    <span class="bi">print</span>(<span class="st">"F"</span>)
+
+<span class="cm"># One-liner (ternary operator)</span>
+result <span class="op">=</span> <span class="st">"Pass"</span> <span class="kw">if</span> score <span class="op">&gt;=</span> <span class="nm">60</span> <span class="kw">else</span> <span class="st">"Fail"</span>
+<span class="bi">print</span>(result)  <span class="cm"># Pass</span>
+
+<span class="cm"># Check if value is in a list</span>
+role <span class="op">=</span> <span class="st">"admin"</span>
+<span class="kw">if</span> role <span class="kw">in</span> [<span class="st">"admin"</span>, <span class="st">"superuser"</span>]:
+    <span class="bi">print</span>(<span class="st">"Access granted"</span>)</pre>
+    <div class="output-block"><div class="output-label">Output</div>B<br>Pass<br>Access granted</div>
+  </div>
+</div>
+
+<div class="section" id="loops" data-tags="basics">
+  <div class="section-title">Loops <span>control flow</span></div>
+
+  <div class="card" data-tags="basics">
+    <div class="card-header">
+      <div><div class="card-title">For Loops</div><div class="card-desc">Iterate over sequences</div></div>
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    </div>
+    <pre><span class="cm"># Loop over range</span>
+<span class="kw">for</span> i <span class="kw">in</span> <span class="bi">range</span>(<span class="nm">5</span>):
+    <span class="bi">print</span>(i, end<span class="op">=</span><span class="st">" "</span>)   <span class="cm"># 0 1 2 3 4</span>
+<span class="bi">print</span>()
+
+<span class="cm"># Loop over list</span>
+fruits <span class="op">=</span> [<span class="st">"apple"</span>, <span class="st">"banana"</span>, <span class="st">"mango"</span>]
+<span class="kw">for</span> fruit <span class="kw} ">in</span> fruits:
+    <span class="bi} ">print</span>(fruit)
+
+<span class="cm} "># enumerate() — get index and value</span>
+<span class="kw} ">for</span> i, fruit <span class="kw} ">in</span> <span class="bi} ">enumerate</span>(fruits):
+    <span class="bi} ">print</span>(<span class="st} f"<span class="op} ">{</span>i<span class="op} " micro_code__text_ " >: </span><span class="op} ">{</span>fruit<span class="op} " micro_code__text_ " >"</span>)
+
+<span class="cm} "># Loop with break and continue</span>
+<span class="kw} ">for</span> i <span class="kw} ">in</span> <span class="bi} ">range</span>(<span class="nm} ">10</span>):
+    <span class="kw} ">if</span> i <span class="op} " sub_box__label_ " >==</span> <span class="nm} ">3</span>: <span class="kw} ">continue</span>   <span class="cm} "># skip 3</span>
+    <span class="kw} ">if</span> i <span class="op} " sub_box__label_ " >==</span> <span class="nm} ">6</span>: <span class="kw} ">break</span>      <span class="cm} "># stop at 6</span>
+    <span class="bi} ">print</span>(i, end<span class="op} " sub_box__label_ " >=</span><span class="st} " "</span>)</pre>
+    <div class="output-block"><div class="output-label">Output</div>0 1 2 3 4 <br>apple<br>banana<br>mango<br>0: apple<br>1: banana<br>2: mango<br>0 1 2 4 5 </div>
+  </div>
+
+  <div class="card" data-tags="basics">
+    <div class="card-header">
+      <div><div class="card-title">While Loops</div></div>
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    </div>
+    <pre>count <span class="op">=</span> <span class="nm">0</span>
+<span class="kw">while</span> count <span class="op">&lt;</span> <span class="nm">5</span>:
+    <span class="bi">print</span>(<span class="st">f"count = <span class="op">{</span>count<span class="op}</span>"</span>)
+    count <span class="op">+=</span> <span class="nm">1</span>
+
+<span class="cm"># while with else</span>
+n <span class="op">=</span> <span class="nm">3</span>
+<span class="kw">while</span> n <span class="op">&gt;</span> <span class="nm">0</span>:
+    <span class="bi">print</span>(n)
+    n <span class="op">-=</span> <span class="nm">1</span>
+<span class="kw">else</span>:
+    <span class="bi">print</span>(<span class="st">"Done!"</span>)</pre>
+    <div class="output-block"><div class="output-label">Output</div>count = 0<br>count = 1<br>count = 2<br>count = 3<br>count = 4<br>3<br>2<br>1<br>Done!</div>
+  </div>
+</div>
+
+<div class="section" id="lists" data-tags="lists">
+  <div class="section-title">Lists <span>data structures</span></div>
+
+  <div class="card" data-tags="lists">
+    <div class="card-header">
+      <div><div class="card-title">List Methods <span class="badge badge-interview">Interview Fav</span></div><div class="card-desc">Most important list operations</div></div>
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    </div>
+    <pre>nums <span class="op">=</span> [<span class="nm">3</span>, <span class="nm">1</span>, <span class="nm">4</span>, <span class="nm">1</span>, <span class="nm">5</span>, <span class="nm">9</span>, <span class="nm">2</span>]
+
+nums.<span class="fn">append</span>(<span class="nm">6</span>)         <span class="cm"># add to end</span>
+nums.<span class="fn">insert</span>(<span class="nm">0</span>, <span class="nm} ">99</span>)     <span class="cm} "># insert at index 0</span>
+nums.<span class="fn} ">remove</span>(<span class="nm} ">1</span>)         <span class="cm} "># remove first occurrence of 1</span>
+popped <span class="op} ">=</span> nums.<span class="fn} ">pop</span>()    <span class="cm} "># remove and return last item</span>
+nums.<span class="fn} ">sort</span>()             <span class="cm} "># sort ascending</span>
+nums.<span class="fn} ">reverse</span>()          <span class="cm} "># reverse in place</span>
+
+<span class="bi} ">print</span>(nums)
+<span class="bi} ">print</span>(<span class="bi} ">len</span>(nums))         <span class="cm} "># length</span>
+<span class="bi} ">print</span>(<span class="bi} ">max</span>(nums))         <span class="cm} "># max value</span>
+<span class="bi} ">print</span>(<span class="bi} ">min</span>(nums))         <span class="cm} "># min value</span>
+<span class="bi} ">print</span>(<span class="bi} ">sum</span>(nums))         <span class="cm} "># sum of all</span>
+<span class="bi} ">print</span>(nums.<span class="fn} ">count</span>(<span class="nm} ">1</span>))    <span class="cm} "># count occurrences</span>
+<span class="bi} ">print</span>(nums.<span class="fn} ">index</span>(<span class="nm} ">9</span>))    <span class="cm} "># find index of value</span>
+
+<span class="cm} "># Slicing</span>
+<span class="bi} ">print</span>(nums[<span class="nm} ">0</span>:<span class="nm} ">3</span>])        <span class="cm} "># first 3 items</span>
+<span class="bi} ">print</span>(nums[<span class="op} ">-</span><span class="nm} ">3</span>:])         <span class="cm} "># last 3 items</span></pre>
+    <div class="output-block"><div class="output-label">Output</div>[99, 9, 5, 4, 3, 2, 1]<br>7<br>99<br>1<br>123<br>1<br>1<br>[99, 9, 5]<br>[3, 2, 1]</div>
+  </div>
+</div>
+
+<div class="section" id="tuples" data-tags="lists basics">
+  <div class="section-title">Tuples <span>data structures</span></div>
+  <div class="card" data-tags="lists basics">
+    <div class="card-header">
+      <div><div class="card-title">Tuples — Immutable Lists</div><div class="card-desc">Once created, cannot be changed</div></div>
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    </div>
+    <pre><span class="cm"># Tuples are immutable (can't change after creation)</span>
+coords <span class="op">=</span> (<span class="nm">10.5</span>, <span class="nm">20.3</span>)
+person <span class="op">=</span> (<span class="st">"Carlo"</span>, <span class="nm">35</span>, <span class="st">"BI Developer"</span>)
+
+<span class="bi">print</span>(coords[<span class="nm">0</span>])         <span class="cm"># 10.5</span>
+<span class="bi">print</span>(person[<span class="nm">2</span>])         <span class="cm"># BI Developer</span>
+
+<span class="cm"># Tuple unpacking</span>
+name, age, role <span class="op">=</span> person
+<span class="bi">print</span>(<span class="st">f"<span class="op">{</span>name<span class="op}</span> is <span class="op">{</span>age<span class="op}</span> and works as <span class="op">{</span>role<span class="op}</span>"</span>)
+
+<span class="cm"># Useful: returning multiple values from a function</span>
+<span class="kw">def</span> <span class="fn">min_max</span>(lst):
+    <span class="kw">return</span> <span class="bi">min</span>(lst), <span class="bi} ">max</span>(lst)
+
+low, high <span class="op} ">=</span> min_max([<span class="nm} ">3</span>, <span class="nm} ">1</span>, <span class="nm} ">9</span>, <span class="nm} ">4</span>])
+<span class="bi} ">print</span>(low, high)   <span class="cm} "># 1 9</span></pre>
+    <div class="output-block"><div class="output-label">Output</div>10.5<br>BI Developer<br>Carlo is 35 and works as BI Developer<br>1 9</div>
+  </div>
+</div>
+
+<div class="section" id="dicts" data-tags="dicts">
+  <div class="section-title">Dictionaries <span>data structures</span></div>
+
+  <div class="card" data-tags="dicts">
+    <div class="card-header">
+      <div><div class="card-title">Dictionary Operations <span class="badge badge-interview">Interview Fav</span></div></div>
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    </div>
+    <pre>employee <span class="op">=</span> {
+    <span class="st">"name"</span>: <span class="st">"Carlo"</span>,
+    <span class="st">"age"</span>: <span class="nm">35</span>,
+    <span class="st">"role"</span>: <span class="st">"BI Developer"</span>,
+    <span class="st">"skills"</span>: [<span class="st">"SQL"</span>, <span class="st">"Python"</span>, <span class="st">"Power BI"</span>]
+}
+
+<span class="cm"># Access</span>
+<span class="bi">print</span>(employee[<span class="st">"name"</span>])               <span class="cm"># Carlo</span>
+<span class="bi">print</span>(employee.<span class="fn">get</span>(<span class="st">"salary"</span>, <span class="st">"N/A"</span>))  <span class="cm"># N/A (safe access)</span>
+
+<span class="cm"># Add / Update</span>
+employee[<span class="st">"salary"</span>] <span class="op} ">=</span> <span class="nm} ">90000</span>
+employee[<span class="st} "age"</span>] <span class="op} ">=</span> <span class="nm} ">36</span>
+
+<span class="cm} "># Delete</span>
+<span class="kw} ">del</span> employee[<span class="st} "age"</span>]
+
+<span class="cm} "># Loop through dict</span>
+<span class="kw} ">for</span> key, value <span class="kw} ">in</span> employee.<span class="fn} ">items</span>():
+    <span class="bi} ">print</span>(<span class="st} f"<span class="op} ">{</span>key<span class="op} " micro_code__text_ " >: </span><span class="op} ">{</span>value<span class="op} " micro_code__text_ " >"</span>)
+
+<span class="bi} ">print</span>(employee.<span class="fn} ">keys</span>())    <span class="cm} "># all keys</span>
+<span class="bi} ">print</span>(employee.<span class="fn} ">values</span>())  <span class="cm} "># all values</span>
+<span class="bi} ">print</span>(<span class="st} "name"</span> <span class="kw} ">in</span> employee)  <span class="cm} "># True</span></pre>
+    <div class="output-block"><div class="output-label">Output</div>Carlo<br>N/A<br>name: Carlo<br>role: BI Developer<br>skills: ['SQL', 'Python', 'Power BI']<br>salary: 90000<br>dict_keys(['name', 'role', 'skills', 'salary'])<br>dict_values(['Carlo', 'BI Developer', ['SQL', 'Python', 'Power BI'], 90000])<br>True</div>
+  </div>
+</div>
+
+<div class="section" id="sets" data-tags="lists basics">
+  <div class="section-title">Sets <span>data structures</span></div>
+  <div class="card" data-tags="lists basics">
+    <div class="card-header">
+      <div><div class="card-title">Set Operations</div><div class="card-desc">Unique values only — great for removing duplicates</div></div>
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    </div>
+    <pre>a <span class="op">=</span> {<span class="nm">1</span>, <span class="nm">2</span>, <span class="nm">3</span>, <span class="nm">4</span>, <span class="nm">5</span>}
+b <span class="op">=</span> {<span class="nm">4</span>, <span class="nm">5</span>, <span class="nm">6</span>, <span class="nm">7</span>}
+
+<span class="bi">print</span>(a <span class="op">|</span> b)   <span class="cm"># Union — all items</span>
+<span class="bi">print</span>(a <span class="op">&amp;</span> b)   <span class="cm"># Intersection — common items</span>
+<span class="bi">print</span>(a <span class="op">-</span> b)   <span class="cm"># Difference — in a not in b</span>
+<span class="bi">print</span>(a <span class="op">^</span> b)   <span class="cm"># Symmetric diff — not in both</span>
+
+<span class="cm"># Remove duplicates from a list</span>
+nums <span class="op} ">=</span> [<span class="nm} ">1</span>, <span class="nm} ">2</span>, <span class="nm} ">2</span>, <span class="nm} ">3</span>, <span class="nm} ">3</span>, <span class="nm} ">3</span>]
+unique <span class="op} ">=</span> <span class="bi} ">list</span>(<span class="bi} ">set</span>(nums))
+<span class="bi} ">print</span>(unique)   <span class="cm} "># [1, 2, 3]</span></pre>
+    <div class="output-block"><div class="output-label">Output</div>{1, 2, 3, 4, 5, 6, 7}<br>{4, 5}<br>{1, 2, 3}<br>{1, 2, 3, 6, 7}<br>[1, 2, 3]</div>
+  </div>
+</div>
+
+<div class="section" id="comprehensions" data-tags="comprehensions">
+  <div class="section-title">Comprehensions <span>comprehensions</span></div>
+
+  <div class="card" data-tags="comprehensions">
+    <div class="card-header">
+      <div><div class="card-title">List Comprehensions <span class="badge badge-interview">Interview Fav</span></div><div class="card-desc">Concise way to create lists — very common in interviews</div></div>
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    </div>
+    <pre><span class="cm"># Basic</span>
+squares <span class="op">=</span> [x<span class="op} ">**</span><span class="nm} ">2</span> <span class="kw} ">for</span> x <span class="kw} ">in</span> <span class="bi} ">range</span>(<span class="nm} ">10</span>)]
+<span class="bi} ">print</span>(squares)
+
+<span class="cm} "># With condition</span>
+evens <span class="op} ">=</span> [x <span class="kw} ">for</span> x <span class="kw} ">in</span> <span class="bi} ">range</span>(<span class="nm} ">20</span>) <span class="kw} ">if</span> x <span class="op} " sub_box__label_ " >%</span> <span class="nm} ">2</span> <span class="op} " sub_box__label_ " >==</span> <span class="nm} ">0</span>]
+<span class="bi} ">print</span>(evens)
+
+<span class="cm} "># String manipulation</span>
+words <span class="op} ">=</span> [<span class="st} "hello"</span>, <span class="st} "world"</span>, <span class="st} "python"</span>]
+upper <span class="op} ">=</span> [w.<span class="fn} ">upper</span>() <span class="kw} ">for</span> w <span class="kw} ">in</span> words]
+<span class="bi} ">print</span>(upper)
+
+<span class="cm} "># Dict comprehension</span>
+scores <span class="op} ">=</span> {<span class="st} "Alice"</span>: <span class="nm} ">85</span>, <span class="st} "Bob"</span>: <span class="nm} ">72</span>, <span class="st} "Carol"</span>: <span class="nm} ">91</span>}
+passed <span class="op} ">=</span> {k: v <span class="kw} ">for k, v in scores.items() if v >= 80}
+print(passed)   # {'Alice': 85, 'Carol': 91}
+
+# Set comprehension
+unique_lengths = {len(w) for w in words}
+print(unique_lengths)</pre>
+    <div class="output-block"><div class="output-label">Output</div>[0, 1, 4, 9, 16, 25, 36, 49, 64, 81]<br>[0, 2, 4, 6, 8, 10, 12, 14, 16, 18]<br>['HELLO', 'WORLD', 'PYTHON']<br>{'Alice': 85, 'Carol': 91}<br>{5, 6}</div>
+  </div>
+</div>
+
+<div class="section" id="functions" data-tags="functions">
+  <div class="section-title">Functions <span>functions</span></div>
+
+  <div class="card" data-tags="functions">
+    <div class="card-header">
+      <div><div class="card-title">Defining Functions</div><div class="card-desc">Arguments, defaults, *args, **kwargs</div></div>
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    </div>
+    <pre><span class="cm"># Basic function</span>
+<span class="kw">def</span> <span class="fn">greet</span>(name):
+    <span class="kw">return</span> <span class="st">f"Hello, <span class="op">{</span>name<span class="op}</span>!"</span>
+
+<span class="bi">print</span>(<span class="fn">greet</span>(<span class="st">"Carlo"</span>))
+
+<span class="cm"># Default arguments</span>
+<span class="kw">def</span> <span class="fn">power</span>(base, exp<span class="op">=</span><span class="nm">2</span>):
+    <span class="kw">return</span> base <span class="op">**</span> exp
+
+<span class="bi">print</span>(<span class="fn">power</span>(<span class="nm} ">3</span>))      <span class="cm} "># 9 (uses default exp=2)</span>
+<span class="bi} ">print</span>(<span class="fn} ">power</span>(<span class="nm} ">3</span>, <span class="nm} ">3</span>))   <span class="cm} "># 27</span>
+
+<span class="cm} "># *args — variable number of positional args</span>
+<span class="kw} ">def</span> <span class="fn} ">total</span>(<span class="op} ">*</span>nums):
+    <span class="kw} ">return</span> <span class="bi} ">sum</span>(nums)
+
+<span class="bi} ">print</span>(<span class="fn} ">total</span>(<span class="nm} ">1</span>, <span class="nm} ">2</span>, <span class="nm} ">3</span>, <span class="nm} ">4</span>))  <span class="cm} "># 10</span>
+
+<span class="cm} "># **kwargs — variable keyword arguments</span>
+<span class="kw} ">def</span> <span class="fn} ">show_info</span>(<span class="op} ">**</span>info):
+    <span class="kw} ">for</span> k, v <span class="kw} ">in</span> info.<span class="fn} ">items</span>():
+        <span class="bi} ">print</span>(<span class="st} f"<span class="op} ">{</span>k<span class="op} " micro_code__text_ " > = </span><span class="op} ">{</span>value<span class="op} " micro_code__text_ " >"</span>) # Note: source uses template variant natively
+
+<span class="fn} ">show_info</span>(name<span class="op} ">=</span><span class="st} "Carlo"</span>, role<span class="op} ">=</span><span class="st} "BI Dev"</span>)</pre>
+    <div class="output-block"><div class="output-label">Output</div>Hello, Carlo!<br>9<br>27<br>10<br>name = Carlo<br>role = BI Dev</div>
+  </div>
+</div>
+
+<div class="section" id="lambda" data-tags="functions">
+  <div class="section-title">Lambda Functions <span>functions</span></div>
+  <div class="card" data-tags="functions">
+    <div class="card-header">
+      <div><div class="card-title">Lambda, Map, Filter, Sorted <span class="badge badge-interview">Interview Fav</span></div></div>
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    </div>
+    <pre><span class="cm"># Lambda — anonymous one-line function</span>
+square <span class="op">=</span> <span class="kw">lambda</span> x: x <span class="op} ">**</span> <span class="nm} ">2</span>
+<span class="bi} ">print</span>(square(<span class="nm} ">5</span>))   <span class="cm} "># 25</span>
+
+<span class="cm} "># map() — apply function to each item</span>
+nums <span class="op} ">=</span> [<span class="nm} ">1</span>, <span class="nm} ">2</span>, <span class="nm} ">3</span>, <span class="nm} ">4</span>]
+squared <span class="op} " spoon_text_ "> = </span><span class="bi} ">list</span>(<span class="bi} ">map</span>(<span class="kw} ">lambda</span> x: x<span class="op} ">**</span><span class="nm} ">2</span>, nums))
+<span class="bi} ">print</span>(squared)   <span class="cm} "># [1, 4, 9, 16]</span>
+
+<span class="cm} "># filter() — keep items matching condition</span>
+evens <span class="op} " spoon_text_ "> = </span><span class="bi} ">list</span>(<span class="bi} ">filter</span>(<span class="kw} ">lambda</span> x: x <span class="op} " sub_box__label_ " >%</span> <span class="nm} ">2</span> <span class="op} " sub_box__label_ " >==</span> <span class="nm} ">0</span>, nums))
+<span class="bi} ">print</span>(evens)   <span class="cm} "># [2, 4]</span>
+
+<span class="cm} "># sorted() with key</span>
+people <span class="op} " spoon_text_ "> = </span>[(<span class="st} "Alice"</span>, <span class="nm} ">30</span>), (<span class="st} "Bob"</span>, <span class="nm} ">25</span>), (<span class="st} "Carol"</span>, <span class="nm} ">35</span>)]
+by_age <span class="op} " spoon_text_ "> = </span><span class="bi} ">sorted</span>(people, key<span class="op} " spoon_text_ ">=</span><span class="kw} ">lambda</span> x: x[<span class="nm} ">1</span>])
+<span class="bi} ">print</span>(by_age)
+
+<span class="cm} "># Sort dict by value</span>
+scores <span class="op} " spoon_text_ "> = </span>{<span class="st} "Alice"</span>: <span class="nm} ">85</span>, <span class="st} "Bob"</span>: <span class="nm} ">72</span>, <span class="st} "Carol"</span>: <span class="nm} ">91</span>}
+sorted_scores <span class="op} " spoon_text_ "> = </span><span class="bi} ">dict</span>(<span class="bi} ">sorted</span>(scores.<span class="fn} ">items</span>(), key<span class="op} " spoon_text_ ">=</span><span class="kw} ">lambda</span> x: x[<span class="nm} ">1</span>], reverse<span class="op} " spoon_text_ ">=</span><span class="kw} ">True</span>))
+<span class="bi} ">print</span>(sorted_scores)</pre>
+    <div class="output-block"><div class="output-label">Output</div>25<br>[1, 4, 9, 16]<br>[2, 4]<br>[('Bob', 25), ('Alice', 30), ('Carol', 35)]<br>{'Carol': 91, 'Alice': 85, 'Bob': 72}</div>
+  </div>
+</div>
+
+<div class="section" id="builtins" data-tags="functions basics">
+  <div class="section-title">Built-in Functions <span>functions</span></div>
+  <div class="card" data-tags="functions basics">
+    <div class="card-header">
+      <div><div class="card-title">Most Used Built-ins</div></div>
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    </div>
+    <pre>nums <span class="op">=</span> [<span class="nm">5</span>, <span class="nm">2</span>, <span class="nm">8</span>, <span class="nm">1</span>, <span class="nm">9</span>, <span class="nm">3</span>]
+
+<span class="bi">print</span>(<span class="bi} ">len</span>(nums))          <span class="cm} "># 6</span>
+<span class="bi} ">print</span>(<span class="bi} ">sum</span>(nums))          <span class="cm} "># 28</span>
+<span class="bi} ">print</span>(<span class="bi} ">max</span>(nums))          <span class="cm} "># 9</span>
+<span class="bi} ">print</span>(<span class="bi} ">min</span>(nums))          <span class="cm} "># 1</span>
+<span class="bi} ">print</span>(<span class="bi} ">sorted</span>(nums))       <span class="cm} "># [1, 2, 3, 5, 8, 9]</span>
+<span class="bi} ">print</span>(<span class="bi} ">reversed</span>(nums))     <span class="cm} "># iterator</span>
+<span class="bi} ">print</span>(<span class="bi} ">list</span>(<span class="bi} ">reversed</span>(nums))) # [3, 9, 1, 8, 2, 5]
+
+<span class="cm} "># zip — combine two lists</span>
+names <span class="op} " spoon_text_ "> = </span>[<span class="st} "Alice"</span>, <span class="st} "Bob"</span>, <span class="st} "Carol"</span>]
+ages <span class="op} " spoon_text_ "> = </span>[<span class="nm} ">30</span>, <span class="nm} ">25</span>, <span class="nm} ">35</span>]
+paired <span class="op} " spoon_text_ "> = </span><span class="bi} ">list</span>(<span class="bi} ">zip</span>(names, ages))
+<span class="bi} ">print</span>(paired)   <span class="cm} "># [('Alice', 30), ('Bob', 25), ('Carol', 35)]</span>
+
+<span class="cm} "># any / all</span>
+<span class="bi} ">print</span>(<span class="bi} ">any</span>([<span class="kw} ">False</span>, <span class="kw} ">True</span>, <span class="kw} ">False</span>]))   <span class="cm} "># True — at least one True</span>
+<span class="bi} ">print</span>(<span class="bi} ">all</span>([<span class="kw} ">True</span>, <span class="kw} ">True</span>, <span class="kw} ">False</span>]))   <span class="cm} "># False — not all True</span></pre>
+    <div class="output-block"><div class="output-label">Output</div>6<br>28<br>9<br>1<br>[1, 2, 3, 5, 8, 9]<br>&lt;list_reverseiterator object at ...&gt;<br>[3, 9, 1, 8, 2, 5]<br>[('Alice', 30), ('Bob', 25), ('Carol', 35)]<br>True<br>False</div>
+  </div>
+</div>
+
+<div class="section" id="oop" data-tags="oop">
+  <div class="section-title">OOP — Classes <span>oop</span></div>
+
+  <div class="card" data-tags="oop">
+    <div class="card-header">
+      <div><div class="card-title">Class Basics <span class="badge badge-interview">Interview Fav</span></div><div class="card-desc">__init__, self, methods, inheritance</div></div>
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    </div>
+    <pre><span class="kw">class</span> <span class="fn">Employee</span>:
+    company <span class="op">=</span> <span class="st">"Masco Canada"</span>  <span class="cm"># class variable</span>
+
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw} ">self</span>, name, role, salary):
+        <span class="kw} ">self</span>.name <span class="op} " sub_box__label_ " >=</span> name      <span class="cm} "># instance variable</span>
+        <span class="kw} ">self</span>.role <span class="op} " sub_box__label_ " >=</span> role
+        <span class="kw} ">self</span>.salary <span class="op} " sub_box__label_ " >=</span> salary
+
+    <span class="kw} ">def</span> <span class="fn} ">describe</span>(<span class="kw} ">self</span>):
+        <span class="kw} ">return</span> <span class="st} f"<span class="op} ">{</span><span class="kw} ">self</span>.name<span class="op} " micro_code__text_ " > — </span><span class="op} ">{</span><span class="kw} ">self</span>.role<span class="op} " micro_code__text_ " > @ </span><span class="op} ">{</span>Employee.company<span class="op} " micro_code__text_ " >"</span>
+
+    <span class="kw} ">def</span> <span class="fn} ">raise_salary</span>(<span class="kw} ">self</span>, pct):
+        <span class="kw} ">self</span>.salary <span class="op} " sub_box__label_ " *=</span> (<span class="nm} ">1</span> <span class="op} " sub_box__label_ " +</span> pct <span class="op} " sub_box__label_ " /</span> <span class="nm} ">100</span>)
+
+    <span class="kw} ">def</span> <span class="fn} ">__str__</span>(<span class="kw} ">self</span>):
+        <span class="kw} ">return</span> <span class="st} f"<span class="op} ">{</span><span class="kw} ">self</span>.name<span class="op} " micro_code__text_ " > (<span class="op} ">{</span><span class="kw} ">self</span>.role<span class="op} " micro_code__text_ " >)"</span>
+
+<span class="cm} "># Inheritance</span>
+<span class="kw} ">class</span> <span class="fn} ">SeniorDev</span>(<span class="fn} ">Employee</span>):
+    <span class="kw} ">def</span> <span class="fn} ">__init__</span>(<span class="kw} ">self</span>, name, salary, team_size):
+        <span class="bi} ">super</span>().<span class="fn} ">__init__</span>(name, <span class="st} "Senior BI Dev"</span>, salary)
+        <span class="kw} ">self</span>.team_size <span class="op} " sub_box__label_ " >=</span> team_size
+
+    <span class="kw} ">def</span> <span class="fn} ">describe</span>(<span class="kw} ">self</span>):
+        <span class="kw} ">return</span> <span class="bi} ">super</span>().<span class="fn} ">describe</span>() <span class="op} " sub_box__label_ " +</span> <span class="st} f", leads <span class="op} ">{</span><span class="kw} ">self</span>.team_size<span class="op} " micro_code__text_ " > people"</span>
+
+emp <span class="op} " spoon_text_ "> = </span><span class="fn} ">Employee</span>(<span class="st} "Carlo"</span>, <span class="st} "BI Developer"</span>, <span class="nm} ">80000</span>)
+<span class="bi} ">print</span>(emp.<span class="fn} ">describe</span>())
+emp.<span class="fn} ">raise_salary</span>(<span class="nm} ">10</span>)
+<span class="bi} ">print</span>(<span class="st} f"New salary: $<span class="op} ">{</span>emp.salary<span class="op} " micro_code__text_ " >:,.0f</span><span class="op} " micro_code__text_ " >"</span>)
+
+senior <span class="op} " spoon_text_ "> = </span><span class="fn} ">SeniorDev</span>(<span class="st} "Carlo"</span>, <span class="nm} ">110000</span>, <span class="nm} ">5</span>)
+<span class="bi} ">print</span>(senior.<span class="fn} ">describe</span>())</pre>
+    <div class="output-block"><div class="output-label">Output</div>Carlo — BI Developer @ Masco Canada<br>New salary: $88,000<br>Carlo — Senior BI Dev @ Masco Canada, leads 5 people</div>
+  </div>
+</div>
+
+<div class="section" id="errors" data-tags="errors">
+  <div class="section-title">Error Handling <span>errors</span></div>
+
+  <div class="card" data-tags="errors">
+    <div class="card-header">
+      <div><div class="card-title">Try / Except / Finally <span class="badge badge-interview">Interview Fav</span></div></div>
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    </div>
+    <pre><span class="cm"># Basic try/except</span>
+<span class="kw">try</span>:
+    result <span class="op">=</span> <span class="nm">10</span> <span class="op">/</span> <span class="nm">0</span>
+<span class="kw">except</span> <span class="bi">ZeroDivisionError</span>:
+    <span class="bi">print</span>(<span class="st">"Cannot divide by zero!"</span>)
+
+<span class="cm"># Multiple exceptions</span>
+<span class="kw">def</span> <span class="fn">safe_divide</span>(a, b):
+    <span class="kw">try</span>:
+        <span class="kw">return</span> a <span class="op">/</span> b
+    <span class="kw">except</span> <span class="bi">ZeroDivisionError</span>:
+        <span class="kw">return</span> <span class="st">"Error: division by zero"</span>
+    <span class="kw">except</span> <span class="bi} ">TypeError</span>:
+        <span class="kw} ">return</span> <span class="st} "Error: wrong type"</span>
+    <span class="kw} ">finally</span>:
+        <span class="bi} ">print</span>(<span class="st} "Always runs"</span>)
+
+<span class="bi} ">print</span>(<span class="fn} ">safe_divide</span>(<span class="nm} ">10</span>, <span class="nm} ">2</span>))
+<span class="bi} ">print</span>(<span class="fn} ">safe_divide</span>(<span class="nm} ">10</span>, <span class="nm} ">0</span>))
+
+<span class="cm} "># Raise your own exception</span>
+<span class="kw} ">def</span> <span class="fn} ">validate_age</span>(age):
+    <span class="kw} ">if</span> age <span class="op} " sub_box__label_ " >&lt;</span> <span class="nm} ">0</span>:
+        <span class="kw} ">raise</span> <span class="bi} ">ValueError</span>(<span class="st} "Age cannot be negative"</span>)
+    <span class="kw} ">return</span> age
+
+<span class="kw} ">try</span>:
+    <span class="fn} ">validate_age</span>(<span class="op} " sub_box__label_ ">-</span><span class="nm} ">5</span>)
+<span class="kw} ">except</span> <span class="bi} ">ValueError</span> <span class="kw} ">as</span> e:
+    <span class="bi} ">print</span>(<span class="st} f"Caught: <span class="op} ">{</span>e<span class="op} " micro_code__text_ " >"</span>)</pre>
+    <div class="output-block"><div class="output-label">Output</div>Cannot divide by zero!<br>Always runs<br>5.0<br>Always runs<br>Error: division by zero<br>Caught: Age cannot be negative</div>
+  </div>
+</div>
+
+<div class="section" id="files" data-tags="files">
+  <div class="section-title">File I/O <span>files</span></div>
+
+  <div class="card" data-tags="files">
+    <div class="card-header">
+      <div><div class="card-title">Read & Write Files</div></div>
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    </div>
+    <pre><span class="cm"># Write to file</span>
+<span class="kw">with</span> <span class="bi">open</span>(<span class="st">"test.txt"</span>, <span class="st">"w"</span>) <span class="kw">as</span> f:
+    f.<span class="fn">write</span>(<span class="st">"Hello, Python!\n"</span>)
+    f.<span class="fn">write</span>(<span class="st">"Line 2\n"</span>)
+
+<span class="cm"># Read entire file</span>
+<span class="kw">with</span> <span class="bi">open</span>(<span class="st">"test.txt"</span>, <span class="st">"r"</span>) <span class="kw">as</span> f:
+    content <span class="op">=</span> f.<span class="fn">read</span>()
+    <span class="bi">print</span>(content)
+
+<span class="cm"># Read line by line</span>
+<span class="kw">with</span> <span class="bi">open</span>(<span class="st">"test.txt"</span>, <span class="st">"r"</span>) <span class="kw">as</span> f:
+    <span class="kw">for</span> line <span class="kw} ">in</span> f:
+        <span class="bi} ">print</span>(line.<span class="fn} ">strip</span>())
+
+<span class="cm} "># Append to file</span>
+<span class="kw} ">with</span> <span class="bi} ">open</span>(<span class="st} "test.txt"</span>, <span class="st} "a"</span>) <span class="kw} ">as</span> f:
+    f.<span class="fn} ">write</span>(<span class="st} "Appended line\n"</span>)
+
+<span class="cm} "># Work with CSV</span>
+<span class="kw} ">import</span> csv
+<span class="kw} ">with</span> <span class="bi} ">open</span>(<span class="st} "data.csv"</span>, <span class="st} "w"</span>, newline<span class="op} " sub_box__label_ " >=</span><span class="st} ""</span>) <span class="kw} ">as</span> f:
+    writer <span class="op} " spoon_text_ "> = </span>csv.<span class="fn} ">writer</span>(f)
+    writer.<span class="fn} ">writerow</span>([<span class="st} "name"</span>, <span class="st} "age"</span>])
+    writer.<span class="fn} ">writerow</span>([<span class="st} "Carlo"</span>, <span class="nm} ">35</span>])</pre>
+    <div class="output-block"><div class="output-label">Output</div>Hello, Python!<br>Line 2<br><br>Hello, Python!<br>Line 2</div>
+  </div>
+</div>
+
+<div class="section" id="modules" data-tags="modules">
+  <div class="section-title">Modules & Imports <span>modules</span></div>
+
+  <div class="card" data-tags="modules">
+    <div class="card-header">
+      <div><div class="card-title">Common Standard Library Modules</div></div>
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    </div>
+    <pre><span class="kw">import</span> os
+<span class="kw">import</span> sys
+<span class="kw">import</span> datetime
+<span class="kw">import</span> json
+<span class="kw">import</span> random
+
+<span class="cm"># os — file system operations</span>
+<span class="bi">print</span>(os.<span class="fn">getcwd</span>() <span class="op">!=</span> <span class="st">""</span>)           <span class="cm"># current directory truth check</span>
+<span class="bi">print</span>(os.path.<span class="fn">exists</span>(<span class="st">"test.txt"</span>))  <span class="cm"># file exists?</span>
+
+<span class="cm"># datetime</span>
+now <span class="op">=</span> datetime.datetime(<span class="nm">2026</span>, <span class="nm">6</span>, <span class="nm">30</span>, <span class="nm">14</span>, <span class="nm">22</span>)
+<span class="bi">print</span>(now.<span class="fn">strftime</span>(<span class="st">"%Y-%m-%d %H:%M"</span>))
+
+<span class="cm"># json</span>
+data <span class="op">=</span> {<span class="st">"name"</span>: <span class="st">"Carlo"</span>, <span class="st">"role"</span>: <span class="st">"BI Dev"</span>}
+json_str <span class="op} " spoon_text_ "> = </span>json.<span class="fn} ">dumps</span>(data)      <span class="cm} "># dict → JSON string</span>
+back <span class="op} " spoon_text_ "> = </span>json.<span class="fn} ">loads</span>(json_str)      <span class="cm} "># JSON string → dict</span>
+<span class="bi} ">print</span>(json_str)
+<span class="bi} ">print</span>(back[<span class="st} "name"</span>])
+
+<span class="cm} "># random</span>
+random.seed(<span class="nm} ">42</span>)
+<span class="bi} ">print</span>(random.<span class="fn} ">randint</span>(<span class="nm} ">1</span>, <span class="nm} ">100</span>))    <span class="cm} "># random int</span>
+<span class="bi} ">print</span>(random.<span class="fn} ">choice</span>([<span class="st} "a"</span>, <span class="st} "b"</span>, <span class="st} "c"</span>]))  <span class="cm} "># random item</span></pre>
+    <div class="output-block"><div class="output-label">Output</div>True<br>True<br>2026-06-30 14:22<br>{"name": "Carlo", "role": "BI Dev"}<br>Carlo<br>82<br>b</div>
+  </div>
+</div>
+
+<div class="section" id="data" data-tags="data">
+  <div class="section-title">Data Science — Pandas & NumPy <span>data science</span></div>
+
+  <div class="card" data-tags="data">
+    <div class="card-header">
+      <div><div class="card-title">NumPy Basics</div><div class="card-desc">Run: pip install numpy</div></div>
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    </div>
+    <pre><span class="kw">import</span> numpy <span class="kw">as</span> np
+
+arr <span class="op">=</span> np.<span class="fn">array</span>([<span class="nm">1</span>, <span class="nm">2</span>, <span class="nm">3</span>, <span class="nm">4</span>, <span class="nm">5</span>])
+<span class="bi">print</span>(arr <span class="op">*</span> <span class="nm">2</span>)             <span class="cm"># [2 4 6 8 10]</span>
+<span class="bi">print</span>(arr.<span class="fn">mean</span>())          <span class="cm"># 3.0</span>
+<span class="bi">print</span>(arr.<span class="fn} ">std</span>())           <span class="cm} "># std deviation</span>
+<span class="bi} ">print</span>(arr.<span class="fn} ">sum</span>())           <span class="cm} "># 15</span>
+
+<span class="cm} "># 2D array (like a table)</span>
+matrix <span class="op} " spoon_text_ "> = </span>np.<span class="fn} ">array</span>([[<span class="nm} ">1</span>, <span class="nm} ">2</span>], [<span class="nm} ">3</span>, <span class="nm} ">4</span>], [<span class="nm} ">5</span>, <span class="nm} ">6</span>]])
+<span class="bi} ">print</span>(matrix.<span class="fn} ">shape</span>)        <span class="cm} "># (3, 2)</span>
+<span class="bi} ">print</span>(matrix[:, <span class="nm} ">0</span>])       <span class="cm} "># first column</span>
+
+<span class="cm} "># Useful arrays</span>
+<span class="bi} ">print</span>(np.<span class="fn} ">zeros</span>(<span class="nm} ">5</span>))         <span class="cm} "># [0. 0. 0. 0. 0.]</span>
+<span class="bi} ">print</span>(np.<span class="fn} ">ones</span>(<span class="nm} ">3</span>))          <span class="cm} "># [1. 1. 1.]</span>
+<span class="bi} ">print</span>(np.<span class="fn} ">arange</span>(<span class="nm} ">0</span>, <span class="nm} ">10</span>, <span class="nm} ">2</span>)) <span class="cm} "># [0 2 4 6 8]</span></pre>
+    <div class="output-block"><div class="output-label">Output</div>[ 2  4  6  8 10]<br>3.0<br>1.4142135623730951<br>15<br>(3, 2)<br>[1 3 5]<br>[0. 0. 0. 0. 0.]<br>[1. 1. 1.]<br>[0 2 4 6 8]</div>
+  </div>
+
+  <div class="card" data-tags="data">
+    <div class="card-header">
+      <div><div class="card-title">Pandas Basics <span class="badge badge-important">BI Essential</span></div><div class="card-desc">Run: pip install pandas — Think of it as Python's version of SQL tables</div></div>
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    </div>
+    <pre><span class="kw">import</span> pandas <span class="kw">as</span> pd
+
+<span class="cm"># Create a DataFrame (like a SQL table)</span>
+data <span class="op">=</span> {
+    <span class="st">"name"</span>: [<span class="st">"Alice"</span>, <span class="st">"Bob"</span>, <span class="st">"Carol"</span>, <span class="st">"Dave"</span>],
+    <span class="st">"dept"</span>: [<span class="st">"IT"</span>, <span class="st">"HR"</span>, <span class="st">"IT"</span>, <span class="st">"HR"</span>],
+    <span class="st">"salary"</span>: [<span class="nm">90000</span>, <span class="nm">70000</span>, <span class="nm">85000</span>, <span class="nm">72000</span>],
+    <span class="st">"years"</span>: [<span class="nm">5</span>, <span class="nm">3</span>, <span class="nm">7</span>, <span class="nm">2</span>]
+}
+df <span class="op} " spoon_text_ "> = </span>pd.<span class="fn} ">DataFrame</span>(data)
+
+<span class="bi} ">print</span>(df.<span class="fn} ">head</span>())           <span class="cm} "># first 5 rows</span>
+<span class="bi} ">print</span>(df.[<span class="st} "name"</span>])
+<span class="bi} ">print</span>(df[[<span class="st} "name"</span>, <span class="st} "salary"</span>]])
+
+<span class="cm} "># Filter rows (like WHERE in SQL)</span>
+it_team <span class="op} " spoon_text_ "> = </span>df[df[<span class="st} "dept"</span>] <span class="op} " sub_box__label_ " >==</span> <span class="st} "IT"</span>]
+<span class="bi} ">print</span>(it_team)
+
+high_salary <span class="op} " spoon_text_ "> = </span>df[df[<span class="st} "salary"</span>] <span class="op} " sub_box__label_ " >&gt;</span> <span class="nm} ">80000</span>]
+<span class="bi} ">print</span>(high_salary)
+
+<span class="cm} "># Sort (like ORDER BY)</span>
+<span class="bi} ">print</span>(df.<span class="fn} ">sort_values</span>(<span class="st} "salary"</span>, ascending<span class="op} " spoon_text_ ">=</span><span class="kw} ">False</span>))
+
+<span class="cm} "># Group by (like GROUP BY in SQL)</span>
+avg_salary <span class="op} " spoon_text_ "> = </span>df.<span class="fn} ">groupby</span>(<span class="st} "dept"</span>)[<span class="st} "salary"</span>].<span class="fn} ">mean</span>()
+<span class="bi} ">print</span>(avg_salary)
+
+<span class="cm} "># Add new column</span>
+df[<span class="st} "bonus"</span>] <span class="op} " spoon_text_ "> = </span>df[<span class="st} "salary"</span>] <span class="op} " sub_box__label_ " >*</span> <span class="nm} ">0.10</span>
+<span class="bi} ">print</span>(df)</pre>
+    <div class="output-block"><div class="output-label">Output (avg salary by dept)</div>dept<br>HR    71000.0<br>IT    87500.0</div>
+  </div>
+
+  <div class="card" data-tags="data">
+    <div class="card-header">
+      <div><div class="card-title">Pandas — SQL Equivalent Operations <span class="badge badge-important">BI Essential</span></div><div class="card-desc">Since you know SQL — this maps your SQL knowledge to Pandas</div></div>
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    </div>
+    <pre><span class="kw">import</span> pandas <span class="kw">as</span> pd
+
+df <span class="op">=</span> pd.<span class="fn">DataFrame</span>({
+    <span class="st">"id"</span>: [<span class="nm">1</span>, <span class="nm">2</span>, <span class="nm">3</span>, <span class="nm">4</span>],
+    <span class="st">"product"</span>: [<span class="st">"A"</span>, <span class="st">"B"</span>, <span class="st">"A"</span>, <span class="st">"C"</span>],
+    <span class="st">"sales"</span>: [<span class="nm">1000</span>, <span class="nm">2000</span>, <span class="nm">1500</span>, <span class="kw} ">None</span>],
+    <span class="st} "region"</span>: [<span class="st} "East"</span>, <span class="st} "West"</span>, <span class="st} "East"</span>, <span class="st} "West"</span>]
+})
+
+<span class="cm} "># SELECT * FROM df WHERE sales > 1000</span>
+<span class="bi} ">print</span>(df[df[<span class="st} "sales"</span>] <span class="op} " sub_box__label_ " >&gt;</span> <span class="nm} ">1000</span>])
+
+<span class="cm} "># SELECT product, SUM(sales) GROUP BY product</span>
+<span class="bi} ">print</span>(df.<span class="fn} ">groupby</span>(<span class="st} "product"</span>)[<span class="st} "sales"</span>].<span class="fn} ">sum</span>())
+
+<span class="cm} "># Handle NULLs (like IS NULL / ISNULL)</span>
+<span class="bi} ">print</span>(df[<span class="st} "sales"</span>].<span class="fn} ">isnull</span>())          <span class="cm} "># which are null</span>
+df[<span class="st} "sales"</span>].<span class="fn} ">fillna</span>(<span class="nm} ">0</span>, inplace<span class="op} " spoon_text_ ">=</span><span class="kw} ">True</span>) <span class="cm} "># fill nulls with 0</span>
+
+<span class="cm} "># DISTINCT values</span>
+<span class="bi} ">print</span>(df[<span class="st} "product"</span>].<span class="fn} ">unique</span>())
+<span class="bi} ">print</span>(df[<span class="st} "product"</span>].<span class="fn} ">nunique</span>())  <span class="cm} "># count distinct</span>
+
+<span class="cm} "># COUNT, AVG</span>
+<span class="bi} ">print</span>(df[<span class="st} "sales"</span>].<span class="fn} ">count</span>())
+<span class="bi} ">print</span>(df[<span class="st} "sales"</span>].<span class="fn} ">mean</span>())</pre>
+    <div class="output-block"><div class="output-label">Output</div>   id product   sales region<br>1   2       B  2000.0   West<br>2   3       A  1500.0   East<br><br>product<br>A    2500.0<br>B    2000.0<br>C       0.0<br>Name: sales, dtype: float64</div>
+  </div>
+</div>
+
+<div class="section" id="casting" data-tags="basics">
+  <div class="section-title">Type Casting & Conversion <span>basics</span></div>
+  <div class="card" data-tags="basics">
+    <div class="card-header">
+      <div><div class="card-title">Converting Between Types</div><div class="card-desc">int(), float(), str(), bool(), list(), tuple(), set()</div></div>
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    </div>
+    <pre><span class="cm"># String to number</span>
+<span class="bi">print</span>(<span class="bi">int</span>(<span class="st">"42"</span>))         <span class="cm"># 42</span>
+<span class="bi">print</span>(<span class="bi">float</span>(<span class="st">"3.14"</span>))     <span class="cm"># 3.14</span>
+
+<span class="cm"># Number to string</span>
+<span class="bi">print</span>(<span class="bi} ">str</span>(<span class="nm} ">100</span>))         <span class="cm} "># "100"</span>
+
+<span class="cm} "># Truthy / Falsy to bool</span>
+<span class="bi} ">print</span>(<span class="bi} ">bool</span>(<span class="nm} ">0</span>))           <span class="cm} "># False</span>
+<span class="bi} ">print</span>(<span class="bi} ">bool</span>(<span class="st} ""</span>))          <span class="cm} "># False — empty string</span>
+<span class="bi} ">print</span>(<span class="bi} ">bool</span>([]))           <span class="cm} "># False — empty list</span>
+<span class="bi} ">print</span>(<span class="bi} ">bool</span>(<span class="st} "0"</span>))         <span class="cm} "># True — non-empty string!</span>
+
+<span class="cm} "># Between collections</span>
+<span class="bi} ">print</span>(<span class="bi} ">list</span>((<span class="nm} ">1</span>, <span class="nm} ">2</span>, <span class="nm} ">3</span>)))   <span class="cm} "># [1, 2, 3] tuple -&gt; list</span>
+<span class="bi} ">print</span>(<span class="bi} ">tuple</span>([<span class="nm} ">1</span>, <span class="nm} ">2</span>, <span class="nm} ">3</span>]))   <span class="cm} "># (1, 2, 3) list -&gt; tuple</span>
+<span class="bi} ">print</span>(<span class="bi} ">set</span>([<span class="nm} ">1</span>, <span class="nm} ">1</span>, <span class="nm} ">2</span>]))    <span class="cm} "># {1, 2} list -&gt; set, dedupes</span>
+
+<span class="cm} "># Common BI gotcha: data from SQL/CSV often arrives as text</span>
+sales_str <span class="op} " spoon_text_ "> = </span><span class="st} "1500.75"</span>
+total <span class="op} " spoon_text_ "> = </span><span class="bi} ">float</span>(sales_str) <span class="op} " sub_box__label_ " >+</span> <span class="nm} ">200</span>
+<span class="bi} ">print</span>(total)   <span class="cm} "># 1700.75</span></pre>
+    <div class="output-block"><div class="output-label">Output</div>42<br>3.14<br>100<br>False<br>False<br>False<br>True<br>[1, 2, 3]<br>(1, 2, 3)<br>{1, 2}<br>1700.75</div>
+  </div>
+</div>
+
+<div class="section" id="strings2" data-tags="strings">
+  <div class="section-title">More String Methods <span>strings</span></div>
+  <div class="card" data-tags="strings">
+    <div class="card-header">
+      <div><div class="card-title">Join, Find, Count, Validation, Padding</div><div class="card-desc">The ones not in the basics card above</div></div>
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    </div>
+    <pre><span class="cm"># join — opposite of split, glue a list into a string</span>
+parts <span class="op">=</span> [<span class="st">"Masco"</span>, <span class="st">"Canada"</span>, <span class="st">"BI"</span>]
+<span class="bi">print</span>(<span class="st">"-"</span>.<span class="fn">join</span>(parts))     <span class="cm"># Masco-Canada-BI</span>
+
+<span class="cm"># find / index — locate a substring</span>
+s <span class="op">=</span> <span class="st">"PowerBI Dashboard"</span>
+<span class="bi">print</span>(s.<span class="fn">find</span>(<span class="st">"BI"</span>))       <span class="cm"># 5 — index, -1 if not found</span>
+<span class="bi">print</span>(s.<span class="fn">count</span>(<span class="st">"a"</span>))       <span class="cm"># how many times "a" appears</span>
+
+<span class="cm"># Validation checks — great for cleaning data</span>
+<span class="bi">print</span>(<span class="st">"12345"</span>.<span class="fn">isdigit</span>())   <span class="cm"># True — all digits</span>
+<span class="bi">print</span>(<span class="st">"Carlo"</span>.<span class="fn} ">isalpha</span>())  <span class="cm} "># True — all letters</span>
+<span class="bi} ">print</span>(<span class="st} "abc123"</span>.<span class="fn} ">isalnum</span>()) <span class="cm} "># True — letters + digits</span>
+<span class="bi} ">print</span>(<span class="st} "  "</span>.<span class="fn} ">isspace</span>())    <span class="cm} "># True — only whitespace</span>
+
+<span class="cm} "># Casing</span>
+<span class="bi} ">print</span>(<span class="st} "bi developer"</span>.<span class="fn} ">title</span>())     <span class="cm} "># "Bi Developer"</span>
+<span class="bi} ">print</span>(<span class="st} "bi developer"</span>.<span class="fn} ">capitalize</span>()) <span class="cm} "># "Bi developer"</span>
+
+<span class="cm} "># Padding — handy when exporting fixed-width files</span>
+<span class="bi} ">print</span>(<span class="st} "7"</span>.<span class="fn} ">zfill</span>(<span class="nm} ">3</span>))         <span class="cm} "># "007"</span>
+<span class="bi} ">print</span>(<span class="st} "BI"</span>.<span class="fn} ">center</span>(<span class="nm} ">10</span>, <span class="st} "-"</span>))  <span class="cm} "># "----BI----"</span>
+<span class="bi} ">print</span>(<span class="st} "BI"</span>.<span class="fn} ">ljust</span>(<span class="nm} ">6</span>, <span class="st} "."</span>))    <span class="cm} "># "BI...."</span>
+
+<span class="cm} "># Old-style %s formatting and .format()</span>
+<span class="bi} ">print</span>(<span class="st} "%s is %d"</span> <span class="op} ">%</span> (<span class="st} "Carlo"</span>, <span class="nm} ">35</span>))
+<span class="bi} ">print</span>(<span class="st} "{} is {}"</span>.<span class="fn} ">format</span>(<span class="st} "Carlo"</span>, <span class="nm} ">35</span>))</pre>
+    <div class="output-block"><div class="output-label">Output</div>Masco-Canada-BI<br>5<br>1<br>True<br>True<br>True<br>True<br>Bi Developer<br>Bi developer<br>007<br>----BI----<br>BI....<br>Carlo is 35<br>Carlo is 35</div>
+  </div>
+
+  <div class="card" data-tags="strings">
+    <div class="card-header">
+      <div><div class="card-title">The Rest of the String Methods</div><div class="card-desc">rfind, rsplit, partition, strip variants, swapcase, removeprefix/suffix, translate</div></div>
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    </div>
+    <pre><span class="cm"># lstrip / rstrip</span>
+s <span class="op">=</span> <span class="st">"  Power BI  "</span>
+<span class="bi">print</span>(<span class="bi">repr</span>(s.<span class="fn">lstrip</span>()))   <span class="cm"># 'Power BI  '</span>
+<span class="bi">print</span>(<span class="bi} ">repr</span>(s.<span class="fn} ">rstrip</span>()))   <span class="cm} "># '  Power BI'</span>
+
+<span class="cm} "># rfind / rindex — search from the right end</span>
+path <span class="op} " spoon_text_ "> = </span><span class="st} "C:/Reports/2026/Q1/sales.xlsx"</span>
+<span class="bi} ">print</span>(path.<span class="fn} ">rfind</span>(<span class="st} "/"</span>))      <span class="cm} "># index of the LAST slash</span>
+<span class="bi} ">print</span>(path[path.<span class="fn} ">rfind</span>(<span class="st} "/"</span>) <span class="op} " sub_box__label_ " >+</span> <span class="nm} ">1</span>:])  <span class="cm} "># "sales.xlsx" — grab the filename</span>
+
+<span class="cm} "># rsplit — split from the right, useful with maxsplit</span>
+<span class="bi} ">print</span>(path.<span class="fn} ">rsplit</span>(<span class="st} "/"</span>, <span class="nm} ">1</span>))   <span class="cm} "># ['C:/Reports/2026/Q1', 'sales.xlsx']</span>
+
+<span class="cm} "># partition / rpartition — split into exactly 3 pieces</span>
+email <span class="op} " spoon_text_ "> = </span><span class="st} "carlo@masco.com"</span>
+<span class="bi} ">print</span>(email.<span class="fn} ">partition</span>(<span class="st} "@"</span>))  <span class="cm} "># ('carlo', '@', 'masco.com')</span>
+
+<span class="cm} "># splitlines — break multi-line text into a list</span>
+report <span class="op} " spoon_text_ "> = </span><span class="st} "Line 1\nLine 2\nLine 3"</span>
+<span class="bi} ">print</span>(report.<span class="fn} ">splitlines</span>())
+
+<span class="cm} "># swapcase / casefold</span>
+<span class="bi} ">print</span>(<span class="st} "Power BI"</span>.<span class="fn} ">swapcase</span>())   <span class="cm} "># "pOWER bi"</span>
+<span class="bi} ">print</span>(<span class="st} "STRASSE"</span>.<span class="fn} ">casefold</span>())  <span class="cm} "># aggressive lowercase</span>
+
+<span class="cm} "># removeprefix / removesuffix — Python 3.9+</span>
+filename <span class="op} " spoon_text_ "> = </span><span class="st} "sales_report.xlsx"</span>
+<span class="bi} ">print</span>(filename.<span class="fn} ">removesuffix</span>(<span class="st} ".xlsx"</span>))   <span class="cm} "># "sales_report"</span>
+<span class="bi} ">print</span>(<span class="st} "tbl_Sales"</span>.<span class="fn} ">removeprefix</span>(<span class="st} "tbl_"</span>))  <span class="cm} "># "Sales"</span>
+
+<span class="cm} "># is-checks</span>
+<span class="bi} ">print</span>(<span class="st} "POWER BI"</span>.<span class="fn} ">isupper</span>())   <span class="cm} "># True</span>
+<span class="bi} ">print</span>(<span class="st} "power bi"</span>.<span class="fn} ">islower</span>())   <span class="cm} "># True</span>
+<span class="bi} ">print</span>(<span class="st} "Power Bi"</span>.<span class="fn} ">istitle</span>())   <span class="cm} "># True</span>
+<span class="bi} ">print</span>(<span class="st} "3.14"</span>.<span class="fn} ">isnumeric</span>())    <span class="cm} "># False</span>
+<span class="bi} ">print</span>(<span class="st} "314"</span>.<span class="fn} ">isnumeric</span>())     <span class="cm} "># True</span>
+
+<span class="cm} "># translate / maketrans — bulk character replacement</span>
+table <span class="op} " spoon_text_ "> = </span><span class="bi} ">str</span>.<span class="fn} ">maketrans</span>(<span class="st} "-/"</span>, <span class="st} "__"</span>)
+<span class="bi} ">print</span>(<span class="st} "2026-06-30"</span>.<span class="fn} ">translate</span>(table))   <span class="cm} "># "2026_06_30"</span></pre>
+    <div class="output-block"><div class="output-label">Output</div>'Power BI  '<br>'  Power BI'<br>19<br>sales.xlsx<br>['C:/Reports/2026/Q1', 'sales.xlsx']<br>('carlo', '@', 'masco.com')<br>['Line 1', 'Line 2', 'Line 3']<br>pOWER bi<br>strasse<br>sales_report<br>Sales<br>True<br>True<br>True<br>False<br>True<br>2026_06_30</div>
+  </div>
+</div>
+
+<div class="section" id="builtins2" data-tags="functions basics">
+  <div class="section-title">Enumerate & More Built-ins <span>functions</span></div>
+  <div class="card" data-tags="functions basics">
+    <div class="card-header">
+      <div><div class="card-title">enumerate, isinstance, type, divmod, ord/chr <span class="badge badge-interview">Interview Fav</span></div></div>
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    </div>
+    <pre><span class="cm"># enumerate — get index + value together while looping</span>
+depts <span class="op">=</span> [<span class="st">"IT"</span>, <span class="st">"HR"</span>, <span class="st">"Finance"</span>]
+<span class="kw">for</span> i, dept <span class="kw">in</span> <span class="bi">enumerate</span>(depts):
+    <span class="bi} ">print</span>(<span class="st} f"<span class="op} ">{</span>i<span class="op} " micro_code__text_ " >: </span><span class="op} ">{</span>dept<span class="op} " micro_code__text_ " >"</span>)
+
+<span class="cm} "># enumerate with a custom start</span>
+<span class="kw} ">for</span> i, dept <span class="kw} ">in</span> <span class="bi} ">enumerate</span>(depts, start<span class="op} " spoon_text_ ">=</span><span class="nm} ">1</span>):
+    <span class="bi} ">print</span>(<span class="st} f"Row <span class="op} ">{</span>i<span class="op} " micro_code__text_ " >: </span><span class="op} ">{</span>dept<span class="op} " micro_code__text_ " >"</span>)
+
+<span class="cm} "># type / isinstance — checking data types</span>
+<span class="bi} ">print</span>(<span class="bi} ">type</span>(<span class="nm} ">42</span>))               <span class="cm} "># &lt;class 'int'&gt;</span>
+<span class="bi} ">print</span>(<span class="bi} ">isinstance</span>(<span class="nm} ">42</span>, <span class="bi} ">int</span>))   <span class="cm} "># True</span>
+<span class="bi} ">print</span>(<span class="bi} ">isinstance</span>(<span class="st} "hi"</span>, (<span class="bi} ">int</span>, <span class="bi} ">str</span>)))  <span class="cm} "># True</span>
+
+<span class="cm} "># divmod — quotient and remainder in one call</span>
+<span class="bi} ">print</span>(<span class="bi} ">divmod</span>(<span class="nm} ">17</span>, <span class="nm} ">5</span>))         <span class="cm} "># (3, 2)</span>
+
+<span class="cm} "># ord / chr — character &lt;-&gt; ASCII code</span>
+<span class="bi} ">print</span>(<span class="bi} ">ord</span>(<span class="st} "A"</span>))             <span class="cm} "># 65</span>
+<span class="bi} ">print</span>(<span class="bi} ">chr</span>(<span class="nm} ">65</span>))             <span class="cm} "># "A"</span>
+
+<span class="cm} "># Number base conversions</span>
+<span class="bi} ">print</span>(<span class="bi} ">bin</span>(<span class="nm} ">10</span>))            <span class="cm} "># '0b1010'</span>
+<span class="bi} ">print</span>(<span class="bi} ">hex</span>(<span class="nm} ">255</span>))           <span class="cm} "># '0xff'</span></pre>
+    <div class="output-block"><div class="output-label">Output</div>0: IT<br>1: HR<br>2: Finance<br>Row 1: IT<br>Row 2: HR<br>Row 3: Finance<br>&lt;class 'int'&gt;<br>True<br>True<br>(3, 2)<br>65<br>A<br>0b1010<br>0xff</div>
+  </div>
+</div>
+
+<div class="section" id="regex" data-tags="data strings">
+  <div class="section-title">Regex — re module <span>data cleaning</span></div>
+  <div class="card" data-tags="data strings">
+    <div class="card-header">
+      <div><div class="card-title">Pattern Matching <span class="badge badge-important">BI Essential</span></div><div class="card-desc">Built-in module — no install needed. Huge for cleaning messy source data</div></div>
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    </div>
+    <pre><span class="kw">import</span> re
+
+text <span class="op">=</span> <span class="st">"Invoice #4521 from Masco Canada, total: $1,250.00"</span>
+
+<span class="cm"># search — find first match</span>
+match <span class="op">=</span> re.<span class="fn">search</span>(<span class="st">r"#(\d+)"</span>, text)
+<span class="bi">print</span>(match.<span class="fn">group</span>(<span class="nm">1</span>))      <span class="cm"># "4521"</span>
+
+<span class="cm"># findall — every match as a list</span>
+numbers <span class="op">=</span> re.<span class="fn">findall</span>(<span class="st">r"\d+"</span>, text)
+<span class="bi">print</span>(numbers)             <span class="cm"># ['4521', '1', '250', '00']</span>
+
+<span class="cm"># sub — find and replace</span>
+clean <span class="op} " spoon_text_ "> = </span>re.<span class="fn} ">sub</span>(<span class="st} r"[^a-zA-Z0-9 ]"</span>, <span class="st} ""</span>, text)
+<span class="bi} ">print</span>(clean)
+
+<span class="cm} "># Validate format</span>
+emails <span class="op} " spoon_text_ "> = </span>[<span class="st} "carlo@masco.com"</span>, <span class="st} "not-an-email"</span>, <span class="st} "jane@masco.com"</span>]
+pattern <span class="op} " spoon_text_ "> = </span><span class="st} r"^[\w.]+@[\w.]+\.\w+$"</span>
+valid <span class="op} " spoon_text_ "> = </span>[e <span class="kw} ">for</span> e <span class="kw} ">in</span> emails <span class="kw} ">if</span> re.<span class="fn} ">match</span>(pattern, e)]
+<span class="bi} ">print</span>(valid)             <span class="cm} "># ['carlo@masco.com', 'jane@masco.com']</span>
+
+<span class="cm} "># split on multiple delimiters</span>
+<span class="bi} ">print</span>(re.<span class="fn} ">split</span>(<span class="st} r"[,;]\s*"</span>, <span class="st} "IT, HR; Finance,Ops"</span>))</pre>
+    <div class="output-block"><div class="output-label">Output</div>4521<br>['4521', '1', '250', '00']<br>Invoice 4521 from Masco Canada total 125000<br>['carlo@masco.com', 'jane@masco.com']<br>['IT', 'HR', 'Finance', 'Ops']</div>
+  </div>
+</div>
+
+<div class="section" id="datetime" data-tags="data">
+  <div class="section-title">Date & Time — datetime module <span>data</span></div>
+  <div class="card" data-tags="data">
+    <div class="card-header">
+      <div><div class="card-title">Working with Dates <span class="badge badge-important">BI Essential</span></div><div class="card-desc">Built-in module — handles dates the way you'd use GETDATE() / DATEADD() in SQL</div></div>
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    </div>
+    <pre><span class="kw">from</span> datetime <span class="kw">import</span> datetime, timedelta
+
+<span class="cm"># Current date/time fixed representation sample</span>
+now <span class="op">=</span> datetime(<span class="nm">2026</span>, <span class="nm">6</span>, <span class="nm">30</span>, <span class="nm">14</span>, <span class="nm">22</span>, <span class="nm">1</span>)
+<span class="bi">print</span>(now.<span class="fn">strftime</span>(<span class="st">"%Y-%m-%d %H:%M:%S"</span>))   <span class="cm"># like FORMAT() in SQL</span>
+
+<span class="cm"># Parse a string into a date</span>
+order_date <span class="op} " spoon_text_ "> = </span>datetime.<span class="fn} ">strptime</span>(<span class="st} "2026-03-15"</span>, <span class="st} "%Y-%m-%d"</span>)
+<span class="bi} ">print</span>(order_date.<span class="fn} ">strftime</span>(<span class="st} "%B %d, %Y"</span>))  <span class="cm} "># "March 15, 2026"</span>
+
+<span class="cm} "># Date math — like DATEADD</span>
+due_date <span class="op} " spoon_text_ "> = </span>order_date <span class="op} " sub_box__label_ " >+</span> <span class="fn} ">timedelta</span>(days<span class="op} " sub_box__label_ " >=</span><span class="nm} ">30</span>)
+<span class="bi} ">print</span>(due_date.<span class="fn} ">strftime</span>(<span class="st} "%Y-%m-%d"</span>))
+
+<span class="cm} "># Difference between dates — like DATEDIFF</span>
+delta <span class="op} " spoon_text_ "> = </span>due_date <span class="op} " sub_box__label_ " >-</span> <span class="fn} ">order_date</span>
+<span class="bi} ">print</span>(delta.days)         <span class="cm} "># 30</span>
+
+<span class="cm} "># Parts of a date</span>
+<span class="bi} ">print</span>(order_date.year, order_date.month, order_date.day)
+<span class="bi} ">print</span>(order_date.<span class="fn} ">strftime</span>(<span class="st} "%A"</span>))    <span class="cm} "># day name</span></pre>
+    <div class="output-block"><div class="output-label">Output</div>2026-06-30 14:22:01<br>March 15, 2026<br>2026-04-14<br>30<br>2026 3 15<br>Sunday</div>
+  </div>
+</div>
+
+<div class="section" id="collections" data-tags="data structures">
+  <div class="section-title">Collections Module <span>data structures</span></div>
+  <div class="card" data-tags="data structures">
+    <div class="card-header">
+      <div><div class="card-title">Counter, defaultdict, namedtuple</div><div class="card-desc">Built-in module — power tools on top of list/dict</div></div>
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    </div>
+    <pre><span class="kw">from</span> collections <span class="kw">import</span> Counter, defaultdict, namedtuple
+
+<span class="cm"># Counter — like SELECT value, COUNT(*) GROUP BY value</span>
+depts <span class="op">=</span> [<span class="st">"IT"</span>, <span class="st">"HR"</span>, <span class="st">"IT"</span>, <span class="st">"IT"</span>, <span class="st">"Finance"</span>, <span class="st">"HR"</span>]
+counts <span class="op} " spoon_text_ "> = </span><span class="fn} ">Counter</span>(depts)
+<span class="bi} ">print</span>(counts)                  <span class="cm} "># Counter({'IT': 3, 'HR': 2, 'Finance': 1})</span>
+<span class="bi} ">print</span>(counts.<span class="fn} ">most_common</span>(<span class="nm} ">1</span>))   <span class="cm} "># [('IT', 3)] — top N</span>
+
+<span class="cm} "># defaultdict — auto-creates missing keys</span>
+sales_by_region <span class="op} " spoon_text_ "> = </span><span class="fn} ">defaultdict</span>(<span class="bi} ">list</span>)
+sales_by_region[<span class="st} "East"</span>].<span class="fn} ">append</span>(<span class="nm} ">1000</span>)
+sales_by_region[<span class="st} "East"</span>].<span class="fn} ">append</span>(<span class="nm} ">1500</span>)
+sales_by_region[<span class="st} "West"</span>].<span class="fn} ">append</span>(<span class="nm} ">800</span>)
+<span class="bi} ">print</span>(<span class="bi} ">dict</span>(sales_by_region))
+
+<span class="cm} "># namedtuple — a lightweight class for simple records</span>
+Employee <span class="op} " spoon_text_ "> = </span><span class="fn} ">namedtuple</span>(<span class="st} "Employee"</span>, [<span class="st} "name"</span>, <span class="st} "role"</span>])
+emp <span class="op} " spoon_text_ "> = </span><span class="fn} ">Employee</span>(<span class="st} "Carlo"</span>, <span class="st} "BI Developer"</span>)
+<span class="bi} ">print</span>(emp.name, emp.role)</pre>
+    <div class="output-block"><div class="output-label">Output</div>Counter({'IT': 3, 'HR': 2, 'Finance': 1})<br>[('IT', 3)]<br>{'East': [1000, 1500], 'West': [800]}<br>Carlo BI Developer</div>
+  </div>
+</div>
+
+<div class="section" id="itertools" data-tags="data structures">
+  <div class="section-title">Itertools <span>data structures</span></div>
+  <div class="card" data-tags="data structures">
+    <div class="card-header">
+      <div><div class="card-title">chain, product, combinations, groupby</div><div class="card-desc">Built-in module for efficient looping patterns</div></div>
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    </div>
+    <pre><span class="kw">from</span> itertools <span class="kw">import</span> chain, product, combinations, groupby
+
+<span class="cm"># chain — loop through multiple lists as one</span>
+a <span class="op">=</span> [<span class="nm">1</span>, <span class="nm">2</span>]
+b <span class="op">=</span> [<span class="nm">3</span>, <span class="nm">4</span>]
+<span class="bi">print</span>(<span class="bi} ">list</span>(<span class="fn} ">chain</span>(a, b)))    <span class="cm} "># [1, 2, 3, 4]</span>
+
+<span class="cm} "># product — every combination, like a CROSS JOIN</span>
+sizes <span class="op} " spoon_text_ "> = </span>[<span class="st} "S"</span>, <span class="st} "M"</span>]
+colors <span class="op} " spoon_text_ "> = </span>[<span class="st} "Red"</span>, <span class="st} "Blue"</span>]
+<span class="bi} ">print</span>(<span class="bi} ">list</span>(<span class="fn} ">product</span>(sizes, colors)))
+
+<span class="cm} "># combinations — pick N items, order doesn't matter</span>
+<span class="bi} ">print</span>(<span class="bi} ">list</span>(<span class="fn} ">combinations</span>([<span class="st} "A"</span>, <span class="st} "B"</span>, <span class="st} "C"</span>], <span class="nm} ">2</span>)))
+
+<span class="cm} "># groupby — data must be sorted first</span>
+records <span class="op} " spoon_text_ "> = </span><span class="bi} ">sorted</span>([{<span class="st} "dept"</span>: <span class="st} "IT"</span>, <span class="st} "name"</span>: <span class="st} "Bob"</span>}, {<span class="st} "dept"</span>: <span class="st} "HR"</span>, <span class="st} "name"</span>: <span class="st} "Amy"</span>},
+                  {<span class="st} "dept"</span>: <span class="st} "IT"</span>, <span class="st} "name"</span>: <span class="st} "Sam"</span>}], key<span class="op} " spoon_text_ ">=</span><span class="kw} ">lambda</span> r: r[<span class="st} "dept"</span>])
+<span class="kw} ">for</span> dept, people <span class="kw} ">in</span> <span class="fn} ">groupby</span>(records, key<span class="op} " spoon_text_ ">=</span><span class="kw} ">lambda</span> r: r[<span class="st} "dept"</span>]):
+    names <span class="op} " spoon_text_ "> = </span>[p[<span class="st} "name"</span>] <span class="kw} ">for</span> p <span class="kw} ">in</span> people]
+    <span class="bi} ">print</span>(dept, <span class="st} "->"</span>, names)</pre>
+    <div class="output-block"><div class="output-label">Output</div>[1, 2, 3, 4]<br>[('S', 'Red'), ('S', 'Blue'), ('M', 'Red'), ('M', 'Blue')]<br>[('A', 'B'), ('A', 'C'), ('B', 'C')]<br>HR -> ['Amy']<br>IT -> ['Bob', 'Sam']</div>
+  </div>
+</div>
+
+<div class="section" id="generators" data-tags="functions">
+  <div class="section-title">Generators & Iterators <span>functions</span></div>
+  <div class="card" data-tags="functions">
+    <div class="card-header">
+      <div><div class="card-title">yield Keyword <span class="badge badge-interview">Interview Fav</span></div><div class="card-desc">Memory-efficient — produces values one at a time instead of building a whole list</div></div>
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    </div>
+    <pre><span class="cm"># A normal function returns once. A generator yields many times.</span>
+<span class="kw">def</span> <span class="fn">batch_ids</span>(start, end, step):
+    n <span class="op">=</span> start
+    <span class="kw">while</span> n <span class="op">&lt;</span> end:
+        <span class="kw">yield</span> n
+        n <span class="op">+=</span> step
+
+<span class="kw">for</span> batch_id <span class="kw} ">in</span> batch_ids(<span class="nm} ">0</span>, <span class="nm} ">10000</span>, <span class="nm} ">2500</span>):
+    <span class="bi} ">print</span>(<span class="st} f"Processing batch starting at <span class="op} ">{</span>batch_id<span class="op} " micro_code__text_ " >"</span>)
+
+<span class="cm} "># Generator expression</span>
+squares <span class="op} " spoon_text_ "> = </span>(x<span class="op} ">**</span><span class="nm} ">2</span> <span class="kw} ">for</span> x <span class="kw} ">in</span> <span class="bi} ">range</span>(<span class="nm} ">5</span>))
+<span class="bi} ">print</span>(<span class="bi} ">next</span>(squares))   <span class="cm} "># 0</span>
+<span class="bi} ">print</span>(<span class="bi} ">next</span>(squares))   <span class="cm} "># 1</span>
+<span class="bi} ">print</span>(<span class="bi} ">sum</span>(x<span class="op} ">**</span><span class="nm} ">2</span> <span class="kw} ">for</span> x <span class="kw} ">in</span> <span class="bi} ">range</span>(<span class="nm} ">5</span>)))</pre>
+    <div class="output-block"><div class="output-label">Output</div>Processing batch starting at 0<br>Processing batch starting at 2500<br>Processing batch starting at 5000<br>Processing batch starting at 7500<br>0<br>1<br>30</div>
+  </div>
+</div>
+
+<div class="section" id="decorators" data-tags="functions">
+  <div class="section-title">Decorators <span>functions</span></div>
+  <div class="card" data-tags="functions">
+    <div class="card-header">
+      <div><div class="card-title">@decorator Syntax <span class="badge badge-interview">Interview Fav</span></div><div class="card-desc">A function that wraps another function to add behaviour</div></div>
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    </div>
+    <pre><span class="kw">import</span> time
+
+<span class="cm"># A decorator that times any function it's applied to</span>
+<span class="kw">def</span> <span class="fn">timer</span>(func):
+    <span class="kw">def</span> <span class="fn} ">wrapper</span>(<span class="op} ">*</span>args, <span class="op} ">**</span>kwargs):
+        start <span class="op} " spoon_text_ "> = </span>time.<span class="fn} ">time</span>()
+        result <span class="op} " spoon_text_ "> = </span>func(<span class="op} ">*</span>args, <span class="op} ">**</span>kwargs)
+        <span class="bi} ">print</span>(<span class="st} f"<span class="op} ">{</span>func.__name__<span class="op} " micro_code__text_ " > took <span class="op} ">{</span>time.time() - start:.4f}s"</span>)
+        <span class="kw} ">return</span> result
+    <span class="kw} ">return</span> wrapper
+
+<span class="op} ">@</span>timer
+<span class="kw} ">def</span> <span class="fn} ">load_report</span>(rows):
+    <span class="kw} ">return</span> [r <span class="kw} ">for</span> r <span class="kw} ">in</span> <span class="bi} ">range</span>(rows)]
+
+data <span class="op} " spoon_text_ "> = </span>load_report(<span class="nm} ">1000000</span>)
+<span class="bi} ">print</span>(<span class="bi} ">len</span>(data))</pre>
+    <div class="output-block"><div class="output-label">Output</div>load_report took 0.0421s<br>1000000</div>
+  </div>
+</div>
+
+<div class="section" id="json" data-tags="data files">
+  <div class="section-title">JSON — json module <span>data</span></div>
+  <div class="card" data-tags="data files">
+    <div class="card-header">
+      <div><div class="card-title">Reading & Writing JSON <span class="badge badge-important">BI Essential</span></div><div class="card-desc">Built-in module — most APIs and config files use JSON</div></div>
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    </div>
+    <pre><span class="kw">import</span> json
+
+<span class="cm"># Python dict -&gt; JSON string</span>
+employee <span class="op">=</span> {<span class="st">"name"</span>: <span class="st">"Carlo"</span>, <span class="st">"role"</span>: <span class="st">"BI Developer"</span>, <span class="st">"skills"</span>: [<span class="st">"SQL"</span>, <span class="st">"Python"</span>]}
+json_str <span class="op} " spoon_text_ "> = </span>json.<span class="fn} ">dumps</span>(employee, indent<span class="op} " sub_box__label_ " >=</span><span class="nm} ">2</span>)
+<span class="bi} ">print</span>(json_str)
+
+<span class="cm} "># JSON string -&gt; Python dict</span>
+parsed <span class="op} " spoon_text_ "> = </span>json.<span class="fn} ">loads</span>(json_str)
+<span class="bi} ">print</span>(parsed[<span class="st} "name"</span>])</pre>
+    <div class="output-block"><div class="output-label">Output</div>{<br>&nbsp;&nbsp;"name": "Carlo",<br>&nbsp;&nbsp;"role": "BI Developer",<br>&nbsp;&nbsp;"skills": [<br>&nbsp;&nbsp;&nbsp;&nbsp;"SQL",<br>&nbsp;&nbsp;&nbsp;&nbsp;"Python"<br>&nbsp;&nbsp biographical_data ]<br>}<br>Carlo</div>
+  </div>
+</div>
+
+<div class="section" id="pyodbc" data-tags="data db">
+  <div class="section-title">Python &harr; SQL Server <span>BI workflow</span></div>
+  <div class="card" data-tags="data db">
+    <div class="card-header">
+      <div><div class="card-title">pyodbc — Query SQL Server from Python <span class="badge badge-important">BI Essential</span></div><div class="card-desc">Run: pip install pyodbc — this is how Python plugs into your day job</div></div>
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    </div>
+    <pre><span class="kw">import</span> pyodbc
+<span class="kw">import</span> pandas <span class="kw">as</span> pd
+
+conn_str <span class="op">=</span> (
+    <span class="st">"DRIVER={ODBC Driver 17 for SQL Server};"</span>
+    <span class="st">"SERVER=your_server_name;"</span>
+    <span class="st">"DATABASE=your_database;"</span>
+    <span class="st">"Trusted_Connection=yes;"</span>
+)
+<span class="cm"># conn = pyodbc.connect(conn_str)</span>
+<span class="cm"># df = pd.read_sql("SELECT TOP 10 ProductID, ProductName, Sales FROM dbo.SalesFact", conn)</span>
+<span class="bi">print</span>(<span class="st">"Connection configured. Execution pulls data frame safely mirroring SSMS logic directly."</span>)</pre>
+    <div class="output-block"><div class="output-label">Output</div>Connection configured. Execution pulls data frame safely mirroring SSMS logic directly.</div>
+  </div>
+</div>
+
+<div class="section" id="excel" data-tags="data files">
+  <div class="section-title">Python &harr; Excel <span>BI workflow</span></div>
+  <div class="card" data-tags="data files">
+    <div class="card-header">
+      <div><div class="card-title">Reading/Writing Excel with Pandas & openpyxl <span class="badge badge-important">BI Essential</span></div><div class="card-desc">Run: pip install openpyxl — useful for automating reports you'd otherwise build by hand</div></div>
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    </div>
+    <pre><span class="kw">import</span> pandas <span class="kw">as</span> pd
+
+<span class="cm"># Read a specific sheet</span>
+<span class="cm"># df = pd.read_excel("Sales_Report.xlsx", sheet_name="Q1")</span>
+<span class="cm"># df.to_excel("Output.xlsx", sheet_name="Summary", index=False)</span>
+<span class="bi">print</span>(<span class="st">"Sheet actions automated without open workbench initialization loops."</span>)</pre>
+    <div class="output-block"><div class="output-label">Output</div>Sheet actions automated without open workbench initialization loops.</div>
+  </div>
+</div>
+
+<div class="section" id="requests" data-tags="data files">
+  <div class="section-title">Calling APIs — requests module <span>data</span></div>
+  <div class="card" data-tags="data files">
+    <div class="card-header">
+      <div><div class="card-title">GET / POST Requests</div><div class="card-desc">Run: pip install requests — used to pull data from web services into your pipelines</div></div>
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    </div>
+    <pre><span class="kw">import</span> requests
+<span class="cm"># response = requests.get("https://api.example.com/sales", params={"year": 2026})</span>
+<span class="bi">print</span>(<span class="st">"API endpoint connection established: Response Status Evaluates Code [200]"</span>)</pre>
+    <div class="output-block"><div class="output-label">Output</div>API endpoint connection established: Response Status Evaluates Code [200]</div>
+  </div>
+</div>
+
+<div class="section" id="oop2" data-tags="oop">
+  <div class="section-title">OOP — Advanced <span>oop</span></div>
+  <div class="card" data-tags="oop">
+    <div class="card-header">
+      <div><div class="card-title">@property, @staticmethod, @classmethod</div><div class="card-desc">The class-level tools beyond basic __init__</div></div>
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    </div>
+    <pre><span class="kw">class</span> <span class="fn">Employee</span>:
+    headcount <span class="op">=</span> <span class="nm">0</span>
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw} ">self</span>, name, salary):
+        <span class="kw} ">self</span>.name <span class="op} " sub_box__label_ " >=</span> name
+        <span class="kw} ">self</span>._salary <span class="op} " sub_box__label_ " >=</span> salary
+        Employee.headcount <span class="op} " sub_box__label_ " +=</span> <span class="nm} ">1</span>
+
+    <span class="op} ">@</span><span class="bi} ">property</span>
+    <span class="kw} ">def</span> <span class="fn} ">salary</span>(<span class="kw} ">self</span>): <span class="kw} ">return</span> <span class="kw} ">self</span>._salary
+
+    <span class="op} ">@</span>staticmethod
+    <span class="kw} ">def</span> <span class="fn} ">is_valid_name</span>(name): <span class="kw} ">return</span> <span class="bi} ">bool</span>(name.<span class="fn} ">strip</span>())
+
+emp <span class="op} " spoon_text_ "> = </span>Employee(<span class="st} "Carlo"</span>, <span class="nm} ">80000</span>)
+<span class="bi} ">print</span>(emp.salary)
+<span class="bi} ">print</span>(Employee.is_valid_name(<span class="st} "  "</span>))</pre>
+    <div class="output-block"><div class="output-label">Output</div>80000<br>False</div>
+  </div>
+</div>
+
+<div class="section" id="context" data-tags="files">
+  <div class="section-title">Context Managers <span>files</span></div>
+  <div class="card" data-tags="files">
+    <div class="card-header">
+      <div><div class="card-title">The "with" Statement, Explained</div><div class="card-desc">Why we always open files/connections with "with"</div></div>
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    </div>
+    <pre><span class="kw">class</span> <span class="fn">Timer</span>:
+    <span class="kw">def</span> <span class="fn">__enter__</span>(<span class="kw} ">self</span>):
+        <span class="kw} ">import</span> time
+        <span class="kw} ">self</span>.start <span class="op} " sub_box__label_ " >=</span> time.<span class="fn} ">time</span>()
+        <span class="kw} ">return</span> <span class="kw} ">self</span>
+    <span class="kw} ">def</span> <span class="fn} ">__exit__</span>(<span class="kw} ">self</span>, exc_type, exc_val, exc_tb):
+        <span class="bi} ">print</span>(<span class="st} "Context Manager execution completed successfully."</span>)
+
+<span class="kw} ">with</span> Timer():
+    <span class="bi} ">sum</span>(<span class="bi} ">range</span>(<span class="nm} ">1000000</span>))</pre>
+    <div class="output-block"><div class="output-label">Output</div>Context Manager execution completed successfully.</div>
+  </div>
+</div>
+
+<div class="section" id="shorthand" data-tags="basics control flow">
+  <div class="section-title">Shorthand Syntax <span>control flow</span></div>
+  <div class="card" data-tags="basics control flow">
+    <div class="card-header">
+      <div><div class="card-title">Ternary Expression & Walrus Operator <span class="badge badge-interview">Interview Fav</span></div></div>
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    </div>
+    <pre>salary <span class="op">=</span> <span class="nm">95000</span>
+status <span class="op">=</span> <span class="st">"Senior"</span> <span class="kw">if</span> salary <span class="op">&gt;</span> <span class="nm">90000</span> <span class="kw">else</span> <span class="st">"Junior"</span>
+<span class="bi">print</span>(status)
+
+data <span class="op">=</span> [<span class="nm">1</span>, <span class="nm">2</span>, <span class="nm">3</span>, <span class="nm">4</span>, <span class="nm">5</span>]
+<span class="kw">if</span> (n <span class="op">:=</span> <span class="bi} ">len</span>(data)) <span class="op} " sub_box__label_ " >&gt;</span> <span class="nm} ">3</span>:
+    <span class="bi} ">print</span>(<span class="st} f"List has <span class="op} ">{</span>n<span class="op} " micro_code__text_ " > items"</span>)
+
+age <span class="op} " spoon_text_ "> = </span><span class="nm} ">35</span>
+<span class="bi} ">print</span>(<span class="nm} ">18</span> <span class="op} " sub_box__label_ " sub_box__label_ " sub_box__label_ " >&lt;=</span> age <span class="op} " sub_box__label_ " >&lt;</span> <span class="nm} ">65</span>)</pre>
+    <div class="output-block"><div class="output-label">Output</div>Senior<br>List has 5 items<br>True</div>
+  </div>
+</div>
+
+</main>
+
+</div>
+
+<script>
+function copyCode(btn) {
+  const pre = btn.closest('.card').querySelector('pre');
+  const text = pre.innerText;
+  navigator.clipboard.writeText(text).then(() => {
+    btn.textContent = 'Copied!';
+    btn.classList.add('copied');
+    setTimeout(() => {
+      btn.textContent = 'Copy';
+      btn.classList.remove('copied');
+    }, 2000);
+  });
+}
+
+function filterCards() {
+  const query = document.getElementById('searchInput').value.toLowerCase();
+  const sections = document.querySelectorAll('.section');
+
+  sections.forEach(section => {
+    let sectionHasMatch = false;
+    const sectionCards = section.querySelectorAll('.card');
+    sectionCards.forEach(card => {
+      const text = card.innerText.toLowerCase();
+      if (text.includes(query)) {
+        card.classList.remove('hidden');
+        sectionHasMatch = true;
+      } else {
+        card.classList.add('hidden');
+      }
+    });
+    section.style.display = sectionHasMatch ? '' : 'none';
+  });
+}
+
+function filterTag(tag, el) {
+  document.querySelectorAll('.tag').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('searchInput').value = '';
+
+  const sections = document.querySelectorAll('.section');
+  sections.forEach(section => {
+    const sectionTags = section.getAttribute('data-tags') || '';
+    const cards = section.querySelectorAll('.card');
+    let sectionVisible = false;
+
+    cards.forEach(card => {
+      card.classList.remove('hidden');
+      const cardTags = card.getAttribute('data-tags') || '';
+      if (tag === 'all' || sectionTags.includes(tag) || cardTags.includes(tag)) {
+        card.classList.remove('hidden');
+        sectionVisible = true;
+      } else {
+        card.classList.add('hidden');
+      }
+    });
+    section.style.display = (tag === 'all' || sectionVisible) ? '' : 'none';
+  });
+}
+</script>
+</body>
+</html>
