@@ -24,7 +24,7 @@ export default function Hero() {
           Two tracks, run in parallel for a decade. 15+ years in business intelligence and data
           engineering — SQL Server and Oracle, T-SQL and PL/SQL, SSIS ETL, Power BI, and
           enterprise integration across JD Edwards and Cognos — currently as de facto technical
-          lead at Masco Canada. Alongside it, almost 10 years as a freelance mobile and web
+          lead on an internal platforms team. Alongside it, almost 10 years as a freelance mobile and web
           developer with ten apps on the Apple App Store and six on Google Play, plus full-stack
           web platforms in React, React Native, TypeScript, ASP.NET, and Laravel.
         </p>

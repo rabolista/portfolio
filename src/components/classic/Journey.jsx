@@ -7,23 +7,13 @@ export default function Journey() {
 
       <div className="mt-12 relative pl-6 sm:pl-10">
         <div className="absolute left-[5px] sm:left-[9px] top-2 bottom-2 w-px bg-blueprint-line" />
-        {experience.map((job, i) => (
-          <div key={job.role + job.company} className="relative pb-12 last:pb-0">
+        {experience.map((job) => (
+          <div key={job.role} className="relative pb-8 last:pb-0">
             <div className="absolute -left-6 sm:-left-10 top-1 h-[11px] w-[11px] rounded-full bg-blueprint-bg border-2 border-blueprint-cyan" />
             <div className="font-display text-[11px] uppercase tracking-wider text-blueprint-cyan mb-1">
               {job.period}
             </div>
             <h3 className="font-display text-lg text-blueprint-paper font-semibold">{job.role}</h3>
-            <div className="text-sm text-blueprint-muted mb-3">
-              {job.company} · {job.location}
-            </div>
-            <ul className="space-y-1.5">
-              {job.bullets.map((b) => (
-                <li key={b} className="text-sm text-blueprint-muted leading-relaxed pl-4 relative before:content-['›'] before:absolute before:left-0 before:text-blueprint-amber">
-                  {b}
-                </li>
-              ))}
-            </ul>
           </div>
         ))}
       </div>

@@ -18,7 +18,7 @@ export default function AboutApp() {
           engineering — SQL Server and Oracle, T-SQL and PL/SQL, SSIS ETL, Power BI, and
           enterprise integration across JD Edwards and Cognos — for retail, manufacturing,
           telecom, insurance, and financial-services clients, currently as de facto technical
-          lead at Masco Canada. Alongside it, almost 10 years as a freelance mobile and web
+          lead on an internal platforms team. Alongside it, almost 10 years as a freelance mobile and web
           developer: ten apps published on the Apple App Store and six on Google Play,
           independently designed and built since 2016, plus full-stack web platforms in React,
           React Native, TypeScript, ASP.NET, and Laravel on PostgreSQL and SQL Server backends.
@@ -28,21 +28,11 @@ export default function AboutApp() {
       </div>
 
       <div className="text-rab-sky mb-2">$ cat experience.log</div>
-      <div className="space-y-4">
+      <div className="space-y-2">
         {experience.map((job) => (
-          <div key={`${job.company}-${job.period}`} className="border-l-2 border-rab-line pl-3">
+          <div key={job.role} className="border-l-2 border-rab-line pl-3 py-1">
             <div className="text-rab-paper font-sans text-sm font-semibold">{job.role}</div>
-            <div className="text-rab-muted font-sans text-xs">
-              {job.company} · {job.location} · {job.period}
-            </div>
-            <ul className="mt-1.5 space-y-1">
-              {job.bullets.map((b) => (
-                <li key={b} className="font-sans text-xs text-rab-paper/80 flex gap-1.5">
-                  <span className="text-rab-amber">›</span>
-                  <span>{b}</span>
-                </li>
-              ))}
-            </ul>
+            <div className="text-rab-muted font-sans text-xs">{job.period}</div>
           </div>
         ))}
       </div>
